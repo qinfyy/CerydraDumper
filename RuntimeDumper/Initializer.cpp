@@ -17,10 +17,9 @@
 
 void TestPrintAllImageNames()
 {
-    il2cpp_functions funcs;
 
     // 获取当前域
-    Il2CppDomain* domain = funcs.il2cpp_domain_get();
+    Il2CppDomain* domain = il2cpp_domain_get();
     if (!domain) {
         DebugPrintA("Failed to get IL2CPP domain.\n");
         return;
@@ -28,7 +27,7 @@ void TestPrintAllImageNames()
 
     // 获取域里的程序集
     size_t assemblyCount = 0;
-    Il2CppAssembly** assemblies = funcs.il2cpp_domain_get_assemblies(domain, &assemblyCount);
+    Il2CppAssembly** assemblies = il2cpp_domain_get_assemblies(domain, &assemblyCount);
     if (!assemblies || assemblyCount == 0) {
         DebugPrintA("No assemblies found.\n");
         return;
@@ -43,11 +42,11 @@ void TestPrintAllImageNames()
         if (!assembly) continue;
 
         // 获取程序集对应的 image
-        Il2CppImage* image = funcs.il2cpp_assembly_get_image(assembly);
+        Il2CppImage* image = il2cpp_assembly_get_image(assembly);
         if (!image) continue;
 
         // 获取 image 名称
-        const char* imageName = funcs.il2cpp_image_get_name(image);
+        const char* imageName = il2cpp_image_get_name(image);
         if (imageName) {
             DebugPrintA("%s\n", imageName);
         }

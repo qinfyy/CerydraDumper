@@ -2,11 +2,13 @@
 #include <cstdint>
 
 uintptr_t GetUnityPlayerModuleBase();
+
 uintptr_t GetApiBase();
-void InitIl2CppFunctions();
+
 uintptr_t GetGameAssemblyModuleBase();
 
-// 占位类型
+void InitIl2CppFunctions();
+
 typedef void Il2CppDomain;
 typedef void Il2CppClass;
 typedef void Il2CppType;
@@ -16,103 +18,43 @@ typedef void Il2CppImage;
 typedef void FieldInfo;
 typedef void MethodInfo;
 
-// function_ptr 模板
-template<typename T>
-class function_ptr {
-public:
-    function_ptr() = default;
-    explicit function_ptr(void* address) : _fn(reinterpret_cast<T>(address)) {}
+#define IL2CPP_API(i, name, ret, params, args) \
+inline ret name params { \
+    using FuncType = ret(__fastcall*) params; \
+    uintptr_t addr = GetApiBase() + 8 * (i); \
+    FuncType fn = reinterpret_cast<FuncType>(*reinterpret_cast<uintptr_t*>(addr)); \
+    return fn args; \
+}
 
-    inline bool valid() const { return _fn != nullptr; }
-    inline operator bool() const { return valid(); }
+IL2CPP_API(22, il2cpp_assembly_get_image, Il2CppImage*, (Il2CppAssembly* assembly), (assembly))
+IL2CPP_API(31, il2cpp_class_get_fields, FieldInfo*, (Il2CppClass* klass, void** iter), (klass, iter))
+IL2CPP_API(33, il2cpp_class_get_interface, uintptr_t, (Il2CppClass* klass), (klass))
+IL2CPP_API(35, il2cpp_class_get_methods, MethodInfo*, (Il2CppClass* klass, void** iter), (klass, iter))
+IL2CPP_API(37, il2cpp_class_get_name, const char*, (Il2CppClass* klass), (klass))
+IL2CPP_API(39, il2cpp_class_get_namespace, const char*, (Il2CppClass* klass), (klass))
+IL2CPP_API(40, il2cpp_class_get_parent, Il2CppClass*, (Il2CppClass* klass), (klass))
+IL2CPP_API(43, il2cpp_class_is_valuetype, bool, (Il2CppClass* klass), (klass))
+IL2CPP_API(45, il2cpp_class_get_flags, int32_t, (Il2CppClass* klass), (klass))
+IL2CPP_API(49, il2cpp_class_from_type, Il2CppClass*, (const Il2CppType* type), (type))
+IL2CPP_API(53, il2cpp_class_is_enum, bool, (Il2CppClass* klass), (klass))
 
-    T get() const { return _fn; }
+IL2CPP_API(63, il2cpp_domain_get, Il2CppDomain*, (), ())
+IL2CPP_API(65, il2cpp_domain_get_assemblies, Il2CppAssembly**, (Il2CppDomain* domain, size_t* size), (domain, size))
 
-private:
-    T _fn = nullptr;
-};
+IL2CPP_API(72, il2cpp_field_get_flags, int32_t, (FieldInfo* field), (field))
+IL2CPP_API(73, il2cpp_field_get_name, const char*, (FieldInfo* field), (field))
+IL2CPP_API(75, il2cpp_field_get_offset, size_t, (FieldInfo* field), (field))
+IL2CPP_API(76, il2cpp_field_get_type, Il2CppType*, (FieldInfo* field), (field))
 
-// il2cpp_functions 类
-class il2cpp_functions {
-public:
-    explicit il2cpp_functions();
+IL2CPP_API(116, il2cpp_method_get_return_type, Il2CppType*, (const MethodInfo* method), (method))
+IL2CPP_API(117, il2cpp_method_get_name, const char*, (const MethodInfo* method), (method))
+IL2CPP_API(123, il2cpp_method_get_param_count, uint32_t, (const MethodInfo* method), (method))
+IL2CPP_API(124, il2cpp_method_get_param, Il2CppType*, (const MethodInfo* method, uint32_t index), (method, index))
 
-    // Function pointers
-    function_ptr<Il2CppImage* (*)(Il2CppAssembly* assembly)> assembly_get_image;
-    function_ptr<FieldInfo* (*)(Il2CppClass* klass, void** iter)> class_get_fields;
-    function_ptr<MethodInfo* (*)(Il2CppClass* klass, void** iter)> class_get_methods;
-    function_ptr<const char* (*)(Il2CppClass* klass)> class_get_name;
-    function_ptr<const char* (*)(Il2CppClass* klass)> class_get_namespace;
-    function_ptr<Il2CppClass* (*)(Il2CppClass* klass)> class_get_parent;
-    function_ptr<bool(*)(const Il2CppClass* klass)> class_is_valuetype;
-    function_ptr<int32_t(*)(const Il2CppClass* klass)> class_get_flags;
-    function_ptr<Il2CppClass* (*)(const Il2CppType* type)> class_from_type;
-    function_ptr<bool(*)(const Il2CppClass* klass)> class_is_enum;
+IL2CPP_API(161, il2cpp_type_get_name, const char*, (Il2CppType* type), (type))
+IL2CPP_API(162, il2cpp_type_is_byref, bool, (Il2CppType* type), (type))
+IL2CPP_API(163, il2cpp_type_get_attrs, uint32_t, (Il2CppType* type), (type))
 
-    function_ptr<Il2CppDomain* (*)()> domain_get;
-    function_ptr<Il2CppAssembly** (*)(Il2CppDomain* domain, size_t* size)> domain_get_assemblies;
-
-    function_ptr<int32_t(*)(FieldInfo* field)> field_get_flags;
-    function_ptr<const char* (*)(FieldInfo* field)> field_get_name;
-    function_ptr<size_t(*)(FieldInfo* field)> field_get_offset;
-    function_ptr<Il2CppType* (*)(FieldInfo* field)> field_get_type;
-
-    function_ptr<Il2CppType* (*)(const MethodInfo* method)> method_get_return_type;
-    function_ptr<const char* (*)(const MethodInfo* method)> method_get_name;
-    function_ptr<uint32_t(*)(const MethodInfo* method)> method_get_param_count;
-    function_ptr<Il2CppType* (*)(const MethodInfo* method, uint32_t index)> method_get_param;
-
-    function_ptr<const char* (*)(Il2CppType* type)> type_get_name;
-    function_ptr<bool(*)(Il2CppType* type)> type_is_byref;
-    function_ptr<uint32_t(*)(Il2CppType* type)> type_get_attrs;
-
-    function_ptr<const char* (*)(Il2CppImage* image)> image_get_name;
-    function_ptr<size_t(*)(Il2CppImage* image)> image_get_class_count;
-    function_ptr<Il2CppClass* (*)(Il2CppImage* image, size_t index)> image_get_class;
-
-    // Check if function is valid
-    bool is_valid() const;
-
-    Il2CppType* il2cpp_class_get_type(Il2CppClass* klass);
-
-    uintptr_t il2cpp_method_get_relative_pointer(MethodInfo* method);
-
-    // Wrappers for easier calling
-    Il2CppImage* il2cpp_assembly_get_image(Il2CppAssembly* assembly);
-    FieldInfo* il2cpp_class_get_fields(Il2CppClass* klass, void** iter);
-    MethodInfo* il2cpp_class_get_methods(Il2CppClass* klass, void** iter);
-    const char* il2cpp_class_get_name(Il2CppClass* klass);
-    const char* il2cpp_class_get_namespace(Il2CppClass* klass);
-    Il2CppClass* il2cpp_class_get_parent(Il2CppClass* klass);
-    bool il2cpp_class_is_valuetype(const Il2CppClass* klass);
-    int32_t il2cpp_class_get_flags(const Il2CppClass* klass);
-    Il2CppClass* il2cpp_class_from_type(const Il2CppType* type);
-    bool il2cpp_class_is_enum(const Il2CppClass* klass);
-
-    Il2CppDomain* il2cpp_domain_get();
-    Il2CppAssembly** il2cpp_domain_get_assemblies(Il2CppDomain* domain, size_t* size);
-
-    int32_t il2cpp_field_get_flags(FieldInfo* field);
-    const char* il2cpp_field_get_name(FieldInfo* field);
-    size_t il2cpp_field_get_offset(FieldInfo* field);
-    Il2CppType* il2cpp_field_get_type(FieldInfo* field);
-
-    Il2CppType* il2cpp_method_get_return_type(const MethodInfo* method);
-    const char* il2cpp_method_get_name(const MethodInfo* method);
-    uint32_t il2cpp_method_get_param_count(const MethodInfo* method);
-    Il2CppType* il2cpp_method_get_param(const MethodInfo* method, uint32_t index);
-
-    const char* il2cpp_type_get_name(Il2CppType* type);
-    bool il2cpp_type_is_byref(Il2CppType* type);
-    uint32_t il2cpp_type_get_attrs(Il2CppType* type);
-
-    const char* il2cpp_image_get_name(Il2CppImage* image);
-    size_t il2cpp_image_get_class_count(Il2CppImage* image);
-    Il2CppClass* il2cpp_image_get_class(Il2CppImage* image, size_t index);
-
-private:
-    void** _table;
-
-    template<typename T>
-    function_ptr<T> resolve(size_t index);
-};
+IL2CPP_API(168, il2cpp_image_get_name, const char*, (Il2CppImage* image), (image))
+IL2CPP_API(169, il2cpp_image_get_class_count, size_t, (Il2CppImage* image), (image))
+IL2CPP_API(170, il2cpp_image_get_class, Il2CppClass*, (Il2CppImage* image, size_t index), (image, index))

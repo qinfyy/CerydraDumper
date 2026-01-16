@@ -1,60 +1,43 @@
 //#pragma once
 //#include <cstdint>
-//#include <cstddef>
+//#include <vector>
+//#include <string>
+//#include "Il2CppFunctions.h" // 假设里面有 il2cpp_domain_get_assemblies, il2cpp_domain_assembly_open
+//#include "Util.h" // 你的字符串辅助函数
 //
-//// 空壳类，只封装了一个指针
+//class Il2CppAssembly; // 前置声明
+//
 //class Il2CppDomain {
 //public:
-//    uintptr_t ptr = 0;
-//    explicit Il2CppDomain(uintptr_t p = 0) : ptr(p) {}
-//    operator uintptr_t() const { return ptr; } // 可以当指针使用
-//};
+//    // 构造函数
+//    explicit Il2CppDomain(uintptr_t ptr = 0) : _ptr(ptr) {}
 //
-//class Il2CppAssembly {
-//public:
-//    uintptr_t ptr = 0;
-//    explicit Il2CppAssembly(uintptr_t p = 0) : ptr(p) {}
-//    operator uintptr_t() const { return ptr; }
-//};
+//    // 判断指针是否有效
+//    explicit operator bool() const { return _ptr != 0; }
 //
-//class Il2CppImage {
-//public:
-//    uintptr_t ptr = 0;
-//    explicit Il2CppImage(uintptr_t p = 0) : ptr(p) {}
-//    operator uintptr_t() const { return ptr; }
-//};
+//    // 原始指针
+//    uintptr_t raw() const { return _ptr; }
 //
-//class Il2CppClass {
-//public:
-//    uintptr_t ptr = 0;
-//    explicit Il2CppClass(uintptr_t p = 0) : ptr(p) {}
-//    operator uintptr_t() const { return ptr; }
-//};
+//    // 获取所有程序集
+//    std::vector<Il2CppAssembly> assemblies() const {
+//        if (!_ptr) return {};
 //
-//class Il2CppType {
-//public:
-//    uintptr_t ptr = 0;
-//    explicit Il2CppType(uintptr_t p = 0) : ptr(p) {}
-//    operator uintptr_t() const { return ptr; }
-//};
+//        size_t count = 0;
 //
-//class Il2CppObject {
-//public:
-//    uintptr_t ptr = 0;
-//    explicit Il2CppObject(uintptr_t p = 0) : ptr(p) {}
-//    operator uintptr_t() const { return ptr; }
-//};
+//        il2cpp_functions funcs;
+//        Il2CppAssembly** ptrs = funcs.il2cpp_domain_get_assemblies(reinterpret_cast<Il2CppDomain*>(_ptr), &count);
+//        std::vector<Il2CppAssembly> result;
+//        result.reserve(count);
 //
-//class Il2CppField {
-//public:
-//    uintptr_t ptr = 0;
-//    explicit Il2CppField(uintptr_t p = 0) : ptr(p) {}
-//    operator uintptr_t() const { return ptr; }
-//};
+//        for (size_t i = 0; i < count; ++i) {
+//            result.emplace_back(reinterpret_cast<uintptr_t>(ptrs[i]));
+//        }
+//        return result;
+//    }
 //
-//class Il2CppMethod {
-//public:
-//    uintptr_t ptr = 0;
-//    explicit Il2CppMethod(uintptr_t p = 0) : ptr(p) {}
-//    operator uintptr_t() const { return ptr; }
+//    // 根据名字打开程序集
+//    Il2CppAssembly assembly_open(const std::string& name) const;
+//
+//private:
+//    uintptr_t _ptr = 0;
 //};
