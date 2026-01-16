@@ -111,7 +111,7 @@
     <ClInclude Include="CSharpRender3.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Il2CppApi.h">
+    <ClInclude Include="Il2CppApiWrapper.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Memory.h">
@@ -158,7 +158,7 @@
     <ClCompile Include="CSharpRender3.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Il2CppApi.cpp">
+    <ClCompile Include="Il2CppApiWrapper.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Memory.cpp">

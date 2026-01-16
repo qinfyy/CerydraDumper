@@ -16,7 +16,13 @@ typedef void Il2CppObject;
 typedef void Il2CppAssembly;
 typedef void Il2CppImage;
 typedef void FieldInfo;
-typedef void MethodInfo;
+
+typedef struct MethodInfo {
+    void* invoker_method;
+    void* method_pointer;
+    uint8_t _pad[0x20];
+    uint16_t flags;
+} MethodInfo;
 
 #define IL2CPP_API(i, name, ret, params, args) \
 inline ret name params { \
@@ -39,6 +45,7 @@ IL2CPP_API(49, il2cpp_class_from_type, Il2CppClass*, (const Il2CppType* type), (
 IL2CPP_API(53, il2cpp_class_is_enum, bool, (Il2CppClass* klass), (klass))
 
 IL2CPP_API(63, il2cpp_domain_get, Il2CppDomain*, (), ())
+IL2CPP_API(64, il2cpp_domain_assembly_open, Il2CppAssembly*, (Il2CppDomain* domain, char* name), (domain, name))
 IL2CPP_API(65, il2cpp_domain_get_assemblies, Il2CppAssembly**, (Il2CppDomain* domain, size_t* size), (domain, size))
 
 IL2CPP_API(72, il2cpp_field_get_flags, int32_t, (FieldInfo* field), (field))

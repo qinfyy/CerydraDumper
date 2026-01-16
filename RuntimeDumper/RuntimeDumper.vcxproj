@@ -166,7 +166,7 @@
   <ItemGroup>
     <ClInclude Include="CSharpRender3.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="Il2CppApi.h" />
+    <ClInclude Include="Il2CppApiWrapper.h" />
     <ClInclude Include="il2cpp\vm\GlobalMetadataFileInternals.h" />
     <ClInclude Include="Initializer.h" />
     <ClInclude Include="Il2CppDumper.h" />
@@ -200,7 +200,7 @@
   <ItemGroup>
     <ClCompile Include="CSharpRender3.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Il2CppApi.cpp" />
+    <ClCompile Include="Il2CppApiWrapper.cpp" />
     <ClCompile Include="Initializer.cpp" />
     <ClCompile Include="Il2CppDumper.cpp" />
     <ClCompile Include="Il2CppFunctions.cpp" />
