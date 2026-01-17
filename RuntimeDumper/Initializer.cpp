@@ -2,7 +2,7 @@
 #include "Initializer.h"
 #include "PrintHelper.h"
 #include "Il2CppFunctions.h"
-//#include "Il2CppDumper.h"
+#include "Il2CppDumper.h"
 //#include "JsonGenerator.h"
 //#include "MetaDumper.h"
 //#include "ProtoDumper.h"
@@ -56,14 +56,14 @@ void TestPrintAllImageNames()
 void TestPrintAllImageNames_Wrapper()
 {
     // 获取当前域（全局静态获取）
-    Il2CppApiWrapper::Il2CppDomain domain = Il2CppApiWrapper::Il2CppDomain::get();
+    CIl2CppDomain domain = CIl2CppDomain::get();
     if (domain.is_null()) {
         DebugPrintA("Failed to get IL2CPP domain.\n");
         return;
     }
 
     // 获取域里的所有程序集
-    std::vector<Il2CppApiWrapper::Il2CppAssembly> assemblies = domain.assemblies();
+    std::vector<CIl2CppAssembly> assemblies = domain.assemblies();
     if (assemblies.empty()) {
         DebugPrintA("No assemblies found.\n");
         return;
@@ -72,12 +72,12 @@ void TestPrintAllImageNames_Wrapper()
     DebugPrintA("Loaded Assemblies and Images:\n");
 
     // 遍历程序集
-    for (const Il2CppApiWrapper::Il2CppAssembly& assembly : assemblies)
+    for (const CIl2CppAssembly& assembly : assemblies)
     {
         if (assembly.is_null()) continue;
 
         // 获取程序集对应的 image
-        Il2CppApiWrapper::Il2CppImage image = assembly.get_image();
+        CIl2CppImage image = assembly.get_image();
         if (image.is_null()) continue;
 
         // 获取 image 名称
@@ -98,9 +98,11 @@ DWORD WINAPI MainThread(LPVOID) {
 
     DebugPrintA("[INFO] GameAssembly.dll loaded, Starting dump ...\n");
 
-    Sleep(5000);
+    Sleep(10000);
     InitIl2CppFunctions();
     TestPrintAllImageNames_Wrapper();
+
+    DumpCs(".\\output\\dump.cs");
 //    Il2CppDomain* domain = nullptr;
 //    Il2CppThread* thread = nullptr;
 //    if (!AttachIl2Cpp(domain, thread))

@@ -3,6 +3,9 @@
 #include <Windows.h>
 #include <iostream>
 #include "Memory.h"
+#include "PrintHelper.h"
+
+static uintptr_t API_BASE_PTR = 0;
 
 uintptr_t GetUnityPlayerModuleBase()
 {
@@ -15,8 +18,6 @@ uintptr_t GetGameAssemblyModuleBase()
     HMODULE mod = GetModuleHandleA("GameAssembly.dll");
     return reinterpret_cast<uintptr_t>(mod);
 }
-
-uintptr_t API_BASE_PTR = 0;
 
 uintptr_t GetApiBase()
 {
@@ -31,7 +32,7 @@ uintptr_t ExtractQwordTarget(uintptr_t instruction_address) {
 
 void InitIl2CppFunctions()
 {
-    HMODULE hUnityPlayer = GetModuleHandleA("UnityPlayer.dll");
+    HMODULE hUnityPlayer = (HMODULE)GetUnityPlayerModuleBase();
     if (!hUnityPlayer) {
         MessageBoxA(NULL, "UnityPlayer.dll not found!", "Error", MB_OK | MB_ICONERROR);
         ExitProcess(1);
@@ -39,10 +40,11 @@ void InitIl2CppFunctions()
     }
 
     uintptr_t target = Scan(hUnityPlayer, "48 8B 05 ? ? ? ? 48 8D 0D ? ? ? ? FF D0");
+    DebugPrintA("[INFO] Target: %p, RVA: 0x%llX\n", target, target - GetUnityPlayerModuleBase());
 
     if (target != 0) {
         API_BASE_PTR = ExtractQwordTarget(target);
-        std::cout << "[INFO] IL2CPP functions table: " << std::hex << API_BASE_PTR << std::endl;
+        DebugPrintA("[INFO] IL2CPP functions table: %p\n", API_BASE_PTR);
     }
     else {
         MessageBoxA(NULL, "Failed to find IL2CPP functions table!", "Error", MB_OK | MB_ICONERROR);
