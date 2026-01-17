@@ -25,7 +25,7 @@ typedef struct MethodInfo {
 } MethodInfo;
 
 #define IL2CPP_API(i, name, ret, params, args) \
-inline ret name params { \
+__declspec(noinline) inline ret name params { \
     using FuncType = ret(__fastcall*) params; \
     uintptr_t addr = GetApiBase() + 8 * (i); \
     FuncType fn = reinterpret_cast<FuncType>(*reinterpret_cast<uintptr_t*>(addr)); \
