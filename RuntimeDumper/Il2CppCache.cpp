@@ -8,7 +8,7 @@ void InitCache() {
     std::call_once(INIT_ONCE_FLAG, [=]() {
         CIl2CppDomain domain = CIl2CppDomain::get();
 
-        il2cpp_thread_attach((Il2CppDomain*)domain);
+        il2cpp_thread_attach(domain);
 
         for (auto& assembly : domain.assemblies()) {
             CIl2CppImage image = assembly.get_image();

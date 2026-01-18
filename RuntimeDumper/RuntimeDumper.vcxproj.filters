@@ -129,13 +129,25 @@
     <ClInclude Include="CAppDomain.h">
       <Filter>头文件\CSharp</Filter>
     </ClInclude>
-    <ClInclude Include="SystemString.h">
+    <ClInclude Include="CSystemString.h">
       <Filter>头文件\CSharp</Filter>
     </ClInclude>
-    <ClInclude Include="MonoAssembly.h">
+    <ClInclude Include="CMonoAssembly.h">
       <Filter>头文件\CSharp</Filter>
     </ClInclude>
     <ClInclude Include="Bind.h">
+      <Filter>头文件\CSharp</Filter>
+    </ClInclude>
+    <ClInclude Include="CSystemArray.h">
+      <Filter>头文件\CSharp</Filter>
+    </ClInclude>
+    <ClInclude Include="CActivator.h">
+      <Filter>头文件\CSharp</Filter>
+    </ClInclude>
+    <ClInclude Include="CCSharpRuntime.h">
+      <Filter>头文件\CSharp</Filter>
+    </ClInclude>
+    <ClInclude Include="CSystemType.h">
       <Filter>头文件\CSharp</Filter>
     </ClInclude>
   </ItemGroup>
@@ -194,10 +206,22 @@
     <ClCompile Include="CAppDomain.cpp">
       <Filter>源文件\CSharp</Filter>
     </ClCompile>
-    <ClCompile Include="SystemString.cpp">
+    <ClCompile Include="CSystemString.cpp">
       <Filter>源文件\CSharp</Filter>
     </ClCompile>
-    <ClCompile Include="MonoAssembly.cpp">
+    <ClCompile Include="CMonoAssembly.cpp">
+      <Filter>源文件\CSharp</Filter>
+    </ClCompile>
+    <ClCompile Include="CSystemArray.cpp">
+      <Filter>源文件\CSharp</Filter>
+    </ClCompile>
+    <ClCompile Include="CActivator.cpp">
+      <Filter>源文件\CSharp</Filter>
+    </ClCompile>
+    <ClCompile Include="CCSharpRuntime.cpp">
+      <Filter>源文件\CSharp</Filter>
+    </ClCompile>
+    <ClCompile Include="CSystemType.cpp">
       <Filter>源文件\CSharp</Filter>
     </ClCompile>
   </ItemGroup>

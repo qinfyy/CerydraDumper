@@ -150,7 +150,7 @@ CIl2CppMethod CIl2CppClass::find_method(const std::string& name, const std::vect
         bool fail = false;
         for (size_t i = 0; i < count; ++i) {
             CIl2CppType t = m.get_param(i);
-            std::string tn = t.name();
+            std::string tn = t.formatted_name();
             if (tn != arg_types[i]) { fail = true; break; }
         }
 
@@ -165,7 +165,7 @@ CIl2CppMethod CIl2CppClass::find_method_by_return_type(const std::string& return
 
     for (auto& m : ms) {
         CIl2CppType rt = m.return_type();      // 现在是封装类
-        std::string rname = rt.name();         // 使用封装类的接口获取名称
+        std::string rname = rt.formatted_name();         // 使用封装类的接口获取名称
         if (rname.find(return_type) != 0) continue;
 
         size_t count = m.param_count();
@@ -174,7 +174,7 @@ CIl2CppMethod CIl2CppClass::find_method_by_return_type(const std::string& return
         bool fail = false;
         for (size_t i = 0; i < count; ++i) {
             CIl2CppType t = m.get_param(i);    // 现在返回封装类
-            std::string tn = t.name();         // 用封装类接口
+            std::string tn = t.formatted_name();         // 用封装类接口
             if (tn != arg_types[i]) { fail = true; break; }
         }
 

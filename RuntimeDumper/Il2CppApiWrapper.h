@@ -33,6 +33,7 @@ public:
 class CIl2CppDomain : public CIl2CppWrapBase {
 public:
     using CIl2CppWrapBase::CIl2CppWrapBase;
+    operator Il2CppDomain*() const { return (Il2CppDomain*)ptr; }
 
     std::vector<CIl2CppAssembly> assemblies() const;
     CIl2CppAssembly assembly_open(const std::string& name) const;

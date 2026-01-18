@@ -5,14 +5,15 @@
 #include "Il2CppDumper.h"
 #include "Il2CppCache.h"
 #include "CAppDomain.h"
-#include "MonoAssembly.h"
+#include "CMonoAssembly.h"
 //
 //#include "CSharpRender2.h"
 //#include "CSharpRender3.h"
 
 #include "Il2CppApiWrapper.h"
-#include "SystemString.h"
+#include "CSystemString.h"
 #include <iostream>
+#include "CCSharpRuntime.h"
 
 #define DUMPCS_RENDER 1
 
@@ -90,6 +91,172 @@ void TestPrintAllImageNames_Wrapper()
     }
 }
 
+void TestWrapper()
+{
+    const char* hello = "Hello IL2CPP";
+
+    // =========================
+    // 1️⃣ 测试 System.String 封装
+    // =========================
+    try {
+        CSystemString s = CSystemString::PtrToStringAnsi(hello);
+        std::string cpp_str = s.AsString();
+
+        printf("[String] Converted string: %s\n", cpp_str.c_str());
+    }
+    catch (const std::exception& e) {
+        std::cerr << "[String] Exception: " << e.what() << std::endl;
+        return;
+    }
+
+    // =========================
+    // 2️⃣ 测试 AppDomain / Assembly（基础）
+    // =========================
+    try {
+        auto domain = CAppDomain::GetCurrentDomain();
+        auto assemblies = domain.GetAssemblies();
+
+        std::cout << "[Domain] Assembly count: "
+            << assemblies.length() << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "[Domain] Exception: " << e.what() << std::endl;
+        return;
+    }
+
+    // =========================
+    // 3️⃣ 测试 CRuntimeType
+    // =========================
+    try {
+        CRuntimeType stringType = CRuntimeType::FromName("System.String");
+
+        std::cout << "[Type] System.String ptr: "
+            << stringType.raw_ptr() << std::endl;
+
+        std::cout << "[Type] Name: "
+            << stringType.Name().AsString() << std::endl;
+
+        std::cout << "[Type] FullName: "
+            << stringType.FullName().AsString() << std::endl;
+
+        std::cout << "[Type] Namespace: "
+            << stringType.Namespace().AsString() << std::endl;
+
+        std::cout << "[Type] IsEnum: "
+            << stringType.IsEnum() << std::endl;
+
+        std::cout << "[Type] IsGenericType: "
+            << stringType.IsGenericType() << std::endl;
+
+        std::cout << "[Type] IsValueType: "
+            << stringType.IsValueType() << std::endl;
+
+        auto baseType = stringType.BaseType();
+        std::cout << "[Type] BaseType: "
+            << baseType.FullName().AsString() << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "[Type] Exception: " << e.what() << std::endl;
+        return;
+    }
+
+    // =========================
+    // 4️⃣ 测试 CMonoField（System.String.Empty）
+    // =========================
+    try {
+        CRuntimeType stringType = CRuntimeType::FromName("System.String");
+
+        // BindingFlags:
+        // Public | Static | FlattenHierarchy = 0x10 | 0x08 | 0x40 = 0x58
+        auto field = stringType.GetField(
+            CSystemString::PtrToStringAnsi("Empty"),
+            0x58
+        );
+
+        std::cout << "[Field] Name: "
+            << field->Name().AsString() << std::endl;
+
+        std::cout << "[Field] DeclaringType: "
+            << field->DeclaringType().FullName().AsString() << std::endl;
+
+        std::cout << "[Field] FieldType: "
+            << field->FieldType().FullName().AsString() << std::endl;
+
+        std::cout << "[Field] IsLiteral: "
+            << field->IsLiteral() << std::endl;
+
+        std::cout << "[Field] MetadataToken: "
+            << field->MetadataToken() << std::endl;
+
+        // static field → obj = nullptr
+        auto emptyObj = field->GetValue(0);
+
+        std::cout << "[Field] Empty value ptr: "
+            << emptyObj.raw_ptr() << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "[Field] Exception: " << e.what() << std::endl;
+        return;
+    }
+
+    // =========================
+    // 5️⃣ 测试 CMonoProperty（System.String.Length）
+    // =========================
+    try {
+        CRuntimeType stringType = CRuntimeType::FromName("System.String");
+
+        auto prop = stringType.GetProperty(
+            CSystemString::PtrToStringAnsi("Length")
+        );
+
+        std::cout << "[Property] ptr: "
+            << prop->raw_ptr() << std::endl;
+
+        std::cout << "[Property] Name: "
+            << prop->Name().AsString() << std::endl;
+
+        std::cout << "[Property] DeclaringType: "
+            << prop->DeclaringType().FullName().AsString() << std::endl;
+
+        std::cout << "[Property] PropertyType: "
+            << prop->PropertyType().FullName().AsString() << std::endl;
+
+        // 构造一个 string 实例测试 GetValue
+        CSystemString testStr = CSystemString::PtrToStringAnsi("abcdef");
+
+        auto lenObj = prop->GetValue(testStr.raw_ptr());
+
+        std::cout << "[Property] Length value ptr: "
+            << lenObj.raw_ptr() << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "[Property] Exception: " << e.what() << std::endl;
+        return;
+    }
+
+    try {
+        CSystemString helloStr = CSystemString::PtrToStringAnsi("Hello CSystemDynamic");
+
+        CSystemDynamic dynObj(helloStr.raw_ptr());
+
+        std::cout << "[Dynamic] ptr: " << dynObj.raw_ptr() << std::endl;
+
+        try {
+            CSystemString dynStr = dynObj.ToString();
+            std::cout << "[Dynamic] ToString: " << dynStr.AsString() << std::endl;
+        }
+        catch (const std::exception& e) {
+            std::cerr << "[Dynamic] Exception: " << e.what() << std::endl;
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << "[Dynamic] Exception: " << e.what() << std::endl;
+    }
+
+    std::cout << "\n[TestWrapper] All tests finished successfully.\n";
+}
+
+
 DWORD WINAPI MainThread(LPVOID) {
     DebugPrintA("[INFO] RuntimeDumper\n");
     DebugPrintA("[INFO] Waiting for GameAssembly.dll...\n");
@@ -105,37 +272,7 @@ DWORD WINAPI MainThread(LPVOID) {
     InitCache();
     TestPrintAllImageNames_Wrapper();
 
-    const char* hello = "Hello IL2CPP";
-
-    try {
-        // 调用静态方法创建 SystemString
-        CSystemString s = CSystemString::PtrToStringAnsi(hello);
-
-        std::string cpp_str = s.AsString();
-
-        printf("Converted string: %s\n", cpp_str.c_str());
-
-		auto csDom = CAppDomain::GetCurrentDomain();
-        auto csasms = csDom.GetAssemblies();
-        if (csasms.is_null()) {
-            DebugPrintA("No assemblies found.\n");
-            return 0;
-		}
-
-		std::cout << "Assembly Image len: " << csasms.length() << "\n";
-
-        for (auto& csasm : csasms.to_vec<CMonoAssembly>()) {
-            auto csimg = csasm.GetFullName();
-			DebugPrintA("Assembly Image Name: %s\n", csimg.AsString().c_str());
-        }
-    }
-    catch (const std::runtime_error& e) {
-        std::cout << "捕获到 runtime_error: " << e.what() << "\n";
-    }
-    catch (...) {
-        std::cout << "捕获到其他异常\n";
-    }
-
+    TestWrapper();
 
     //DumpCs(".\\output\\dump.cs");
 //    Il2CppDomain* domain = nullptr;

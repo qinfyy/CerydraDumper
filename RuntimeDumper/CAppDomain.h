@@ -13,18 +13,9 @@ public:
     CS_CLASS("System.AppDomain");
 
     inline CIl2CppArray GetAssemblies() {
-        auto klass = GetCachedClass("System.AppDomain"); if (klass->is_null()) {
-            throw std::runtime_error(std::string("No such class: ") + "System.AppDomain");
-        } auto method_info = klass->find_method("GetAssemblies", {}); if (method_info.is_null()) {
-            throw std::runtime_error(std::string("No such method: ") + "GetAssemblies");
-        } auto func = reinterpret_cast<uintptr_t(__fastcall*)(uintptr_t)> (method_info.va()); try {
-            auto result = func(ptr);
-            return CIl2CppArray(result);
-        }
-        catch (...) {
-            throw std::runtime_error(std::string("Exception in method: ") + "GetAssemblies");
-        }
+        return InvokeIl2CppInstanceObjectMethod<CIl2CppArray>(ptr, "System.AppDomain", "GetAssemblies", {});
     }
+
 
     CS_METHOD_STATIC_AUTO_CTOR(GetCurrentDomain, "get_CurrentDomain", {}, CAppDomain, (), ());
 };
