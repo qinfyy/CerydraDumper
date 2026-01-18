@@ -25,6 +25,12 @@ CIl2CppAssembly CIl2CppDomain::assembly_open(const std::string& name) const {
     return CIl2CppAssembly(reinterpret_cast<uintptr_t>(assembly)); // 封装到你的类
 }
 
+CIl2CppDomain CIl2CppDomain::get() {
+    ::Il2CppDomain* domain = ::il2cpp_domain_get();
+    if (!domain) return CIl2CppDomain(0);
+    return CIl2CppDomain(reinterpret_cast<uintptr_t>(domain));
+}
+
 // Il2CppAssembly
 CIl2CppImage CIl2CppAssembly::get_image() const {
     ::Il2CppImage* image = ::il2cpp_assembly_get_image(
@@ -336,7 +342,7 @@ CIl2CppType CIl2CppField::get_type() const {
 CIl2CppObject CIl2CppField::get_value_object(const CIl2CppObject& instance) const {
     if (is_null() || instance.is_null()) return CIl2CppObject(0);
     ::Il2CppObject* value = ::il2cpp_field_get_value_object(reinterpret_cast<::FieldInfo*>(ptr),
-        reinterpret_cast<::Il2CppObject*>(instance.ptr));
+        reinterpret_cast<::Il2CppObject*>(instance.raw_ptr()));
     if (!value) return CIl2CppObject(0);
     return CIl2CppObject(reinterpret_cast<uintptr_t>(value));
 }
@@ -350,4 +356,24 @@ CIl2CppClass CIl2CppObject::get_class() const {
     // 首 8 字节存放类指针
     uintptr_t cls_ptr = *(uintptr_t*)ptr;
     return CIl2CppClass(cls_ptr);
+}
+
+// CIl2CppArray
+CIl2CppClass CIl2CppArray::klass() const
+{
+    return CIl2CppClass(
+        *reinterpret_cast<uintptr_t*>(ptr)
+    );
+}
+
+// +0x08 monitor
+uintptr_t CIl2CppArray::monitor() const
+{
+    return *reinterpret_cast<uintptr_t*>(ptr + 0x08);
+}
+
+// +0x10 bounds
+uintptr_t CIl2CppArray::bounds() const
+{
+    return *reinterpret_cast<uintptr_t*>(ptr + 0x10);
 }

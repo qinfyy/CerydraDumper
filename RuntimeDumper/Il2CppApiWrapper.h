@@ -14,59 +14,51 @@ class CIl2CppMethod;
 class CIl2CppField;
 class CIl2CppObject;
 
-class CIl2CppDomain {
-public:
+class CIl2CppWrapBase {
+protected:
     uintptr_t ptr = 0;
 
-    CIl2CppDomain() : ptr(0) {}
-    explicit CIl2CppDomain(uintptr_t p) : ptr(p) {}
+public:
+    CIl2CppWrapBase() : ptr(0) {}
+    explicit CIl2CppWrapBase(uintptr_t p) : ptr(p) {}
 
     bool is_null() const { return ptr == 0; }
+
+    operator void* () const { return reinterpret_cast<void*>(ptr); }
+    operator uintptr_t() const { return ptr; }
+
+    uintptr_t raw_ptr() const { return ptr; }
+};
+
+class CIl2CppDomain : public CIl2CppWrapBase {
+public:
+    using CIl2CppWrapBase::CIl2CppWrapBase;
 
     std::vector<CIl2CppAssembly> assemblies() const;
     CIl2CppAssembly assembly_open(const std::string& name) const;
 
-    static CIl2CppDomain get() {
-        ::Il2CppDomain* domain = ::il2cpp_domain_get();
-        if (!domain) return CIl2CppDomain(0);
-        return CIl2CppDomain(reinterpret_cast<uintptr_t>(domain));
-    }
+    static CIl2CppDomain get();
 };
 
-class CIl2CppAssembly {
+class CIl2CppAssembly : public CIl2CppWrapBase {
 public:
-    uintptr_t ptr = 0;
-
-    CIl2CppAssembly() : ptr(0) {}
-    explicit CIl2CppAssembly(uintptr_t p) : ptr(p) {}
-
-    bool is_null() const { return ptr == 0; }
+    using CIl2CppWrapBase::CIl2CppWrapBase;
 
     CIl2CppImage get_image() const;
 };
 
-class CIl2CppImage {
+class CIl2CppImage : public CIl2CppWrapBase {
 public:
-    uintptr_t ptr = 0;
-
-    CIl2CppImage() : ptr(0) {}
-    explicit CIl2CppImage(uintptr_t p) : ptr(p) {}
-
-    bool is_null() const { return ptr == 0; }
+    using CIl2CppWrapBase::CIl2CppWrapBase;
 
     std::string name() const;
     size_t class_count() const;
     std::vector<CIl2CppClass> classes() const;
 };
 
-class CIl2CppClass {
+class CIl2CppClass : public CIl2CppWrapBase {
 public:
-    uintptr_t ptr = 0;
-
-    CIl2CppClass() : ptr(0) {}
-    explicit CIl2CppClass(uintptr_t p) : ptr(p) {}
-
-    bool is_null() const { return ptr == 0; }
+    using CIl2CppWrapBase::CIl2CppWrapBase;
 
     std::string name() const;
     std::string namespace_name() const;
@@ -83,14 +75,9 @@ public:
     CIl2CppMethod find_method_by_return_type(const std::string& return_type, const std::vector<std::string>& arg_types) const;
 };
 
-class CIl2CppType {
+class CIl2CppType : public CIl2CppWrapBase {
 public:
-    uintptr_t ptr = 0;
-
-    CIl2CppType() : ptr(0) {}
-    explicit CIl2CppType(uintptr_t p) : ptr(p) {}
-
-    bool is_null() const { return ptr == 0; }
+    using CIl2CppWrapBase::CIl2CppWrapBase;
 
     std::string name() const;
     uint32_t get_attrs() const;
@@ -99,14 +86,9 @@ public:
     CIl2CppClass get_class() const;
 };
 
-class CIl2CppMethod {
+class CIl2CppMethod : public CIl2CppWrapBase {
 public:
-    uintptr_t ptr = 0;
-
-    CIl2CppMethod() : ptr(0) {}
-    explicit CIl2CppMethod(uintptr_t p) : ptr(p) {}
-
-    bool is_null() const { return ptr == 0; }
+    using CIl2CppWrapBase::CIl2CppWrapBase;
 
     ::MethodInfo* method_info() const;
     std::string name() const;
@@ -119,17 +101,12 @@ public:
     CIl2CppType get_param(uint32_t i) const;
     std::string param_type_formatted(uint32_t i) const;
     std::string format_params() const;
-	int32_t get_flags() const;
+    int32_t get_flags() const;
 };
 
-class CIl2CppField {
+class CIl2CppField : public CIl2CppWrapBase {
 public:
-    uintptr_t ptr = 0;
-
-    CIl2CppField() : ptr(0) {}
-    explicit CIl2CppField(uintptr_t p) : ptr(p) {}
-
-    bool is_null() const { return ptr == 0; }
+    using CIl2CppWrapBase::CIl2CppWrapBase;
 
     std::string name() const;
 
@@ -142,16 +119,11 @@ public:
     CIl2CppObject get_value_object(const CIl2CppObject& instance) const;
 };
 
-class CIl2CppObject {
+class CIl2CppObject : public CIl2CppWrapBase {
 public:
-    uintptr_t ptr = 0;
+    using CIl2CppWrapBase::CIl2CppWrapBase;
 
     static const CIl2CppObject NULL_OBJ;
-
-    CIl2CppObject() : ptr(0) {}
-    explicit CIl2CppObject(uintptr_t p) : ptr(p) {}
-
-    bool is_null() const { return ptr == 0; }
 
     static CIl2CppObject from_uintptr(uintptr_t p) { return CIl2CppObject(p); }
 
@@ -161,5 +133,72 @@ public:
     T unbox() const {
         if (is_null()) throw std::runtime_error("Attempt to unbox null object");
         return *(T*)(ptr + 16); // Æ«ÒÆ +16
+    }
+};
+
+
+class CIl2CppArray : public CIl2CppWrapBase
+{
+public:
+    using CIl2CppWrapBase::CIl2CppWrapBase;
+
+    // ---- basic fields ----
+
+    inline CIl2CppClass klass() const;
+    inline uintptr_t monitor() const;
+    inline uintptr_t bounds() const;
+
+    // +0x18 length
+    __forceinline size_t length() const {
+        return *reinterpret_cast<const size_t*>(ptr + 0x18);
+    }
+
+    inline bool empty() const { return length() == 0; }
+
+    // ---- raw data ----
+private:
+    inline uintptr_t first_item_ptr() const
+    {
+        // data starts at +0x20
+        return ptr + 0x20;
+    }
+
+public:
+    // ---- element access (template, header-only) ----
+
+    template<typename T>
+    inline const T& get(size_t index) const
+    {
+        static_assert(!std::is_void_v<T>, "T must not be void");
+        return *reinterpret_cast<const T*>(
+            first_item_ptr() + index * sizeof(T)
+            );
+    }
+
+    template<typename T>
+    inline T& get_mut(size_t index)
+    {
+        static_assert(!std::is_void_v<T>, "T must not be void");
+        return *reinterpret_cast<T*>(first_item_ptr() + index * sizeof(T));
+    }
+
+    template<typename T>
+    inline std::vector<T> to_vec() const
+    {
+        static_assert(std::is_copy_constructible_v<T>,
+            "T must be copyable");
+
+        const T* begin = reinterpret_cast<const T*>(first_item_ptr());
+        return std::vector<T>(begin, begin + length());
+    }
+
+    template<typename T>
+    inline std::vector<T> to_vec_sized(size_t size) const
+    {
+        static_assert(std::is_copy_constructible_v<T>,
+            "T must be copyable");
+
+        const T* begin = reinterpret_cast<const T*>(first_item_ptr());
+        return std::vector<T>(begin, begin + size);
     }
 };

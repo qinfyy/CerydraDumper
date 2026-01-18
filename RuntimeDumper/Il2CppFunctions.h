@@ -16,6 +16,7 @@ typedef void Il2CppObject;
 typedef void Il2CppAssembly;
 typedef void Il2CppImage;
 typedef void FieldInfo;
+typedef void Il2CppThread;
 
 typedef struct MethodInfo {
     void* invoker_method;
@@ -55,6 +56,7 @@ IL2CPP_API(116, il2cpp_method_get_return_type, Il2CppType*, (const MethodInfo* m
 IL2CPP_API(117, il2cpp_method_get_name, const char*, (const MethodInfo* method), (method))
 IL2CPP_API(123, il2cpp_method_get_param_count, uint32_t, (const MethodInfo* method), (method))
 IL2CPP_API(124, il2cpp_method_get_param, Il2CppType*, (const MethodInfo* method, uint32_t index), (method, index))
+IL2CPP_API(154, il2cpp_thread_attach, Il2CppThread*, (Il2CppDomain* domain), (domain));
 IL2CPP_API(161, il2cpp_type_get_name, const char*, (Il2CppType* type), (type))
 IL2CPP_API(162, il2cpp_type_is_byref, bool, (Il2CppType* type), (type))
 IL2CPP_API(163, il2cpp_type_get_attrs, uint32_t, (Il2CppType* type), (type))

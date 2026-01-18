@@ -3,14 +3,16 @@
 #include "PrintHelper.h"
 #include "Il2CppFunctions.h"
 #include "Il2CppDumper.h"
-//#include "JsonGenerator.h"
-//#include "MetaDumper.h"
-//#include "ProtoDumper.h"
+#include "Il2CppCache.h"
+#include "CAppDomain.h"
+#include "MonoAssembly.h"
 //
 //#include "CSharpRender2.h"
 //#include "CSharpRender3.h"
 
 #include "Il2CppApiWrapper.h"
+#include "SystemString.h"
+#include <iostream>
 
 #define DUMPCS_RENDER 1
 
@@ -100,9 +102,42 @@ DWORD WINAPI MainThread(LPVOID) {
 
     Sleep(10000);
     InitIl2CppFunctions();
+    InitCache();
     TestPrintAllImageNames_Wrapper();
 
-    DumpCs(".\\output\\dump.cs");
+    const char* hello = "Hello IL2CPP";
+
+    try {
+        // 调用静态方法创建 SystemString
+        CSystemString s = CSystemString::PtrToStringAnsi(hello);
+
+        std::string cpp_str = s.AsString();
+
+        printf("Converted string: %s\n", cpp_str.c_str());
+
+		auto csDom = CAppDomain::GetCurrentDomain();
+        auto csasms = csDom.GetAssemblies();
+        if (csasms.is_null()) {
+            DebugPrintA("No assemblies found.\n");
+            return 0;
+		}
+
+		std::cout << "Assembly Image len: " << csasms.length() << "\n";
+
+        for (auto& csasm : csasms.to_vec<CMonoAssembly>()) {
+            auto csimg = csasm.GetFullName();
+			DebugPrintA("Assembly Image Name: %s\n", csimg.AsString().c_str());
+        }
+    }
+    catch (const std::runtime_error& e) {
+        std::cout << "捕获到 runtime_error: " << e.what() << "\n";
+    }
+    catch (...) {
+        std::cout << "捕获到其他异常\n";
+    }
+
+
+    //DumpCs(".\\output\\dump.cs");
 //    Il2CppDomain* domain = nullptr;
 //    Il2CppThread* thread = nullptr;
 //    if (!AttachIl2Cpp(domain, thread))

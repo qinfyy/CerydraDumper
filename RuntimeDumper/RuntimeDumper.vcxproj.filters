@@ -19,6 +19,12 @@
     <Filter Include="头文件\il2cpp\vm">
       <UniqueIdentifier>{81f265c9-c33f-4c1f-b88b-6ed397a5d9ef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\CSharp">
+      <UniqueIdentifier>{8016d689-4272-42af-b84b-a91539bd606d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\CSharp">
+      <UniqueIdentifier>{4384029b-eb82-4402-88eb-9966530fd1cb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -117,6 +123,21 @@
     <ClInclude Include="Memory.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Il2CppCache.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CAppDomain.h">
+      <Filter>头文件\CSharp</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemString.h">
+      <Filter>头文件\CSharp</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoAssembly.h">
+      <Filter>头文件\CSharp</Filter>
+    </ClInclude>
+    <ClInclude Include="Bind.h">
+      <Filter>头文件\CSharp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -163,6 +184,21 @@
     </ClCompile>
     <ClCompile Include="Memory.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Il2CppCache.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Bind.cpp">
+      <Filter>源文件\CSharp</Filter>
+    </ClCompile>
+    <ClCompile Include="CAppDomain.cpp">
+      <Filter>源文件\CSharp</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemString.cpp">
+      <Filter>源文件\CSharp</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoAssembly.cpp">
+      <Filter>源文件\CSharp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

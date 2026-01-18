@@ -25,8 +25,8 @@ Il2CppString* CreateIl2CppString(const std::wstring& ws, Il2CppString* original)
     Il2CppString* newStr = (Il2CppString*)malloc(size);
     if (!newStr) return nullptr;
 
-    newStr->object.klass = original->object.klass;
-    newStr->object.monitor = nullptr;
+    newStr->m_pClass = original->m_pClass;
+    newStr->monitor = nullptr;
     newStr->length = len;
 
     memcpy(newStr->chars, ws.c_str(), len * sizeof(wchar_t));

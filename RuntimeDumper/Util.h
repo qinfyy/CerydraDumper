@@ -2,8 +2,18 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include <il2cpp-class-internals.h>
-#include <il2cpp-object-internals.h>
+
+struct Il2CppString // sizeof=0x58
+{
+    void* m_pClass;
+    void* monitor;
+    int32_t length;
+    wchar_t chars[0];
+    // padding byte
+    // padding byte
+    // padding byte
+    // padding byte
+};
 
 std::wstring Il2CppToWString(Il2CppString* str);
 
