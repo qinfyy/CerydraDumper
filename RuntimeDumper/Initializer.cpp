@@ -14,6 +14,7 @@
 #include "CSystemString.h"
 #include <iostream>
 #include "CCSharpRuntime.h"
+#include <optional>
 
 #define DUMPCS_RENDER 1
 
@@ -256,6 +257,37 @@ void TestWrapper()
     std::cout << "\n[TestWrapper] All tests finished successfully.\n";
 }
 
+void yep() {
+    auto domain = CAppDomain::GetCurrentDomain();
+    auto assemblies = domain.GetAssemblies().to_vec<CMonoAssembly>();
+
+    std::optional<CMonoAssembly> proto_assembly;
+    std::optional<CMonoAssembly> excel_assembly;
+    std::optional<CMonoAssembly> cmdid_assembly;
+
+    for (size_t i = 0; i < assemblies.size(); ++i) {
+        if (proto_assembly && excel_assembly && cmdid_assembly)
+            break;
+
+        CMonoAssembly mono_assembly(assemblies[i]);
+        std::string assembly_name = mono_assembly.GetFullName().AsString();
+
+        if (assembly_name.rfind("RPG.Network.Proto,", 0) == 0) { // starts_with
+            proto_assembly = mono_assembly;
+        }
+        else if (assembly_name.rfind("RPG.GameCore.Config,", 0) == 0) {
+            excel_assembly = mono_assembly;
+        }
+        else if (assembly_name.rfind("Assembly-CSharp,", 0) == 0) {
+            cmdid_assembly = mono_assembly;
+        }
+    }
+
+    // 使用
+    if (proto_assembly)
+        printf("[yep] Found proto: %s\n", proto_assembly->GetFullName().AsString().c_str());
+}
+
 
 DWORD WINAPI MainThread(LPVOID) {
     DebugPrintA("[INFO] RuntimeDumper\n");
@@ -267,13 +299,19 @@ DWORD WINAPI MainThread(LPVOID) {
 
     DebugPrintA("[INFO] GameAssembly.dll loaded, Starting dump ...\n");
 
-    Sleep(10000);
+    int countdown = 15;
+    for (int i = countdown; i > 0; --i) {
+        DebugPrintA("\r[INFO] Wait for %d seconds before starting il2cpp dump...  ", i);
+        Sleep(1000);
+    }
+    DebugPrintA("[INFO] Start il2cpp dump!\n");
+
     InitIl2CppFunctions();
     InitCache();
     TestPrintAllImageNames_Wrapper();
 
     TestWrapper();
-
+    yep();
     //DumpCs(".\\output\\dump.cs");
 //    Il2CppDomain* domain = nullptr;
 //    Il2CppThread* thread = nullptr;
