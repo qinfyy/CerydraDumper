@@ -209,7 +209,7 @@ public:
         );
     }
 
-    inline std::unique_ptr<CMonoField> GetField(CSystemString name, int binding_flags) const {
+    inline std::unique_ptr<CMonoField> _GetField(CSystemString name, int binding_flags) const {
         auto ptr = InvokeIl2CppInstanceObjectMethod<uintptr_t>(
             this->ptr,
             "System.RuntimeType",
@@ -221,6 +221,8 @@ public:
 
         return std::make_unique<CMonoField>(ptr);
     }
+
+    CIl2CppField GetField(const char* name) const;
 
     inline static CRuntimeType FromClass(CIl2CppClass klass) {
         uintptr_t type_ptr = CSystemType::GetTypeFromHandle((Il2CppType*)klass.byval_arg());

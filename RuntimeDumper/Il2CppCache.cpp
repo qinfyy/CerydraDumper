@@ -25,5 +25,6 @@ void InitCache() {
                 TYPE_TABLE[type_name] = klass;
             }
         }
+        DebugPrintA("[Cache] Cached\n");
     });
 }

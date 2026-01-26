@@ -149,3 +149,19 @@ std::string AsciiEscapeToEscapeLiterals(const std::string& input) {
 
     return result;
 }
+
+bool ContainsIgnoreCaseA(PCSTR haystack, PCSTR needle)
+{
+    int hlen = (int)strlen(haystack);
+    int nlen = (int)strlen(needle);
+
+    for (int i = 0; i <= hlen - nlen; ++i)
+    {
+        if (CompareStringA(LOCALE_INVARIANT, NORM_IGNORECASE, haystack + i, nlen, needle, nlen) == CSTR_EQUAL)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+

@@ -16,4 +16,23 @@ public:
 
     // ´Ó Il2CppString* ×ª std::string
     std::string AsString() const;
+
+    CSystemString(const char* str) {
+        *this = PtrToStringAnsi(str);
+    }
+
+    inline bool operator==(const char* rhs) const {
+        if (!rhs)
+            return this->is_null();
+
+        if (this->is_null())
+            return false;
+
+        return this->AsString() == rhs;
+    }
+
+    inline bool operator!=(const char* rhs) const {
+        return !(*this == rhs);
+    }
+
 };

@@ -56,6 +56,7 @@ IL2CPP_API(116, il2cpp_method_get_return_type, Il2CppType*, (const MethodInfo* m
 IL2CPP_API(117, il2cpp_method_get_name, const char*, (const MethodInfo* method), (method))
 IL2CPP_API(123, il2cpp_method_get_param_count, uint32_t, (const MethodInfo* method), (method))
 IL2CPP_API(124, il2cpp_method_get_param, Il2CppType*, (const MethodInfo* method, uint32_t index), (method, index))
+IL2CPP_API(127, il2cpp_object_get_class, Il2CppClass*, (Il2CppObject* obj), (obj));
 IL2CPP_API(154, il2cpp_thread_attach, Il2CppThread*, (Il2CppDomain* domain), (domain));
 IL2CPP_API(161, il2cpp_type_get_name, const char*, (Il2CppType* type), (type))
 IL2CPP_API(162, il2cpp_type_is_byref, bool, (Il2CppType* type), (type))

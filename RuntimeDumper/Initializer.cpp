@@ -15,6 +15,39 @@
 #include <iostream>
 #include "CCSharpRuntime.h"
 #include <optional>
+#include "CmdIdOut.h"
+
+#include <DbgHelp.h>
+#pragma comment(lib, "Dbghelp.lib")
+
+void WriteFullDump(EXCEPTION_POINTERS* ep)
+{
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+
+    char path[MAX_PATH];
+    sprintf_s(path, "Crash_%04d%02d%02d_%02d%02d%02d.dmp", st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
+
+    HANDLE hFile = CreateFileA(path, GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hFile == INVALID_HANDLE_VALUE)
+        return;
+
+    MINIDUMP_EXCEPTION_INFORMATION mei{};
+    mei.ThreadId = GetCurrentThreadId();
+    mei.ExceptionPointers = ep;
+    mei.ClientPointers = FALSE;
+
+    MINIDUMP_TYPE dumpType = (MINIDUMP_TYPE)(MiniDumpWithFullMemory | MiniDumpWithHandleData | MiniDumpWithThreadInfo | MiniDumpWithUnloadedModules);
+    MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, dumpType, &mei, nullptr, nullptr);
+
+    CloseHandle(hFile);
+}
+
+LONG WINAPI GlobalExceptionFilter(EXCEPTION_POINTERS* ep)
+{
+    WriteFullDump(ep);
+    return EXCEPTION_EXECUTE_HANDLER;
+}
 
 #define DUMPCS_RENDER 1
 
@@ -169,10 +202,8 @@ void TestWrapper()
 
         // BindingFlags:
         // Public | Static | FlattenHierarchy = 0x10 | 0x08 | 0x40 = 0x58
-        auto field = stringType.GetField(
-            CSystemString::PtrToStringAnsi("Empty"),
-            0x58
-        );
+        auto field = stringType._GetField("Empty", 0x58);
+        //auto field = stringType.GetField("Empty");
 
         std::cout << "[Field] Name: "
             << field->Name().AsString() << std::endl;
@@ -284,12 +315,16 @@ void yep() {
     }
 
     // 使用
-    if (proto_assembly)
-        printf("[yep] Found proto: %s\n", proto_assembly->GetFullName().AsString().c_str());
+    printf("[yep] Found proto: %s\n", proto_assembly->GetFullName().AsString().c_str());
+    printf("[yep] Found Config: %s\n", excel_assembly->GetFullName().AsString().c_str());
+    printf("[yep] Found Assembly-CSharp: %s\n", cmdid_assembly->GetFullName().AsString().c_str());
+
+	CmdIdDump(*cmdid_assembly);
 }
 
 
 DWORD WINAPI MainThread(LPVOID) {
+    SetUnhandledExceptionFilter(GlobalExceptionFilter);
     DebugPrintA("[INFO] RuntimeDumper\n");
     DebugPrintA("[INFO] Waiting for GameAssembly.dll...\n");
 
@@ -299,11 +334,12 @@ DWORD WINAPI MainThread(LPVOID) {
 
     DebugPrintA("[INFO] GameAssembly.dll loaded, Starting dump ...\n");
 
-    int countdown = 15;
+    int countdown = 20;
     for (int i = countdown; i > 0; --i) {
         DebugPrintA("\r[INFO] Wait for %d seconds before starting il2cpp dump...  ", i);
         Sleep(1000);
     }
+	DebugPrintA("\n");
     DebugPrintA("[INFO] Start il2cpp dump!\n");
 
     InitIl2CppFunctions();
@@ -313,6 +349,7 @@ DWORD WINAPI MainThread(LPVOID) {
     TestWrapper();
     yep();
     //DumpCs(".\\output\\dump.cs");
+    // 
 //    Il2CppDomain* domain = nullptr;
 //    Il2CppThread* thread = nullptr;
 //    if (!AttachIl2Cpp(domain, thread))
