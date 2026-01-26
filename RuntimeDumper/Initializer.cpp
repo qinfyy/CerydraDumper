@@ -322,6 +322,44 @@ void yep() {
 	CmdIdDump(*cmdid_assembly);
 }
 
+int Api()
+{
+    FILE* fp = nullptr;
+    fopen_s(&fp, "Api.txt", "w");
+    if (!fp) {
+        printf("无法创建文件\n");
+        return 1;
+    }
+
+    // 写表头
+    fprintf(fp, "索引\t指针地址\tRVA\tPE VA\t是否有效\n");
+
+    for (int i = 0; i < 500; ++i)
+    {
+        uintptr_t addr = GetApiBase() + 8 * i; // 假设64位系统，每个指针8字节
+        uintptr_t funcPtr = 0;
+
+        // 尝试读取指针
+        if (IsBadReadPtr((void*)addr, sizeof(uintptr_t))) {
+            funcPtr = 0;
+        }
+        else {
+            funcPtr = *(uintptr_t*)addr;
+        }
+
+        int valid = (funcPtr != 0) && (!IsBadReadPtr((void*)funcPtr, 1));
+
+        uintptr_t rva = 0;
+        if (funcPtr)
+            rva = funcPtr - GetGameAssemblyModuleBase();
+
+        fprintf(fp, "%d\t%p\t%llX\t%llX\t%d\n", i, (void*)funcPtr, rva, rva + 180000000, valid);
+    }
+
+    fclose(fp);
+    printf("Dump完成\n");
+    return 0;
+}
 
 DWORD WINAPI MainThread(LPVOID) {
     SetUnhandledExceptionFilter(GlobalExceptionFilter);
@@ -334,7 +372,7 @@ DWORD WINAPI MainThread(LPVOID) {
 
     DebugPrintA("[INFO] GameAssembly.dll loaded, Starting dump ...\n");
 
-    int countdown = 20;
+    int countdown = 15;
     for (int i = countdown; i > 0; --i) {
         DebugPrintA("\r[INFO] Wait for %d seconds before starting il2cpp dump...  ", i);
         Sleep(1000);
@@ -347,6 +385,7 @@ DWORD WINAPI MainThread(LPVOID) {
     TestPrintAllImageNames_Wrapper();
 
     TestWrapper();
+    Api();
     yep();
     //DumpCs(".\\output\\dump.cs");
     // 

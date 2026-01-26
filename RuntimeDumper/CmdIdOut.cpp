@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <fstream>
 
-void HandlerAddPacket(CMonoAssembly& mono_assembly)
+void AddPacket(CMonoAssembly& mono_assembly)
 {
     std::cout << "[AddPacket] Add packet handlers...\n";
 
@@ -20,12 +20,10 @@ void HandlerAddPacket(CMonoAssembly& mono_assembly)
         uintptr_t runtime_ptr = types.get<uintptr_t>(i);
         CRuntimeType runtime_type = CRuntimeType(runtime_ptr);
 
-        // if runtime_type.get_is_interface()?
         if (runtime_type.IsInterface()) {
             continue;
         }
 
-        // if runtime_type.get_name()? == "GlobalVars"
         if (runtime_type.Name() == "GlobalVars") {
             auto fields = runtime_type.GetFields(60);
 
@@ -34,25 +32,24 @@ void HandlerAddPacket(CMonoAssembly& mono_assembly)
                 CMonoField field = fields.get<CMonoField>(j);
 
                 if (field.Name() == "s_ModuleManager") {
-                    // static field → obj = nullptr / 0
                     auto module_manager_obj = CModuleManager(field.GetValue(0).raw_ptr());
 
-                    // modules()?.to_vec::<BaseModule>()
                     auto list_module = module_manager_obj.Modules().ToVector<CBaseModule>();
+					//DebugPrintA("[AddPacket] Found modules count: %zu\n", list_module.size());
 
                     for (size_t k = 0; k < list_module.size(); ++k)
                     {
                         auto optModule = list_module.at(k);
                         std::string className = CIl2CppObject(optModule.raw_ptr()).get_class().name();
-                        DebugPrintA("[HandlerAddPacket] <AddPacketHandlersChild> %s\n", className.c_str());
+                        //DebugPrintA("[HandlerAddPacket] <AddPacketHandlersChild> %s\n", className.c_str());
                         try
                         {
                             optModule.AddPacketHandlersChild();
                         }
-                        catch (...)
+                        catch (const std::exception& ex)
                         {
                             std::string className = CIl2CppObject(optModule.raw_ptr()).get_class().name();
-                            DebugPrintA("[HandlerAddPacket] <AddPacketHandlersParent> %s\n", className.c_str());
+                            //DebugPrintA("[HandlerAddPacket] <AddPacketHandlersParent> %s\n", className.c_str());
                             try
                             {
                                 optModule.AddPacketHandlersParent();
@@ -60,7 +57,7 @@ void HandlerAddPacket(CMonoAssembly& mono_assembly)
                             catch (...)
                             {
                                 std::string className = CIl2CppObject(optModule.raw_ptr()).get_class().name();
-                                DebugPrintA("❌ Failed to add packet handlers %s\n", className.c_str());
+                                DebugPrintA("[AddPacket] Failed to add packet handlers %s\n", className.c_str());
                             }
                         }
                     }
@@ -75,32 +72,31 @@ void HandlerAddPacket(CMonoAssembly& mono_assembly)
 
 std::string NormalizeName(const std::string& name)
 {
-    if (name.rfind("_OnCmd", 0) == 0) // starts_with("_OnCmd")
+    if (name.rfind("_OnCmd", 0) == 0)
         return "Cmd" + name.substr(6);
 
-    if (name.rfind("_On", 0) == 0) // starts_with("_On")
+    if (name.rfind("_On", 0) == 0)
         return "Cmd" + name.substr(3);
 
-    if (name.rfind("_Cmd", 0) == 0) // starts_with("_Cmd")
+    if (name.rfind("_Cmd", 0) == 0)
         return "Cmd" + name.substr(4);
 
-    if (name.rfind("Cmd", 0) == 0) // starts_with("Cmd")
+    if (name.rfind("Cmd", 0) == 0)
         return name;
 
-    return name; // 原样返回
+    return name;
 }
 
-// 全局 CMDID
 static std::unordered_map<std::string, uintptr_t> CMDID;
 
-void HandlerDumpRespAndNotify(CMonoAssembly& mono_assembly)
+void DumpRespAndNotify(CMonoAssembly& mono_assembly)
 {
-    DebugPrintA("[HandlerDumpRespAndNotify] 开始 Dump response 并构建 CMDID\n");
+    DebugPrintA("[DumpRespAndNotify] Start Dump response and notify\n");
 
     auto types = mono_assembly.GetTypes(60 != 0);
     auto typesVec = types.to_vec<uintptr_t>();
 
-    DebugPrintA("[HandlerDumpRespAndNotify] 获取到类型数量: %zu\n", typesVec.size());
+    //DebugPrintA("[DumpRespAndNotify] 获取到类型数量: %zu\n", typesVec.size());
 
     for (uintptr_t runtime_ptr : typesVec)
     {
@@ -115,12 +111,12 @@ void HandlerDumpRespAndNotify(CMonoAssembly& mono_assembly)
         if (runtime_type.Name().AsString() != "NotifyManager")
             continue;
 
-        DebugPrintA("[HandlerDumpRespAndNotify] 找到 NotifyManager 类型\n");
+        //DebugPrintA("[DumpRespAndNotify] 找到 NotifyManager 类型\n");
 
         auto fields = runtime_type.GetFields(60);
         auto fieldsVec = fields.to_vec<uintptr_t>();
 
-        DebugPrintA("[HandlerDumpRespAndNotify] NotifyManager 字段数量: %zu\n", fields.length());
+        //DebugPrintA("[DumpRespAndNotify] NotifyManager 字段数量: %zu\n", fields.length());
 
         for (uintptr_t field_ptr : fieldsVec)
         {
@@ -132,20 +128,20 @@ void HandlerDumpRespAndNotify(CMonoAssembly& mono_assembly)
             if (field.Name() != "_RspHandlers")
                 continue;
 
-            DebugPrintA("[HandlerDumpRespAndNotify]  找到字段 _RspHandlers\n");
+            //DebugPrintA("[DumpRespAndNotify]  找到字段 _RspHandlers\n");
 
             CIl2CppObject arr_obj = field.GetValue(0);
 			uintptr_t arr_ptr = arr_obj.raw_ptr();
             if (arr_obj.is_null())
             {
-                DebugPrintA("[HandlerDumpRespAndNotify] [ERROR] _RspHandlers 为 null\n");
+                //DebugPrintA("[DumpRespAndNotify] [ERROR] _RspHandlers 为 null\n");
                 continue;
             }
 
-            DebugPrintA("[HandlerDumpRespAndNotify] _RspHandlers 字段 %p\n", arr_ptr);
+            //DebugPrintA("[DumpRespAndNotify] _RspHandlers 字段 %p\n", arr_ptr);
             CNativeArray<uintptr_t>* res_array = reinterpret_cast<CNativeArray<uintptr_t>*>(arr_ptr);
 
-            DebugPrintA("[HandlerDumpRespAndNotify] CNativeArray 数组长度: %d, CNativeArray 指针 %p\n", res_array->max_length, res_array);
+            //DebugPrintA("[DumpRespAndNotify] CNativeArray 数组长度: %d, CNativeArray 指针 %p\n", res_array->max_length, res_array);
 
             for (int k = 0; k < res_array->max_length; ++k)
             {
@@ -155,7 +151,7 @@ void HandlerDumpRespAndNotify(CMonoAssembly& mono_assembly)
                 CNativeArray<CEntry<uintptr_t, uintptr_t>>* entries_array = res_dict->entries;
                 if (!entries_array) continue;
 
-                DebugPrintA("[HandlerDumpRespAndNotify] Dictionary指针 %p, 处理 Dictionary[%d], entries指针 %p，entries 数量: %d\n", dict_ptr, k, res_dict->entries, res_dict->count);
+                //DebugPrintA("[DumpRespAndNotify] Dictionary指针 %p, 处理 Dictionary[%d], entries指针 %p，entries 数量: %d\n", dict_ptr, k, res_dict->entries, res_dict->count);
 
                 for (int l = 0; l < res_dict->count; ++l)
                 {
@@ -179,7 +175,7 @@ void HandlerDumpRespAndNotify(CMonoAssembly& mono_assembly)
                         CIl2CppMethod method(method_addr);
                         std::string raw_name = method.name();
                         std::string normalized = NormalizeName(raw_name);
-                        DebugPrintA("[HandlerDumpRespAndNotify] Handler 方法名: %s\n", raw_name.c_str());
+                        //DebugPrintA("[DumpRespAndNotify] Handler 方法名: %s\n", raw_name.c_str());
 
                         bool all_upper = std::all_of(
                             raw_name.begin(), raw_name.end(),
@@ -213,6 +209,7 @@ void HandlerDumpRespAndNotify(CMonoAssembly& mono_assembly)
                     }
 
                     CMDID[final_name] = entry.key;
+					//DebugPrintA("[DumpRespAndNotify] %s -> %llu\n", final_name.c_str(), entry.key);
                 }
             }
         }
@@ -221,7 +218,7 @@ void HandlerDumpRespAndNotify(CMonoAssembly& mono_assembly)
     std::ofstream file("cmdid.json");
     if (!file.is_open())
     {
-        DebugPrintA("[HandlerDumpRespAndNotify] [ERROR] 无法写入 cmdid.json\n");
+        DebugPrintA("[DumpRespAndNotify] [ERROR] 打不开 cmdid.json\n");
     }
     else
     {
@@ -237,13 +234,13 @@ void HandlerDumpRespAndNotify(CMonoAssembly& mono_assembly)
         file << "\n}\n";
         file.close();
 
-        DebugPrintA("[HandlerDumpRespAndNotify] cmdid.json 写入成功，共 %zu 条\n", CMDID.size());
+        DebugPrintA("[DumpRespAndNotify] cmdid.json written successfully, %zu items\n", CMDID.size());
     }
 
-    DebugPrintA("[HandlerDumpRespAndNotify] Dump response 完成\n");
+    DebugPrintA("[DumpRespAndNotify] Dump response complete\n");
 }
 
 void CmdIdDump(CMonoAssembly& mono_assembly) {
-    HandlerAddPacket(mono_assembly);
-    HandlerDumpRespAndNotify(mono_assembly);
+    AddPacket(mono_assembly);
+    DumpRespAndNotify(mono_assembly);
 }
