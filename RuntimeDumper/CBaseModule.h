@@ -18,7 +18,7 @@ public:
 
     //???
     inline void AddPacketHandlersParent() const {
-        InvokeIl2CppInstanceObjectMethod<void>(
+        CallIl2CppInstanceObjectMethod<void>(
             this->ptr,
             "RPG.Client.BaseModule",
             "_AddPacketHandlers",
@@ -29,7 +29,7 @@ public:
     // ¶ÔÓ¦ Rust µÄ cs_method!
     // pub add_packet_handlers_child
     inline void AddPacketHandlersChild() const {
-        InvokeIl2CppInstanceObjectMethodDynamic<void>(
+        CallIl2CppInstanceObjectMethodDynamic<void>(
             ptr,
             "_AddPacketHandlers",
             {}

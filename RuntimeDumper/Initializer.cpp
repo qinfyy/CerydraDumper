@@ -18,6 +18,7 @@
 #include "CmdIdOut.h"
 
 #include <DbgHelp.h>
+#include "Pb.h"
 #pragma comment(lib, "Dbghelp.lib")
 
 void WriteFullDump(EXCEPTION_POINTERS* ep)
@@ -319,46 +320,8 @@ void yep() {
     printf("[yep] Found Config: %s\n", excel_assembly->GetFullName().AsString().c_str());
     printf("[yep] Found Assembly-CSharp: %s\n", cmdid_assembly->GetFullName().AsString().c_str());
 
-	CmdIdDump(*cmdid_assembly);
-}
-
-int Api()
-{
-    FILE* fp = nullptr;
-    fopen_s(&fp, "Api.txt", "w");
-    if (!fp) {
-        printf("无法创建文件\n");
-        return 1;
-    }
-
-    // 写表头
-    fprintf(fp, "索引\t指针地址\tRVA\tPE VA\t是否有效\n");
-
-    for (int i = 0; i < 500; ++i)
-    {
-        uintptr_t addr = GetApiBase() + 8 * i; // 假设64位系统，每个指针8字节
-        uintptr_t funcPtr = 0;
-
-        // 尝试读取指针
-        if (IsBadReadPtr((void*)addr, sizeof(uintptr_t))) {
-            funcPtr = 0;
-        }
-        else {
-            funcPtr = *(uintptr_t*)addr;
-        }
-
-        int valid = (funcPtr != 0) && (!IsBadReadPtr((void*)funcPtr, 1));
-
-        uintptr_t rva = 0;
-        if (funcPtr)
-            rva = funcPtr - GetGameAssemblyModuleBase();
-
-        fprintf(fp, "%d\t%p\t%llX\t%llX\t%d\n", i, (void*)funcPtr, rva, rva + 180000000, valid);
-    }
-
-    fclose(fp);
-    printf("Dump完成\n");
-    return 0;
+	//CmdIdDump(*cmdid_assembly);
+	proto_dump(*proto_assembly);
 }
 
 DWORD WINAPI MainThread(LPVOID) {
@@ -385,7 +348,6 @@ DWORD WINAPI MainThread(LPVOID) {
     TestPrintAllImageNames_Wrapper();
 
     TestWrapper();
-    Api();
     yep();
     //DumpCs(".\\output\\dump.cs");
     // 

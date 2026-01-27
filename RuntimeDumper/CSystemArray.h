@@ -16,7 +16,7 @@ public:
     //cs_method_custom!(pub get_value, "GetValue", &["int"], &String::from("System.Array"), usize, (value: i32), self);
 
     inline int GetLength() {
-        return InvokeIl2CppInstanceObjectMethod<int>(
+        return CallIl2CppInstanceObjectMethod<int>(
             this->ptr,                // instance 指针
             "System.Array",           // 类名
             "get_Length",             // 方法名
@@ -25,7 +25,7 @@ public:
     }
 
     inline size_t GetValue(int index) {
-        return InvokeIl2CppInstanceObjectMethod<size_t>(
+        return CallIl2CppInstanceObjectMethod<size_t>(
             this->ptr,                // instance 指针
             "System.Array",           // 类名
             "GetValue",               // 方法名

@@ -22,7 +22,7 @@ public:
     // 返回值是 CRuntimeType 或 bool / size_t 等原生类型！！！
 
     inline CRuntimeType BaseType() const {
-        return InvokeIl2CppInstanceObjectMethod<CRuntimeType>(
+        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
             "System.RuntimeType",
             "get_BaseType",
@@ -31,7 +31,7 @@ public:
     }
 
     inline bool IsGenericType() const {
-        return InvokeIl2CppInstanceObjectMethod<bool>(
+        return CallIl2CppInstanceObjectMethod<bool>(
             this->ptr,
             "System.RuntimeType",
             "get_IsGenericType",
@@ -40,7 +40,7 @@ public:
     }
 
     inline bool IsEnum() const {
-        return InvokeIl2CppInstanceObjectMethod<bool>(
+        return CallIl2CppInstanceObjectMethod<bool>(
             this->ptr,
             "System.RuntimeType",
             "get_IsEnum",
@@ -49,17 +49,43 @@ public:
     }
 
 	// 必须是数组类型才能调用此函数
-    inline uintptr_t ArrayRank() const {
-        return InvokeIl2CppInstanceObjectMethod<uintptr_t>(
-            this->ptr,
-            "System.RuntimeType",
-            "GetArrayRank",
-            {}
-        );
+    //inline int ArrayRank() const {
+    //    return InvokeIl2CppInstanceObjectMethod<int>(
+    //        this->ptr,
+    //        "System.Type",
+    //        "GetArrayRank",
+    //        {}
+    //    );
+    //}
+
+    inline int ArrayRank() const {
+        if (!this->ptr)
+            throw std::runtime_error("Null reference exception! Method: GetArrayRank");
+
+        // 获取对象对应的类
+        auto klass = CIl2CppObject(this->ptr).get_class();
+        if (klass.is_null())
+            throw std::runtime_error("Cannot get class of instance!");
+
+        // 查找方法
+        auto method_info = klass.find_method("GetArrayRank", std::vector<std::string>{});
+        if (!method_info)
+            throw std::runtime_error("No such instance method GetArrayRank in " + klass.byval_arg().name());
+
+        // 原生函数指针
+        using Fn = int(__fastcall*)(uintptr_t);
+        auto func = reinterpret_cast<Fn>(method_info.va());
+        if (!func)
+            throw std::runtime_error("Method VA is null! GetArrayRank");
+
+        if (IsArray()) {
+            return func(this->ptr);
+        }
     }
 
+
     inline CRuntimeType ReflectedType() const {
-        return InvokeIl2CppInstanceObjectMethod<CRuntimeType>(
+        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
             "System.RuntimeType",
             "get_ReflectedType",
@@ -68,7 +94,7 @@ public:
     }
 
     inline CRuntimeType ElementType() const {
-        return InvokeIl2CppInstanceObjectMethod<CRuntimeType>(
+        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
             "System.RuntimeType",
             "GetElementType",
@@ -78,7 +104,7 @@ public:
 
     // 返回 System.String 类型封装
     inline CSystemString Namespace() const {
-        return InvokeIl2CppInstanceObjectMethod<CSystemString>(
+        return CallIl2CppInstanceObjectMethod<CSystemString>(
             this->ptr,
             "System.RuntimeType",
             "get_Namespace",
@@ -87,7 +113,7 @@ public:
     }
 
     inline CSystemString Name() const {
-        return InvokeIl2CppInstanceObjectMethod<CSystemString>(
+        return CallIl2CppInstanceObjectMethod<CSystemString>(
             this->ptr,
             "System.RuntimeType",
             "get_Name",
@@ -96,7 +122,7 @@ public:
     }
 
     inline CSystemString FullName() const {
-        return InvokeIl2CppInstanceObjectMethod<CSystemString>(
+        return CallIl2CppInstanceObjectMethod<CSystemString>(
             this->ptr,
             "System.RuntimeType",
             "get_FullName",
@@ -105,7 +131,7 @@ public:
     }
 
     inline CIl2CppObject TypeHandle() const {
-        return InvokeIl2CppInstanceObjectMethod<CIl2CppObject>(
+        return CallIl2CppInstanceObjectMethod<CIl2CppObject>(
             this->ptr,
             "System.RuntimeType",
             "get_TypeHandle",
@@ -114,7 +140,7 @@ public:
     }
 
     inline CIl2CppArray GenericArguments() const {
-        return InvokeIl2CppInstanceObjectMethod<CIl2CppArray>(
+        return CallIl2CppInstanceObjectMethod<CIl2CppArray>(
             this->ptr,
             "System.RuntimeType",
             "GetGenericArguments",
@@ -124,7 +150,7 @@ public:
 
     // 函数
     inline CIl2CppArray GetFields(int binding_flags) const {
-        return InvokeIl2CppInstanceObjectMethod<CIl2CppArray>(
+        return CallIl2CppInstanceObjectMethod<CIl2CppArray>(
             this->ptr,
             "System.RuntimeType",
             "GetFields",
@@ -134,7 +160,7 @@ public:
     }
 
     inline CIl2CppArray GetProperties(int binding_flags) const {
-        return InvokeIl2CppInstanceObjectMethod<CIl2CppArray>(
+        return CallIl2CppInstanceObjectMethod<CIl2CppArray>(
             this->ptr,
             "System.RuntimeType",
             "GetProperties",
@@ -144,7 +170,7 @@ public:
     }
 
     inline bool IsByRef() const {
-        return InvokeIl2CppInstanceObjectMethod<bool>(
+        return CallIl2CppInstanceObjectMethod<bool>(
             this->ptr,
             "System.Type",
             "get_IsByRef",
@@ -153,7 +179,7 @@ public:
     }
 
     inline bool IsArray() const {
-        return InvokeIl2CppInstanceObjectMethod<bool>(
+        return CallIl2CppInstanceObjectMethod<bool>(
             this->ptr,
             "System.Type",
             "get_IsArray",
@@ -162,7 +188,7 @@ public:
     }
 
     inline bool IsValueType() const {
-        return InvokeIl2CppInstanceObjectMethod<bool>(
+        return CallIl2CppInstanceObjectMethod<bool>(
             this->ptr,
             "System.Type",
             "get_IsValueType",
@@ -171,7 +197,7 @@ public:
     }
 
     inline bool IsPointer() const {
-        return InvokeIl2CppInstanceObjectMethod<bool>(
+        return CallIl2CppInstanceObjectMethod<bool>(
             this->ptr,
             "System.Type",
             "get_IsPointer",
@@ -180,7 +206,7 @@ public:
     }
 
     inline uintptr_t GetType() const {
-        return InvokeIl2CppInstanceObjectMethod<uintptr_t>(
+        return CallIl2CppInstanceObjectMethod<uintptr_t>(
             this->ptr,
             "System.Type",
             "GetType",
@@ -189,7 +215,7 @@ public:
     }
 
     inline std::unique_ptr<CMonoProperty> GetProperty(CSystemString name) const {
-        auto ptr = InvokeIl2CppInstanceObjectMethod<uintptr_t>(
+        auto ptr = CallIl2CppInstanceObjectMethod<uintptr_t>(
             this->ptr,
             "System.Type",
             "GetProperty",
@@ -201,7 +227,7 @@ public:
     }
 
     inline bool IsInterface() const {
-        return InvokeIl2CppInstanceObjectMethod<bool>(
+        return CallIl2CppInstanceObjectMethod<bool>(
             this->ptr,
             "System.Type",
             "get_IsInterface",
@@ -210,7 +236,7 @@ public:
     }
 
     inline std::unique_ptr<CMonoField> _GetField(CSystemString name, int binding_flags) const {
-        auto ptr = InvokeIl2CppInstanceObjectMethod<uintptr_t>(
+        auto ptr = CallIl2CppInstanceObjectMethod<uintptr_t>(
             this->ptr,
             "System.RuntimeType",
             "GetField",
@@ -250,7 +276,7 @@ public:
 
     // cs_property!(pub value, "get_Value", usize, self);
     inline uintptr_t Value() const {
-        return InvokeIl2CppInstanceObjectMethod<uintptr_t>(
+        return CallIl2CppInstanceObjectMethod<uintptr_t>(
             this->ptr,
             "System.RuntimeFieldHandle",
             "get_Value",
@@ -267,7 +293,7 @@ public:
 
     // 属性
     inline CRuntimeType DeclaringType() const {
-        return InvokeIl2CppInstanceObjectMethod<CRuntimeType>(
+        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
             "System.Reflection.MonoField",
             "get_DeclaringType",
@@ -276,7 +302,7 @@ public:
     }
 
     inline CRuntimeType FieldType() const {
-        return InvokeIl2CppInstanceObjectMethod<CRuntimeType>(
+        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
             "System.Reflection.MonoField",
             "get_FieldType",
@@ -285,7 +311,7 @@ public:
     }
 
     inline CSystemString Name() const {
-        return InvokeIl2CppInstanceObjectMethod<CSystemString>(
+        return CallIl2CppInstanceObjectMethod<CSystemString>(
             this->ptr,
             "System.Reflection.MonoField",
             "get_Name",
@@ -294,7 +320,7 @@ public:
     }
 
     inline CRuntimeFieldHandle FieldHandle() const {
-        return InvokeIl2CppInstanceObjectMethod<CRuntimeFieldHandle>(
+        return CallIl2CppInstanceObjectMethod<CRuntimeFieldHandle>(
             this->ptr,
             "System.Reflection.MonoField",
             "get_FieldHandle",
@@ -303,7 +329,7 @@ public:
     }
 
     inline uintptr_t RawConstantValue() const {
-        return InvokeIl2CppInstanceObjectMethod<uintptr_t>(
+        return CallIl2CppInstanceObjectMethod<uintptr_t>(
             this->ptr,
             "System.Reflection.MonoField",
             "GetRawConstantValue",
@@ -313,7 +339,7 @@ public:
 
     // 函数
     inline CIl2CppArray GetCustomAttributes(bool inherit) const {
-        return InvokeIl2CppInstanceObjectMethod<CIl2CppArray>(
+        return CallIl2CppInstanceObjectMethod<CIl2CppArray>(
             this->ptr,
             "System.Reflection.MonoField",
             "GetCustomAttributes",
@@ -323,7 +349,7 @@ public:
     }
 
     inline CIl2CppObject GetValue(uintptr_t obj) const {
-        return InvokeIl2CppInstanceObjectMethod<CIl2CppObject>(
+        return CallIl2CppInstanceObjectMethod<CIl2CppObject>(
             this->ptr,
             "System.Reflection.MonoField",
             "GetValue",
@@ -333,7 +359,7 @@ public:
     }
 
     inline bool IsLiteral() const {
-        return InvokeIl2CppInstanceObjectMethod<bool>(
+        return CallIl2CppInstanceObjectMethod<bool>(
             this->ptr,
             "System.Reflection.FieldInfo",
             "get_IsLiteral",
@@ -342,7 +368,7 @@ public:
     }
 
     inline int32_t MetadataToken() const {
-        return InvokeIl2CppInstanceObjectMethod<int32_t>(
+        return CallIl2CppInstanceObjectMethod<int32_t>(
             this->ptr,
             "System.Reflection.MemberInfo",
             "get_MetadataToken",
@@ -351,7 +377,7 @@ public:
     }
 
     inline void SetValue(uintptr_t obj, uintptr_t value) const {
-        InvokeIl2CppInstanceObjectMethod<void>(
+        CallIl2CppInstanceObjectMethod<void>(
             this->ptr,
             "System.Reflection.FieldInfo",
             "SetValue",
@@ -376,7 +402,7 @@ public:
 
     // 属性
     inline CRuntimeType DeclaringType() const {
-        return InvokeIl2CppInstanceObjectMethod<CRuntimeType>(
+        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
             "System.Reflection.MonoProperty",
             "get_DeclaringType",
@@ -385,7 +411,7 @@ public:
     }
 
     inline CRuntimeType PropertyType() const {
-        return InvokeIl2CppInstanceObjectMethod<CRuntimeType>(
+        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
             "System.Reflection.MonoProperty",
             "get_PropertyType",
@@ -394,7 +420,7 @@ public:
     }
 
     inline CSystemString Name() const {
-        return InvokeIl2CppInstanceObjectMethod<CSystemString>(
+        return CallIl2CppInstanceObjectMethod<CSystemString>(
             this->ptr,
             "System.Reflection.MonoProperty",
             "get_Name",
@@ -404,7 +430,7 @@ public:
 
     // 函数
     inline void SetValue(uintptr_t obj, uintptr_t value) const {
-        InvokeIl2CppInstanceObjectMethod<void>(
+        CallIl2CppInstanceObjectMethod<void>(
             this->ptr,
             "System.Reflection.PropertyInfo",
             "SetValue",
@@ -415,7 +441,7 @@ public:
     }
 
     inline CIl2CppObject GetValue(uintptr_t obj) const {
-        return InvokeIl2CppInstanceObjectMethod<CIl2CppObject>(
+        return CallIl2CppInstanceObjectMethod<CIl2CppObject>(
             this->ptr,
             "System.Reflection.PropertyInfo",
             "GetValue",
@@ -425,7 +451,7 @@ public:
     }
 
     inline uintptr_t GetValue(uintptr_t obj, uintptr_t args) const {
-        return InvokeIl2CppInstanceObjectMethod<uintptr_t>(
+        return CallIl2CppInstanceObjectMethod<uintptr_t>(
             this->ptr,
             "System.Reflection.PropertyInfo",
             "GetValue",
@@ -444,7 +470,7 @@ public:
 
     // 对应 Rust 的 get_type
     inline CRuntimeType GetType() const {
-        return InvokeIl2CppInstanceObjectMethod<CRuntimeType>(
+        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
             "System.Object",
             "GetType",
@@ -462,7 +488,7 @@ public:
 
     // 对应 Rust 的 cs_property!(pub string, "ToString", SystemString, self)
     inline CSystemString ToString() const {
-        return InvokeIl2CppInstanceObjectMethod<CSystemString>(
+        return CallIl2CppInstanceObjectMethod<CSystemString>(
             this->ptr,
             "System.Int32",
             "ToString",
@@ -479,7 +505,7 @@ public:
     CS_CLASS("System.Int64");
 
     inline CSystemString ToString() const {
-        return InvokeIl2CppInstanceObjectMethod<CSystemString>(
+        return CallIl2CppInstanceObjectMethod<CSystemString>(
             this->ptr,
             "System.Int64",
             "ToString",
@@ -509,7 +535,7 @@ public:
             throw std::runtime_error("SystemDynamic::ToString: object class is null");
         }
 
-        return InvokeIl2CppInstanceObjectMethod<CSystemString>(
+        return CallIl2CppInstanceObjectMethod<CSystemString>(
             this->ptr,
             obj_class.byval_arg().name().c_str(), // 动态类名
             "ToString",

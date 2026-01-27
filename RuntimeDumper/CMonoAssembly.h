@@ -14,12 +14,12 @@ public:
 
     //cs_method_custom
     inline CSystemString GetFullName() {
-        return InvokeIl2CppInstanceObjectMethod<CSystemString>(ptr, "System.Reflection.Assembly", "get_FullName",{});
+        return CallIl2CppInstanceObjectMethod<CSystemString>(ptr, "System.Reflection.Assembly", "get_FullName",{});
     }
 
     //cs_method_custom
     inline CIl2CppArray GetTypes(bool flags) {
-        return InvokeIl2CppInstanceObjectMethod<CIl2CppArray, bool>(ptr, "System.Reflection.Assembly", "GetTypes",{ "bool" }, flags);
+        return CallIl2CppInstanceObjectMethod<CIl2CppArray, bool>(ptr, "System.Reflection.Assembly", "GetTypes",{ "bool" }, flags);
     }
 
 };
