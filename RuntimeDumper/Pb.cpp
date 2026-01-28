@@ -148,7 +148,7 @@ std::string dump_csharp_type(CRuntimeType t) {
                                 //    .get_string() ?
                                 //    .as_str()
                                 //    .to_string();
-                                std::string value = CSystemDynamic(oneof_field.RawConstantValue()).ToString().AsString();
+                                std::string value = CSystemDynamic(int32_ptr).ToString().AsString();
                                 //if value != "" && value != "0" {
                                 //    inner.push_str("\t\tint32 ");
                                 //    inner.push_str(&one_of_field.get_name() ? .as_str());
@@ -315,7 +315,10 @@ std::string dump_csharp_type(CRuntimeType t) {
                         if (skip_types.count(property.Name().AsString())) {
                             std::string from = "int32 " + property.Name().AsString();
                             std::string to = type_Name + " " + property.Name().AsString();
-                            out.str(replace_all(out.str(), from, to));
+                            // 我cnm的
+                            std::string tmp = replace_all(out.str(), from, to);
+                            out.str(""); // 清空
+                            out << tmp;
                         }
                         else if (it->second != "0") {
                             out << "\t" << type_Name
@@ -403,12 +406,12 @@ void proto_dump(CMonoAssembly mono_assembly)
 
             std::string output = dump_csharp_type(runtime_type);
             if (!output.empty()) {
-                final_str << output << "\n";
+                final_str << output;
 
                 // 每个 proto 打印
-                DebugPrintA("[ProtoDump] Class: %s\n");
-                DebugPrintA(output.c_str());
-                DebugPrintA("\n");
+                //DebugPrintA("[ProtoDump] Class: %s\n", runtime_type.Name());
+                //DebugPrintA(output.c_str());
+                //DebugPrintA("\n");
             }
         }
         catch (const std::exception& e) {

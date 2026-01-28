@@ -85,6 +85,7 @@
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <IncludePath>$(ProjectDir)il2cpp;$(IncludePath)</IncludePath>
     <TargetName>version</TargetName>
+    <OutDir>D:\Games\StarRail\新建文件夹 (2)\Star Rail GameCN等5项文件\Star Rail GameCN</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LibraryPath>$(LibraryPath)</LibraryPath>

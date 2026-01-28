@@ -54,65 +54,6 @@ inline static ret_type fn_name args_decl { \
 
 void InitSehTranslator();
 
-//template<typename RetOrWrapper, typename... Args>
-//RetOrWrapper InvokeIl2CppInstanceObjectMethod(uintptr_t instance,
-//    const char* class_name,
-//    const char* method_name,
-//    const std::vector<std::string>& arg_types,
-//    Args... args)
-//{
-//    InitSehTranslator();
-//
-//    auto klass = GetCachedClass(class_name);
-//    if (klass->is_null()) {
-//        throw std::runtime_error("No such class: " + std::string(class_name));
-//    }
-//
-//    // 获取方法
-//    auto method_info = klass->find_method(method_name, arg_types);
-//    if (method_info.is_null()) {
-//        throw std::runtime_error("No such method: " + std::string(method_name));
-//    }
-//
-//    auto function_va = method_info.va();
-//    if (!function_va) {
-//        std::ostringstream msg;
-//        msg << "Method VA is null! Cannot call method: " << method_name
-//            << " | class: " << class_name
-//            << " | instance ptr: " << std::hex << instance;
-//        throw std::runtime_error(msg.str());
-//    }
-//
-//    // 原生函数指针
-//    using Fn = uintptr_t(__fastcall*)(uintptr_t, Args...);
-//    auto func = reinterpret_cast<Fn>(function_va);
-//
-//    try {
-//        uintptr_t ret = func(instance, args...);
-//
-//        if constexpr (std::is_base_of_v<CIl2CppWrapBase, RetOrWrapper>) {
-//            return RetOrWrapper(ret);
-//        }
-//        else if constexpr (std::is_convertible_v<uintptr_t, RetOrWrapper>) {
-//            return static_cast<RetOrWrapper>(ret);
-//        }
-//        else if constexpr (std::is_same_v<RetOrWrapper, void>) {
-//            (void)ret;
-//        }
-//        else {
-//            static_assert(std::is_base_of_v<CIl2CppWrapBase, RetOrWrapper> || std::is_convertible_v<uintptr_t, RetOrWrapper>,
-//                "InvokeIl2CppInstanceObjectMethod: RetOrWrapper 必须是源自 CIl2CppWrapBase 的类，或者能够从 uintptr_t 类型转换而来。");
-//        }
-//    }
-//    catch (...) {
-//        std::ostringstream msg;
-//        msg << "Unknown exception in method: " + std::string(method_name) << " | class: " << class_name
-//            << " | instance ptr: " << std::hex << instance
-//            << " | method RVA: " << method_info.rva();
-//        throw std::runtime_error(msg.str());
-//    }
-//}
-
 template<typename RetOrWrapper, typename... Args>
 RetOrWrapper CallIl2CppInstanceObjectMethod(uintptr_t instance,
     const char* class_name,
@@ -147,26 +88,28 @@ RetOrWrapper CallIl2CppInstanceObjectMethod(uintptr_t instance,
         std::is_base_of_v<CIl2CppWrapBase, RetOrWrapper>,
         uintptr_t(__fastcall*)(uintptr_t, Args...),
         std::conditional_t<
-        std::is_same_v<RetOrWrapper, void>,
-        void(__fastcall*)(uintptr_t, Args...),
-        RetOrWrapper(__fastcall*)(uintptr_t, Args...)
+            std::is_same_v<RetOrWrapper, void>,
+            void(__fastcall*)(uintptr_t, Args...),
+            RetOrWrapper(__fastcall*)(uintptr_t, Args...)
         >
     >;
 
     auto func = reinterpret_cast<FnType>(function_va);
+    auto func_raw = reinterpret_cast<void*>(function_va);
 
     try {
         if constexpr (std::is_base_of_v<CIl2CppWrapBase, RetOrWrapper>) {
-            // CIl2CppWrapBase 自动构造
+            auto func = reinterpret_cast<uintptr_t(__fastcall*)(uintptr_t, Args...)>(func_raw);
             uintptr_t ret = func(instance, args...);
-            return RetOrWrapper(ret);
+            return RetOrWrapper(ret); // wrap
         }
         else if constexpr (std::is_same_v<RetOrWrapper, void>) {
+            auto func = reinterpret_cast<void(__fastcall*)(uintptr_t, Args...)>(func_raw);
             func(instance, args...);
             return;
         }
         else {
-            // 普通可转换类型
+            auto func = reinterpret_cast<RetOrWrapper(__fastcall*)(uintptr_t, Args...)>(func_raw);
             return func(instance, args...);
         }
     }
@@ -203,24 +146,29 @@ RetOrWrapper CallIl2CppInstanceObjectMethodDynamic(uintptr_t instance,
         throw std::runtime_error(msg.str());
     }
 
-    using Fn = uintptr_t(__fastcall*)(uintptr_t, Args...);
-    auto func = reinterpret_cast<Fn>(function_va);
+    using FnType = std::conditional_t<
+        std::is_base_of_v<CIl2CppWrapBase, RetOrWrapper>,
+        uintptr_t(__fastcall*)(uintptr_t, Args...),
+        std::conditional_t<
+        std::is_same_v<RetOrWrapper, void>,
+        void(__fastcall*)(uintptr_t, Args...),
+        RetOrWrapper(__fastcall*)(uintptr_t, Args...)
+        >
+    >;
+
+    auto func = reinterpret_cast<FnType>(function_va);
 
     try {
-        uintptr_t ret = func(instance, args...);
-
         if constexpr (std::is_base_of_v<CIl2CppWrapBase, RetOrWrapper>) {
+            uintptr_t ret = func(instance, args...);
             return RetOrWrapper(ret);
         }
-        else if constexpr (std::is_convertible_v<uintptr_t, RetOrWrapper>) {
-            return static_cast<RetOrWrapper>(ret);
-        }
         else if constexpr (std::is_same_v<RetOrWrapper, void>) {
-            (void)ret;
+            func(instance, args...);
+            return;
         }
         else {
-            static_assert(std::is_base_of_v<CIl2CppWrapBase, RetOrWrapper> || std::is_convertible_v<uintptr_t, RetOrWrapper>,
-                "InvokeIl2CppInstanceObjectMethod: RetOrWrapper 必须是源自 CIl2CppWrapBase 的类，或者能够从 uintptr_t 类型转换而来。");
+            return func(instance, args...);
         }
     }
     catch (...) {
