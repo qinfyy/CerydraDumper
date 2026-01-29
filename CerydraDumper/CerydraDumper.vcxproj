@@ -24,7 +24,7 @@
     <ProjectGuid>{879302dd-f0e8-4b96-9b8d-132f642fc801}</ProjectGuid>
     <RootNamespace>version</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>RuntimeDumper</ProjectName>
+    <ProjectName>CerydraDumper</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -85,7 +85,6 @@
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <IncludePath>$(ProjectDir)il2cpp;$(IncludePath)</IncludePath>
     <TargetName>version</TargetName>
-    <OutDir>D:\Games\StarRail\新建文件夹 (2)\Star Rail GameCN等5项文件\Star Rail GameCN</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LibraryPath>$(LibraryPath)</LibraryPath>
@@ -172,7 +171,7 @@
     <ClInclude Include="CmdIdOut.h" />
     <ClInclude Include="CRspHandler.h" />
     <ClInclude Include="CSharpRender3.h" />
-    <ClInclude Include="CCSharpRuntime.h" />
+    <ClInclude Include="CSharpRuntime.h" />
     <ClInclude Include="CSystemArray.h" />
     <ClInclude Include="CSystemType.h" />
     <ClInclude Include="framework.h" />
@@ -202,9 +201,8 @@
     <ClInclude Include="Memory.h" />
     <ClInclude Include="MetaDumper.h" />
     <ClInclude Include="CMonoAssembly.h" />
-    <ClInclude Include="ModuleManager.h" />
+    <ClInclude Include="CModuleManager.h" />
     <ClInclude Include="OriginalNameAttribute.h" />
-    <ClInclude Include="Pb.h" />
     <ClInclude Include="PbUtil.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PrintHelper.h" />
@@ -222,7 +220,7 @@
     <ClCompile Include="CmdIdOut.cpp" />
     <ClCompile Include="CRspHandler.cpp" />
     <ClCompile Include="CSharpRender3.cpp" />
-    <ClCompile Include="CCSharpRuntime.cpp" />
+    <ClCompile Include="CSharpRuntime.cpp" />
     <ClCompile Include="CSystemArray.cpp" />
     <ClCompile Include="CSystemType.cpp" />
     <ClCompile Include="dllmain.cpp" />
@@ -235,9 +233,8 @@
     <ClCompile Include="Memory.cpp" />
     <ClCompile Include="MetaDumper.cpp" />
     <ClCompile Include="CMonoAssembly.cpp" />
-    <ClCompile Include="ModuleManager.cpp" />
+    <ClCompile Include="CModuleManager.cpp" />
     <ClCompile Include="OriginalNameAttribute.cpp" />
-    <ClCompile Include="Pb.cpp" />
     <ClCompile Include="PbUtil.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

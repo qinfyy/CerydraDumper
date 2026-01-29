@@ -2,7 +2,7 @@
 #include <unordered_map>
 #include <string>
 #include <stdexcept>
-#include "CCSharpRuntime.h"
+#include "CSharpRuntime.h"
 
 inline const std::unordered_map<std::string, std::string>& get_system_type_map() {
     static const std::unordered_map<std::string, std::string> m = {
@@ -54,7 +54,7 @@ inline size_t count_occurrences(const std::string& s, const std::string& sub) {
 inline std::string get_reflected_type(CRuntimeType t) {
     if (!t) return "";
 
-    std::string name = t.Name().AsString(); // 相当于 s_name.as_str()
+    std::string name = t.Name().AsString();
     CRuntimeType rt = t.ReflectedType();
 
     if (!t.IsGenericType() && rt && rt.raw_ptr() != 0) {
@@ -70,7 +70,7 @@ inline std::string get_runtime_type_name(CRuntimeType t, bool alias) {
     if (!t || t.raw_ptr() == 0)
         return "";
 
-    // ===== array =====
+    // array
     if (t.IsArray()) {
         CRuntimeType elem = t.ElementType();
         std::string out = get_runtime_type_name(elem, alias);
@@ -83,19 +83,19 @@ inline std::string get_runtime_type_name(CRuntimeType t, bool alias) {
         return out;
     }
 
-    // ===== pointer =====
+    // pointer
     if (t.IsPointer()) {
         CRuntimeType elem = t.ElementType();
         return get_runtime_type_name(elem, alias) + "*";
     }
 
-    // ===== by-ref =====
+    // by-ref
     if (t.IsByRef()) {
         CRuntimeType elem = t.ElementType();
         return get_runtime_type_name(elem, alias) + "&";
     }
 
-    // ===== generic =====
+    // generic
     if (t.IsGenericType()) {
         std::string name = t.Name().AsString();
         auto pos = name.find('`');
@@ -118,7 +118,7 @@ inline std::string get_runtime_type_name(CRuntimeType t, bool alias) {
         return name + "<" + joined + ">";
     }
 
-    // ===== System alias =====
+    // System alias
     if (alias) {
         CIl2CppObject obj(t.raw_ptr());
         std::string ns = obj.get_class().namespace_name();
@@ -132,34 +132,11 @@ inline std::string get_runtime_type_name(CRuntimeType t, bool alias) {
         }
     }
 
-    // ===== default =====
+    // default
     return get_reflected_type(t);
 }
 
-//inline bool contains(const std::string& s, const std::string& sub) {
-//    return s.find(sub) != std::string::npos;
-//}
-//
-////inline size_t count_occurrences(const std::string& s, const std::string& sub) {
-//    if (sub.empty()) {
-//        return 0;
-//    }
-//
-//    size_t count = 0;
-//    size_t pos = 0;
-//
-//    while ((pos = s.find(sub, pos)) != std::string::npos) {
-//        ++count;
-//        pos += sub.length(); // 非重叠
-//    }
-//
-//    return count;
-//}
-
-inline std::string replace_all(std::string str,
-    const std::string& from,
-    const std::string& to)
-{
+inline std::string replace_all(std::string str, const std::string& from, const std::string& to) {
     if (from.empty()) return str;
 
     size_t pos = 0;

@@ -19,8 +19,6 @@ public:
     CS_CLASS("System.RuntimeType");
 
     // 属性封装（对应 Rust cs_property!）
-    // 返回值是 CRuntimeType 或 bool / size_t 等原生类型！！！
-
     inline CRuntimeType BaseType() const {
         return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
@@ -274,7 +272,6 @@ public:
 
     CS_CLASS("System.RuntimeFieldHandle");
 
-    // cs_property!(pub value, "get_Value", usize, self);
     inline uintptr_t Value() const {
         return CallIl2CppInstanceObjectMethod<uintptr_t>(
             this->ptr,
@@ -486,7 +483,6 @@ public:
 
     CS_CLASS("System.Int32");
 
-    // 对应 Rust 的 cs_property!(pub string, "ToString", SystemString, self)
     inline CSystemString ToString() const {
         return CallIl2CppInstanceObjectMethod<CSystemString>(
             this->ptr,

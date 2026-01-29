@@ -6,20 +6,16 @@
 #include "Il2CppCache.h"
 #include "CAppDomain.h"
 #include "CMonoAssembly.h"
-//
-//#include "CSharpRender2.h"
-//#include "CSharpRender3.h"
-
 #include "Il2CppApiWrapper.h"
 #include "CSystemString.h"
 #include <iostream>
-#include "CCSharpRuntime.h"
+#include "CSharpRuntime.h"
 #include <optional>
 #include "CmdIdOut.h"
+#include "ProtoDumper.h"
 
 #include <DbgHelp.h>
-#include "Pb.h"
-#pragma comment(lib, "Dbghelp.lib")
+#pragma comment(lib, "DbgHelp.lib")
 
 void WriteFullDump(EXCEPTION_POINTERS* ep)
 {
@@ -130,9 +126,6 @@ void TestWrapper()
 {
     const char* hello = "Hello IL2CPP";
 
-    // =========================
-    // 1️⃣ 测试 System.String 封装
-    // =========================
     try {
         CSystemString s = CSystemString::PtrToStringAnsi(hello);
         std::string cpp_str = s.AsString();
@@ -144,9 +137,6 @@ void TestWrapper()
         return;
     }
 
-    // =========================
-    // 2️⃣ 测试 AppDomain / Assembly（基础）
-    // =========================
     try {
         auto domain = CAppDomain::GetCurrentDomain();
         auto assemblies = domain.GetAssemblies();
@@ -159,9 +149,6 @@ void TestWrapper()
         return;
     }
 
-    // =========================
-    // 3️⃣ 测试 CRuntimeType
-    // =========================
     try {
         CRuntimeType stringType = CRuntimeType::FromName("System.String");
 
@@ -195,16 +182,12 @@ void TestWrapper()
         return;
     }
 
-    // =========================
-    // 4️⃣ 测试 CMonoField（System.String.Empty）
-    // =========================
     try {
         CRuntimeType stringType = CRuntimeType::FromName("System.String");
 
         // BindingFlags:
         // Public | Static | FlattenHierarchy = 0x10 | 0x08 | 0x40 = 0x58
         auto field = stringType._GetField("Empty", 0x58);
-        //auto field = stringType.GetField("Empty");
 
         std::cout << "[Field] Name: "
             << field->Name().AsString() << std::endl;
@@ -232,9 +215,6 @@ void TestWrapper()
         return;
     }
 
-    // =========================
-    // 5️⃣ 测试 CMonoProperty（System.String.Length）
-    // =========================
     try {
         CRuntimeType stringType = CRuntimeType::FromName("System.String");
 
@@ -320,7 +300,8 @@ void yep() {
     printf("[yep] Found Config: %s\n", excel_assembly->GetFullName().AsString().c_str());
     printf("[yep] Found Assembly-CSharp: %s\n", cmdid_assembly->GetFullName().AsString().c_str());
 
-	//CmdIdDump(*cmdid_assembly);
+    DumpCs(".\\output\\dump.cs");
+	CmdIdDump(*cmdid_assembly);
 	proto_dump(*proto_assembly);
 }
 
@@ -349,8 +330,7 @@ DWORD WINAPI MainThread(LPVOID) {
 
     TestWrapper();
     yep();
-    //DumpCs(".\\output\\dump.cs");
-    // 
+ 
 //    Il2CppDomain* domain = nullptr;
 //    Il2CppThread* thread = nullptr;
 //    if (!AttachIl2Cpp(domain, thread))

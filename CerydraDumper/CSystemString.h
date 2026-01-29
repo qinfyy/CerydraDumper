@@ -11,10 +11,8 @@ public:
 
     CS_CLASS("System.Runtime.InteropServices.Marshal");
 
-    // 对应 Rust 的 cs_method! ptr_to_string_ansi
     CS_METHOD_STATIC_AUTO_CTOR(PtrToStringAnsi, "PtrToStringAnsi", {"System.IntPtr"}, CSystemString, (const char* charPtr), (charPtr));
 
-    // 从 Il2CppString* 转 std::string
     std::string AsString() const;
 
     CSystemString(const char* str) {

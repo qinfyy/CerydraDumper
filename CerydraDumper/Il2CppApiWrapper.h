@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-#include <stdexcept> // 必须
+#include <stdexcept>
 #include "Il2CppFunctions.h"
 #include "PrintHelper.h"
 
@@ -144,8 +144,6 @@ class CIl2CppArray : public CIl2CppWrapBase
 public:
     using CIl2CppWrapBase::CIl2CppWrapBase;
 
-    // ---- basic fields ----
-
     inline CIl2CppClass klass() const;
     inline uintptr_t monitor() const;
     inline uintptr_t bounds() const;
@@ -157,8 +155,7 @@ public:
 
     inline bool empty() const { return length() == 0; }
 
-    // ---- raw data ----
-//private:
+    // raw data
     inline uintptr_t first_item_ptr() const
     {
         // data starts at +0x20
@@ -166,7 +163,7 @@ public:
     }
 
 public:
-    // ---- element access (template, header-only) ----
+    // element access
 
     template<typename T>
     inline const T& get(size_t index) const
@@ -221,7 +218,7 @@ public:
         return *reinterpret_cast<uintptr_t*>(ptr + 0x8);
     }
 
-    // 获取 items（返回封装的 CIl2CppArray）
+    // 获取 items
     inline CIl2CppArray Items() const {
         uintptr_t items_ptr = *reinterpret_cast<uintptr_t*>(ptr + 0x10);
         return CIl2CppArray(items_ptr);
@@ -316,7 +313,7 @@ public:
     }
 };
 
-// ------------------- Entry -------------------
+// Entry
 template<typename TKey, typename TValue>
 struct CEntry {
     int32_t hash_code;
@@ -325,7 +322,7 @@ struct CEntry {
     TValue value;
 };
 
-// ------------------- NativeDictionary -------------------
+// NativeDictionary
 template<typename TKey, typename TValue>
 class CNativeDictionary {
 public:
@@ -342,7 +339,7 @@ public:
     void* values;          // 0x40
     uintptr_t sync_root;   // 0x48
 
-    // ------------------- 实例方法 -------------------
+    // 实例方法
 
     inline int find_entry(const TKey& key) const {
         if (!entries) return -1;
@@ -388,7 +385,7 @@ public:
     inline int get_count() const { return count; }
     inline uintptr_t get_comparer() const { return comparer; }
 
-    // ------------------- 调用 C# Remove 方法 -------------------
+    // 调用 C# Remove 方法
     inline static bool remove(uintptr_t dict_ptr, uintptr_t key_ptr, const std::string& class_name) {
         Il2CppClass* cls_rp = il2cpp_object_get_class((Il2CppObject*)dict_ptr);
 		auto cls = CIl2CppClass((uintptr_t)cls_rp);
@@ -408,7 +405,7 @@ public:
     }
 };
 
-// ------------------- KeysCollection -------------------
+// KeysCollection
 template<typename TKey, typename TValue>
 class CKeysCollection {
 public:
@@ -425,7 +422,7 @@ public:
     }
 };
 
-// ------------------- ValuesCollection -------------------
+// ValuesCollection
 template<typename TKey, typename TValue>
 class CValuesCollection {
 public:

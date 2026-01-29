@@ -16,6 +16,5 @@ public:
         return CallIl2CppInstanceObjectMethod<CIl2CppArray>(ptr, "System.AppDomain", "GetAssemblies", {});
     }
 
-
     CS_METHOD_STATIC_AUTO_CTOR(GetCurrentDomain, "get_CurrentDomain", {}, CAppDomain, (), ());
 };

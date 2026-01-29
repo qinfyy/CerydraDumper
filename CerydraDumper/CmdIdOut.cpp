@@ -1,9 +1,9 @@
 ﻿#include "pch.h"
 #include "CmdIdOut.h"
 #include <iostream>
-#include "CCSharpRuntime.h"
+#include "CSharpRuntime.h"
 #include "Il2CppApiWrapper.h"
-#include "ModuleManager.h"
+#include "CModuleManager.h"
 #include "CBaseModule.h"
 #include "CRspHandler.h"
 #include <algorithm>

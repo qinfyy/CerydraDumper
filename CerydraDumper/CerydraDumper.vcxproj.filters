@@ -144,7 +144,7 @@
     <ClInclude Include="CActivator.h">
       <Filter>头文件\CSharp</Filter>
     </ClInclude>
-    <ClInclude Include="CCSharpRuntime.h">
+    <ClInclude Include="CSharpRuntime.h">
       <Filter>头文件\CSharp</Filter>
     </ClInclude>
     <ClInclude Include="CSystemType.h">
@@ -153,7 +153,7 @@
     <ClInclude Include="CmdIdOut.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ModuleManager.h">
+    <ClInclude Include="CModuleManager.h">
       <Filter>头文件\CSharp</Filter>
     </ClInclude>
     <ClInclude Include="CBaseModule.h">
@@ -161,9 +161,6 @@
     </ClInclude>
     <ClInclude Include="CRspHandler.h">
       <Filter>头文件\CSharp</Filter>
-    </ClInclude>
-    <ClInclude Include="Pb.h">
-      <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="PbUtil.h">
       <Filter>头文件</Filter>
@@ -239,7 +236,7 @@
     <ClCompile Include="CActivator.cpp">
       <Filter>源文件\CSharp</Filter>
     </ClCompile>
-    <ClCompile Include="CCSharpRuntime.cpp">
+    <ClCompile Include="CSharpRuntime.cpp">
       <Filter>源文件\CSharp</Filter>
     </ClCompile>
     <ClCompile Include="CSystemType.cpp">
@@ -248,7 +245,7 @@
     <ClCompile Include="CmdIdOut.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ModuleManager.cpp">
+    <ClCompile Include="CModuleManager.cpp">
       <Filter>源文件\CSharp</Filter>
     </ClCompile>
     <ClCompile Include="CBaseModule.cpp">
@@ -256,9 +253,6 @@
     </ClCompile>
     <ClCompile Include="CRspHandler.cpp">
       <Filter>源文件\CSharp</Filter>
-    </ClCompile>
-    <ClCompile Include="Pb.cpp">
-      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="PbUtil.cpp">
       <Filter>源文件</Filter>

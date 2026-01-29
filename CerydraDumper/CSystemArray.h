@@ -12,9 +12,6 @@ public:
 
     CS_CLASS("System.Array");
 
-    //cs_method_custom!(pub get_length, "get_Length", &[], &String::from("System.Array"), i32, (), self);
-    //cs_method_custom!(pub get_value, "GetValue", &["int"], &String::from("System.Array"), usize, (value: i32), self);
-
     inline int GetLength() {
         return CallIl2CppInstanceObjectMethod<int>(
             this->ptr,                // instance ÷∏’Î
