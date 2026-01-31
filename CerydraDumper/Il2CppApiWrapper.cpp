@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "Il2CppApiWrapper.h"
 #include "Il2CppFunctions.h"
 #include <sstream>
@@ -9,45 +9,49 @@
 //CIl2CppDomain
 std::vector<CIl2CppAssembly> CIl2CppDomain::assemblies() const {
     size_t count = 0;
-    ::Il2CppAssembly** arr = ::il2cpp_domain_get_assemblies(reinterpret_cast<::Il2CppDomain*>(ptr), &count);
+    Il2CppAssembly** arr = il2cpp_domain_get_assemblies(reinterpret_cast<::Il2CppDomain*>(ptr), &count);
 
     std::vector<CIl2CppAssembly> result;
     result.reserve(count);
     for (size_t i = 0; i < count; ++i) {
         result.emplace_back(reinterpret_cast<uintptr_t>(arr[i]));
     }
+
     return result;
 }
 
 CIl2CppAssembly CIl2CppDomain::assembly_open(const std::string& name) const {
-    ::Il2CppAssembly* assembly = ::il2cpp_domain_assembly_open(reinterpret_cast<::Il2CppDomain*>(ptr), const_cast<char*>(name.c_str()));
-    if (!assembly) return CIl2CppAssembly((uintptr_t)nullptr); // ·µ»Ø¿Õ¶ÔÏó
-    return CIl2CppAssembly(reinterpret_cast<uintptr_t>(assembly)); // ·â×°µ½ÄãµÄÀà
+    Il2CppAssembly* assembly = il2cpp_domain_assembly_open(reinterpret_cast<::Il2CppDomain*>(ptr), const_cast<char*>(name.c_str()));
+    if (!assembly)
+        return CIl2CppAssembly(0);
+
+    return CIl2CppAssembly(reinterpret_cast<uintptr_t>(assembly));
 }
 
 CIl2CppDomain CIl2CppDomain::get() {
-    ::Il2CppDomain* domain = ::il2cpp_domain_get();
-    if (!domain) return CIl2CppDomain(0);
+    Il2CppDomain* domain = il2cpp_domain_get();
+    if (!domain)
+        return CIl2CppDomain(0);
     return CIl2CppDomain(reinterpret_cast<uintptr_t>(domain));
 }
 
 // Il2CppAssembly
 CIl2CppImage CIl2CppAssembly::get_image() const {
-    ::Il2CppImage* image = ::il2cpp_assembly_get_image(
-        reinterpret_cast<::Il2CppAssembly*>(ptr)
-    );
+    Il2CppImage* image = il2cpp_assembly_get_image(reinterpret_cast<Il2CppAssembly*>(ptr));
 
-    if (!image) return CIl2CppImage(0);  // ·µ»Ø¿Õ¶ÔÏó
+    if (!image)
+        return CIl2CppImage(0);
+
     return CIl2CppImage(reinterpret_cast<uintptr_t>(image));
 }
 
 // Il2CppImage
 std::string CIl2CppImage::name() const {
-    return std::string(::il2cpp_image_get_name(reinterpret_cast<::Il2CppImage*>(ptr)));
+    return std::string(il2cpp_image_get_name(reinterpret_cast<::Il2CppImage*>(ptr)));
 }
 
 size_t CIl2CppImage::class_count() const {
-    return ::il2cpp_image_get_class_count(reinterpret_cast<::Il2CppImage*>(ptr));
+    return il2cpp_image_get_class_count(reinterpret_cast<::Il2CppImage*>(ptr));
 }
 
 std::vector<CIl2CppClass> CIl2CppImage::classes() const {
@@ -56,12 +60,12 @@ std::vector<CIl2CppClass> CIl2CppImage::classes() const {
     out.reserve(count);
 
     for (size_t i = 0; i < count; ++i) {
-        ::Il2CppClass* cls = ::il2cpp_image_get_class(reinterpret_cast<::Il2CppImage*>(ptr), i);
+        Il2CppClass* cls = il2cpp_image_get_class(reinterpret_cast<::Il2CppImage*>(ptr), i);
         if (!cls) {
-            out.emplace_back(0); // ¿Õ¶ÔÏó
+            out.emplace_back(0);
         }
         else {
-            out.emplace_back(reinterpret_cast<uintptr_t>(cls)); // ·â×°³É Wrapper
+            out.emplace_back(reinterpret_cast<uintptr_t>(cls));
         }
     }
 
@@ -70,132 +74,145 @@ std::vector<CIl2CppClass> CIl2CppImage::classes() const {
 
 // Il2CppClass
 std::string CIl2CppClass::name() const {
-    return std::string(::il2cpp_class_get_name(reinterpret_cast<::Il2CppClass*>(ptr)));
+    return std::string(il2cpp_class_get_name(reinterpret_cast<::Il2CppClass*>(ptr)));
 }
 
 std::string CIl2CppClass::namespace_name() const {
-    return std::string(::il2cpp_class_get_namespace(reinterpret_cast<::Il2CppClass*>(ptr)));
+    return std::string(il2cpp_class_get_namespace(reinterpret_cast<::Il2CppClass*>(ptr)));
 }
 
-// ·µ»Ø¸¸Àà£¬·â×°³É CIl2CppClass
 CIl2CppClass CIl2CppClass::get_parent() const {
-    ::Il2CppClass* parent = ::il2cpp_class_get_parent(reinterpret_cast<::Il2CppClass*>(ptr));
+    Il2CppClass* parent = il2cpp_class_get_parent(reinterpret_cast<::Il2CppClass*>(ptr));
     return CIl2CppClass(reinterpret_cast<uintptr_t>(parent));
 }
 
-// ·µ»Ø byval_arg£¬·â×°³É CIl2CppType
 CIl2CppType CIl2CppClass::byval_arg() const {
-    ::Il2CppType* t = reinterpret_cast<::Il2CppType*>(ptr + 128);
+    Il2CppType* t = reinterpret_cast<Il2CppType*>(ptr + 128);
     return CIl2CppType(reinterpret_cast<uintptr_t>(t));
 }
 
-
-// ·µ»Ø·â×°ºóµÄ·½·¨ÁÐ±í
 std::vector<CIl2CppMethod> CIl2CppClass::methods() const {
     std::vector<CIl2CppMethod> out;
     void* iter = nullptr;
 
     while (true) {
-        ::MethodInfo* method = ::il2cpp_class_get_methods(reinterpret_cast<::Il2CppClass*>(ptr), &iter);
-        if (!method) break;
-        out.emplace_back(reinterpret_cast<uintptr_t>(method)); // ·â×°³É CIl2CppMethod
+        MethodInfo* method = il2cpp_class_get_methods(reinterpret_cast<::Il2CppClass*>(ptr), &iter);
+        if (!method)
+            break;
+
+        out.emplace_back(reinterpret_cast<uintptr_t>(method));
     }
 
     return out;
 }
 
-// ·µ»Ø·â×°ºóµÄ×Ö¶ÎÁÐ±í
 std::vector<CIl2CppField> CIl2CppClass::fields() const {
     std::vector<CIl2CppField> out;
     void* iter = nullptr;
 
     while (true) {
-        ::FieldInfo* field = ::il2cpp_class_get_fields(reinterpret_cast<::Il2CppClass*>(ptr), &iter);
-        if (!field) break;
-        out.emplace_back(reinterpret_cast<uintptr_t>(field)); // ·â×°³É CIl2CppField
+        FieldInfo* field = il2cpp_class_get_fields(reinterpret_cast<::Il2CppClass*>(ptr), &iter);
+        if (!field)
+            break;
+
+        out.emplace_back(reinterpret_cast<uintptr_t>(field));
     }
 
     return out;
 }
 
 int32_t CIl2CppClass::get_flags() const {
-    return ::il2cpp_class_get_flags(reinterpret_cast<::Il2CppClass*>(ptr));
+    return il2cpp_class_get_flags(reinterpret_cast<::Il2CppClass*>(ptr));
 }
 
 bool CIl2CppClass::is_enum() const {
-    return ::il2cpp_class_is_enum(reinterpret_cast<::Il2CppClass*>(ptr));
+    return il2cpp_class_is_enum(reinterpret_cast<::Il2CppClass*>(ptr));
 }
 
 bool CIl2CppClass::is_value_type() const {
-    return ::il2cpp_class_is_valuetype(reinterpret_cast<::Il2CppClass*>(ptr));
+    return il2cpp_class_is_valuetype(reinterpret_cast<::Il2CppClass*>(ptr));
 }
 
-// °´Ãû×Ö²éÕÒ·½·¨£¬·µ»Ø CIl2CppMethod
 CIl2CppMethod CIl2CppClass::find_method_by_name(const std::string& name) const {
-    auto ms = methods(); // ÏÖÔÚ methods() ·µ»Ø CIl2CppMethod
+    auto ms = methods();
     for (auto& m : ms) {
-        if (m.name() == name) return m;
+        if (m.name() == name)
+            return m;
     }
-    return CIl2CppMethod(0); // ·µ»Ø¿Õ¶ÔÏó
+
+    return CIl2CppMethod(0);
 }
 
 CIl2CppMethod CIl2CppClass::find_method(const std::string& name, const std::vector<std::string>& arg_types) const {
     auto ms = methods();
     for (auto& m : ms) {
-        if (m.name() != name) continue;
+        if (m.name() != name)
+            continue;
 
         size_t count = m.param_count();
-        if (count != arg_types.size()) continue;
+        if (count != arg_types.size())
+            continue;
 
         bool fail = false;
         for (size_t i = 0; i < count; ++i) {
             CIl2CppType t = m.get_param(i);
             std::string tn = t.formatted_name();
-            if (tn != arg_types[i]) { fail = true; break; }
+            if (tn != arg_types[i]) {
+                fail = true;
+                break; 
+            }
         }
 
-        if (!fail) return m;
+        if (!fail)
+            return m;
     }
-    return CIl2CppMethod(0); // ·µ»Ø¿Õ¶ÔÏó
+
+    return CIl2CppMethod(0);
 }
 
-// °´·µ»ØÀàÐÍ + ²ÎÊýÀàÐÍ²éÕÒ·½·¨£¬·µ»Ø CIl2CppMethod
+// æŒ‰è¿”å›žç±»åž‹ + å‚æ•°ç±»åž‹æŸ¥æ‰¾æ–¹æ³•ï¼Œè¿”å›ž CIl2CppMethod
 CIl2CppMethod CIl2CppClass::find_method_by_return_type(const std::string& return_type, const std::vector<std::string>& arg_types) const {
-    auto ms = methods(); // ·µ»Ø CIl2CppMethod ÁÐ±í
+    auto ms = methods();
 
     for (auto& m : ms) {
-        CIl2CppType rt = m.return_type();      // ÏÖÔÚÊÇ·â×°Àà
-        std::string rname = rt.formatted_name();         // Ê¹ÓÃ·â×°ÀàµÄ½Ó¿Ú»ñÈ¡Ãû³Æ
-        if (rname.find(return_type) != 0) continue;
+        CIl2CppType rt = m.return_type();
+        std::string rname = rt.formatted_name();
+        if (rname.find(return_type) != 0)
+            continue;
 
         size_t count = m.param_count();
-        if (count != arg_types.size()) continue;
+        if (count != arg_types.size())
+            continue;
 
         bool fail = false;
         for (size_t i = 0; i < count; ++i) {
-            CIl2CppType t = m.get_param(i);    // ÏÖÔÚ·µ»Ø·â×°Àà
-            std::string tn = t.formatted_name();         // ÓÃ·â×°Àà½Ó¿Ú
-            if (tn != arg_types[i]) { fail = true; break; }
+            CIl2CppType t = m.get_param(i);
+            std::string tn = t.formatted_name();
+            if (tn != arg_types[i]) { 
+                fail = true;
+                break;
+            }
         }
 
-        if (!fail) return m;
+        if (!fail)
+            return m;
     }
 
-    return CIl2CppMethod(0); // ·µ»Ø¿Õ¶ÔÏó
+    return CIl2CppMethod(0);
 }
 
 // Il2CppType
 std::string CIl2CppType::name() const {
-	const char* type_name = ::il2cpp_type_get_name(reinterpret_cast<::Il2CppType*>(ptr));
+	const char* type_name = il2cpp_type_get_name(reinterpret_cast<::Il2CppType*>(ptr));
     return std::string(type_name);
 }
 
 uint32_t CIl2CppType::get_attrs() const {
-    return ::il2cpp_type_get_attrs(reinterpret_cast<::Il2CppType*>(ptr));
+    return il2cpp_type_get_attrs(reinterpret_cast<::Il2CppType*>(ptr));
 }
 
 bool CIl2CppType::is_by_ref() const {
-    return ::il2cpp_type_is_byref(reinterpret_cast<::Il2CppType*>(ptr));
+    return il2cpp_type_is_byref(reinterpret_cast<::Il2CppType*>(ptr));
 }
 
 std::string CIl2CppType::formatted_name() const {
@@ -220,34 +237,29 @@ std::string CIl2CppType::formatted_name() const {
     return n;
 }
 
-// ·µ»Ø·â×°Àà CIl2CppClass
 CIl2CppClass CIl2CppType::get_class() const {
-    ::Il2CppClass* cls = ::il2cpp_class_from_type(reinterpret_cast<::Il2CppType*>(ptr));
+    Il2CppClass* cls = il2cpp_class_from_type(reinterpret_cast<::Il2CppType*>(ptr));
     return CIl2CppClass(reinterpret_cast<uintptr_t>(cls));
 }
 
-
 // Il2CppMethod
-::MethodInfo* CIl2CppMethod::method_info() const {
-    return reinterpret_cast<::MethodInfo*>(ptr);
+MethodInfo* CIl2CppMethod::method_info() const {
+    return reinterpret_cast<MethodInfo*>(ptr);
 }
 
 std::string CIl2CppMethod::name() const {
-    return std::string(::il2cpp_method_get_name(reinterpret_cast<::MethodInfo*>(ptr)));
+    return std::string(il2cpp_method_get_name(reinterpret_cast<::MethodInfo*>(ptr)));
 }
 
-// ·µ»Ø·â×°ºóµÄ·µ»ØÀàÐÍ
 CIl2CppType CIl2CppMethod::return_type() const {
-    ::Il2CppType* t = ::il2cpp_method_get_return_type(reinterpret_cast<::MethodInfo*>(ptr));
+    Il2CppType* t = il2cpp_method_get_return_type(reinterpret_cast<::MethodInfo*>(ptr));
     return CIl2CppType(reinterpret_cast<uintptr_t>(t));
 }
 
-// ·µ»Ø·â×°ºóµÄËùÊôÀà
 CIl2CppClass CIl2CppMethod::class_ptr() const {
-    ::Il2CppClass* cls = reinterpret_cast<::Il2CppClass*>(*(uintptr_t*)ptr);
+    Il2CppClass* cls = reinterpret_cast<Il2CppClass*>(*(uintptr_t*)ptr);
     return CIl2CppClass(reinterpret_cast<uintptr_t>(cls));
 }
-
 
 uintptr_t CIl2CppMethod::va() const {
     return *(uintptr_t*)(ptr + 8);
@@ -255,7 +267,9 @@ uintptr_t CIl2CppMethod::va() const {
 
 uintptr_t CIl2CppMethod::rva() const {
     uintptr_t _va = va();
-    if (_va == 0) return 0;
+    if (_va == 0)
+        return 0;
+
     return _va - GetGameAssemblyModuleBase();
 }
 
@@ -265,12 +279,11 @@ bool CIl2CppMethod::is_valid() const {
 }
 
 uint32_t CIl2CppMethod::param_count() const {
-    return ::il2cpp_method_get_param_count(reinterpret_cast<::MethodInfo*>(ptr));
+    return il2cpp_method_get_param_count(reinterpret_cast<::MethodInfo*>(ptr));
 }
 
-// ·µ»Ø·â×°ºóµÄ²ÎÊýÀàÐÍ
 CIl2CppType CIl2CppMethod::get_param(uint32_t i) const {
-    ::Il2CppType* t = ::il2cpp_method_get_param(reinterpret_cast<::MethodInfo*>(ptr), i);
+    Il2CppType* t = il2cpp_method_get_param(reinterpret_cast<::MethodInfo*>(ptr), i);
     return CIl2CppType(reinterpret_cast<uintptr_t>(t));
 }
 
@@ -307,73 +320,67 @@ std::string CIl2CppMethod::format_params() const {
         out << param_type_formatted(i);
         if (i + 1 < count) out << ",";
     }
+
     out << ")";
     return out.str();
 }
 
 int32_t CIl2CppMethod::get_flags() const {
-    if (is_null()) return 0;
+    if (is_null())
+        return 0;
+
     return method_info()->flags;
 }
 
 // CIl2CppField
 std::string CIl2CppField::name() const {
-    if (is_null()) return "";
-    const char* n = ::il2cpp_field_get_name(reinterpret_cast<::FieldInfo*>(ptr));
+    if (is_null())
+        return "";
+
+    const char* n = il2cpp_field_get_name(reinterpret_cast<::FieldInfo*>(ptr));
     return n ? std::string(n) : std::string();
 }
 
 int32_t CIl2CppField::get_flags() const {
-    if (is_null()) return 0;
-    return ::il2cpp_field_get_flags(reinterpret_cast<::FieldInfo*>(ptr));
+    if (is_null())
+        return 0;
+
+    return il2cpp_field_get_flags(reinterpret_cast<::FieldInfo*>(ptr));
 }
 
 size_t CIl2CppField::get_offset() const {
-    if (is_null()) return 0;
-    return ::il2cpp_field_get_offset(reinterpret_cast<::FieldInfo*>(ptr));
+    if (is_null())
+        return 0;
+
+    return il2cpp_field_get_offset(reinterpret_cast<::FieldInfo*>(ptr));
 }
 
 CIl2CppType CIl2CppField::get_type() const {
-    if (is_null()) return CIl2CppType(0);
-    ::Il2CppType* t = ::il2cpp_field_get_type(reinterpret_cast<::FieldInfo*>(ptr));
+    if (is_null())
+        return CIl2CppType(0);
+
+    Il2CppType* t = il2cpp_field_get_type(reinterpret_cast<::FieldInfo*>(ptr));
     return CIl2CppType(reinterpret_cast<uintptr_t>(t));
 }
 
 CIl2CppObject CIl2CppField::get_value_object(const CIl2CppObject& instance) const {
     if (is_null() || instance.is_null()) return CIl2CppObject(0);
-    ::Il2CppObject* value = ::il2cpp_field_get_value_object(reinterpret_cast<::FieldInfo*>(ptr),
-        reinterpret_cast<::Il2CppObject*>(instance.raw_ptr()));
-    if (!value) return CIl2CppObject(0);
+    Il2CppObject* value = il2cpp_field_get_value_object(reinterpret_cast<::FieldInfo*>(ptr), reinterpret_cast<Il2CppObject*>(instance.raw_ptr()));
+    
+    if (!value)
+        return CIl2CppObject(0);
+
     return CIl2CppObject(reinterpret_cast<uintptr_t>(value));
 }
 
-
 // Il2CppObject
 const CIl2CppObject CIl2CppObject::NULL_OBJ = CIl2CppObject(0);
-CIl2CppClass CIl2CppObject::get_class() const {
-    if (is_null()) return CIl2CppClass(0);
 
-    // Ê× 8 ×Ö½Ú´æ·ÅÀàÖ¸Õë
+CIl2CppClass CIl2CppObject::get_class() const {
+    if (is_null())
+        return CIl2CppClass(0);
+
+    // é¦– 8 å­—èŠ‚å­˜æ”¾ç±»æŒ‡é’ˆ
     uintptr_t cls_ptr = *(uintptr_t*)ptr;
     return CIl2CppClass(cls_ptr);
-}
-
-// CIl2CppArray
-CIl2CppClass CIl2CppArray::klass() const
-{
-    return CIl2CppClass(
-        *reinterpret_cast<uintptr_t*>(ptr)
-    );
-}
-
-// +0x08 monitor
-uintptr_t CIl2CppArray::monitor() const
-{
-    return *reinterpret_cast<uintptr_t*>(ptr + 0x08);
-}
-
-// +0x10 bounds
-uintptr_t CIl2CppArray::bounds() const
-{
-    return *reinterpret_cast<uintptr_t*>(ptr + 0x10);
 }

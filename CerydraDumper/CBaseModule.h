@@ -13,7 +13,7 @@ public:
 
     CS_CLASS("RPG.Client.BaseModule");
 
-    inline void AddPacketHandlersParent() const {
+    void AddPacketHandlersParent() const {
         CallIl2CppInstanceObjectMethod<void>(
             this->ptr,
             "RPG.Client.BaseModule",
@@ -22,7 +22,7 @@ public:
         );
     }
 
-    inline void AddPacketHandlersChild() const {
+    void AddPacketHandlersChild() const {
         CallIl2CppInstanceObjectMethodDynamic<void>(
             ptr,
             "_AddPacketHandlers",

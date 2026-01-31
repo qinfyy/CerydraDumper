@@ -12,11 +12,11 @@ public:
 
     CS_CLASS("System.Runtime.InteropServices.Marshal");
 
-    inline CSystemString GetFullName() {
+    CSystemString GetFullName() {
         return CallIl2CppInstanceObjectMethod<CSystemString>(ptr, "System.Reflection.Assembly", "get_FullName",{});
     }
 
-    inline CIl2CppArray GetTypes(bool flags) {
+    CIl2CppArray GetTypes(bool flags) {
         return CallIl2CppInstanceObjectMethod<CIl2CppArray, bool>(ptr, "System.Reflection.Assembly", "GetTypes",{ "bool" }, flags);
     }
 };

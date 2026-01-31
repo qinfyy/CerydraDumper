@@ -51,11 +51,10 @@ LONG WINAPI GlobalExceptionFilter(EXCEPTION_POINTERS* ep)
 
 void TestPrintAllImageNames()
 {
-
     // 获取当前域
     Il2CppDomain* domain = il2cpp_domain_get();
     if (!domain) {
-        DebugPrintA("Failed to get IL2CPP domain.\n");
+        DebugPrintA("[Test] [ERROR] Failed to get il2cpp domain.\n");
         return;
     }
 
@@ -63,11 +62,11 @@ void TestPrintAllImageNames()
     size_t assemblyCount = 0;
     Il2CppAssembly** assemblies = il2cpp_domain_get_assemblies(domain, &assemblyCount);
     if (!assemblies || assemblyCount == 0) {
-        DebugPrintA("No assemblies found.\n");
+        DebugPrintA("[Test] [ERROR] No assemblies found.\n");
         return;
     }
 
-    DebugPrintA("Loaded Assemblies and Images:\n");
+    DebugPrintA("[Test] Loaded Assemblies and Images:\n");
 
     // 遍历所有程序集
     for (size_t i = 0; i < assemblyCount; i++)
@@ -82,28 +81,28 @@ void TestPrintAllImageNames()
         // 获取 image 名称
         const char* imageName = il2cpp_image_get_name(image);
         if (imageName) {
-            DebugPrintA("%s\n", imageName);
+            DebugPrintA("[Test] Assembly: %s\n", imageName);
         }
     }
 }
 
-void TestPrintAllImageNames_Wrapper()
+void TestPrintAllImageNamesWrapper()
 {
     // 获取当前域（全局静态获取）
     CIl2CppDomain domain = CIl2CppDomain::get();
     if (domain.is_null()) {
-        DebugPrintA("Failed to get IL2CPP domain.\n");
+        DebugPrintA("[Test] [ERROR] Failed to get il2cpp domain.\n");
         return;
     }
 
     // 获取域里的所有程序集
     std::vector<CIl2CppAssembly> assemblies = domain.assemblies();
     if (assemblies.empty()) {
-        DebugPrintA("No assemblies found.\n");
+        DebugPrintA("[Test] [ERROR] No assemblies found.\n");
         return;
     }
 
-    DebugPrintA("Loaded Assemblies and Images:\n");
+    DebugPrintA("[Test] Loaded Assemblies and Images:\n");
 
     // 遍历程序集
     for (const CIl2CppAssembly& assembly : assemblies)
@@ -117,23 +116,23 @@ void TestPrintAllImageNames_Wrapper()
         // 获取 image 名称
         std::string imageName = image.name();
         if (!imageName.empty()) {
-            DebugPrintA("%s\n", imageName.c_str());
+            DebugPrintA("[Test] %s\n", imageName.c_str());
         }
     }
 }
 
 void TestWrapper()
 {
-    const char* hello = "Hello IL2CPP";
+    const char* hello = "Hello il2cpp";
 
     try {
         CSystemString s = CSystemString::PtrToStringAnsi(hello);
         std::string cpp_str = s.AsString();
 
-        printf("[String] Converted string: %s\n", cpp_str.c_str());
+        DebugPrintA("[String] Converted string: %s\n", cpp_str.c_str());
     }
     catch (const std::exception& e) {
-        std::cerr << "[String] Exception: " << e.what() << std::endl;
+        DebugPrintA("[String] Exception: %s\n", e.what());
         return;
     }
 
@@ -141,44 +140,35 @@ void TestWrapper()
         auto domain = CAppDomain::GetCurrentDomain();
         auto assemblies = domain.GetAssemblies();
 
-        std::cout << "[Domain] Assembly count: "
-            << assemblies.length() << std::endl;
+        DebugPrintA("[Domain] Assembly count: %zu\n", assemblies.length());
     }
     catch (const std::exception& e) {
-        std::cerr << "[Domain] Exception: " << e.what() << std::endl;
+        DebugPrintA("[Domain] Exception: %s\n", e.what());
         return;
     }
 
     try {
         CRuntimeType stringType = CRuntimeType::FromName("System.String");
 
-        std::cout << "[Type] System.String ptr: "
-            << stringType.raw_ptr() << std::endl;
+        DebugPrintA("[Type] System.String ptr: %p\n", stringType.raw_ptr());
 
-        std::cout << "[Type] Name: "
-            << stringType.Name().AsString() << std::endl;
+        DebugPrintA("[Type] Name: %s\n", stringType.Name().AsString().c_str());
 
-        std::cout << "[Type] FullName: "
-            << stringType.FullName().AsString() << std::endl;
+        DebugPrintA("[Type] FullName: %s\n", stringType.FullName().AsString().c_str());
 
-        std::cout << "[Type] Namespace: "
-            << stringType.Namespace().AsString() << std::endl;
+        DebugPrintA("[Type] Namespace: %s\n", stringType.Namespace().AsString().c_str());
 
-        std::cout << "[Type] IsEnum: "
-            << stringType.IsEnum() << std::endl;
+        DebugPrintA("[Type] IsEnum: %s\n", stringType.IsEnum() ? "true" : "false");
 
-        std::cout << "[Type] IsGenericType: "
-            << stringType.IsGenericType() << std::endl;
+        DebugPrintA("[Type] IsGenericType: %s\n", stringType.IsGenericType() ? "true" : "false");
 
-        std::cout << "[Type] IsValueType: "
-            << stringType.IsValueType() << std::endl;
+        DebugPrintA("[Type] IsValueType: %s\n", stringType.IsValueType() ? "true" : "false");
 
         auto baseType = stringType.BaseType();
-        std::cout << "[Type] BaseType: "
-            << baseType.FullName().AsString() << std::endl;
+        DebugPrintA("[Type] BaseType: %s\n", baseType.FullName().AsString().c_str());
     }
     catch (const std::exception& e) {
-        std::cerr << "[Type] Exception: " << e.what() << std::endl;
+        DebugPrintA("[Type] Exception: %s\n", e.what());
         return;
     }
 
@@ -189,61 +179,48 @@ void TestWrapper()
         // Public | Static | FlattenHierarchy = 0x10 | 0x08 | 0x40 = 0x58
         auto field = stringType._GetField("Empty", 0x58);
 
-        std::cout << "[Field] Name: "
-            << field->Name().AsString() << std::endl;
+        DebugPrintA("[Field] Name: %s\n", field->Name().AsString().c_str());
 
-        std::cout << "[Field] DeclaringType: "
-            << field->DeclaringType().FullName().AsString() << std::endl;
+        DebugPrintA("[Field] DeclaringType: %s\n", field->DeclaringType().FullName().AsString().c_str());
 
-        std::cout << "[Field] FieldType: "
-            << field->FieldType().FullName().AsString() << std::endl;
+        DebugPrintA("[Field] FieldType: %s\n", field->FieldType().FullName().AsString().c_str());
 
-        std::cout << "[Field] IsLiteral: "
-            << field->IsLiteral() << std::endl;
+        DebugPrintA("[Field] IsLiteral: %s\n", field->IsLiteral() ? "true" : "false");
 
-        std::cout << "[Field] MetadataToken: "
-            << field->MetadataToken() << std::endl;
+        DebugPrintA("[Field] MetadataToken: %d\n", field->MetadataToken());
 
         // static field → obj = nullptr
         auto emptyObj = field->GetValue(0);
 
-        std::cout << "[Field] Empty value ptr: "
-            << emptyObj.raw_ptr() << std::endl;
+        DebugPrintA("[Field] Empty value ptr: %p\n", emptyObj.raw_ptr());
     }
     catch (const std::exception& e) {
-        std::cerr << "[Field] Exception: " << e.what() << std::endl;
+        DebugPrintA("[Field] Exception: %s\n", e.what());
         return;
     }
 
     try {
         CRuntimeType stringType = CRuntimeType::FromName("System.String");
 
-        auto prop = stringType.GetProperty(
-            CSystemString::PtrToStringAnsi("Length")
-        );
+        auto prop = stringType.GetProperty("Length");
 
-        std::cout << "[Property] ptr: "
-            << prop->raw_ptr() << std::endl;
+        DebugPrintA("[Property] ptr: %p\n", prop->raw_ptr());
 
-        std::cout << "[Property] Name: "
-            << prop->Name().AsString() << std::endl;
+        DebugPrintA("[Property] Name: %s\n", prop->Name().AsString().c_str());
 
-        std::cout << "[Property] DeclaringType: "
-            << prop->DeclaringType().FullName().AsString() << std::endl;
+        DebugPrintA("[Property] DeclaringType: %s\n", prop->DeclaringType().FullName().AsString().c_str());
 
-        std::cout << "[Property] PropertyType: "
-            << prop->PropertyType().FullName().AsString() << std::endl;
+        DebugPrintA("[Property] PropertyType: %s\n",  prop->PropertyType().FullName().AsString().c_str());
 
         // 构造一个 string 实例测试 GetValue
         CSystemString testStr = CSystemString::PtrToStringAnsi("abcdef");
 
         auto lenObj = prop->GetValue(testStr.raw_ptr());
 
-        std::cout << "[Property] Length value ptr: "
-            << lenObj.raw_ptr() << std::endl;
+        DebugPrintA("[Property] Length value ptr: %p\n", lenObj.raw_ptr());
     }
     catch (const std::exception& e) {
-        std::cerr << "[Property] Exception: " << e.what() << std::endl;
+        DebugPrintA("[Property] Exception: %s\n", e.what());
         return;
     }
 
@@ -252,21 +229,21 @@ void TestWrapper()
 
         CSystemDynamic dynObj(helloStr.raw_ptr());
 
-        std::cout << "[Dynamic] ptr: " << dynObj.raw_ptr() << std::endl;
+        DebugPrintA("[Dynamic] ptr: %p\n", dynObj.raw_ptr());
 
         try {
             CSystemString dynStr = dynObj.ToString();
-            std::cout << "[Dynamic] ToString: " << dynStr.AsString() << std::endl;
+            DebugPrintA("[Dynamic] ToString: %s\n",  dynStr.AsString().c_str());
         }
         catch (const std::exception& e) {
-            std::cerr << "[Dynamic] Exception: " << e.what() << std::endl;
+            DebugPrintA("[Dynamic] Exception: %s\n", e.what());
         }
     }
     catch (const std::exception& e) {
-        std::cerr << "[Dynamic] Exception: " << e.what() << std::endl;
+        DebugPrintA("[Dynamic] Exception: %s\n", e.what());
     }
 
-    std::cout << "\n[TestWrapper] All tests finished successfully.\n";
+    DebugPrintA("[TestWrapper] All tests finished successfully.\n");
 }
 
 void yep() {
@@ -295,20 +272,23 @@ void yep() {
         }
     }
 
-    // 使用
-    printf("[yep] Found proto: %s\n", proto_assembly->GetFullName().AsString().c_str());
-    printf("[yep] Found Config: %s\n", excel_assembly->GetFullName().AsString().c_str());
-    printf("[yep] Found Assembly-CSharp: %s\n", cmdid_assembly->GetFullName().AsString().c_str());
-
     DumpCs(".\\output\\dump.cs");
-	CmdIdDump(*cmdid_assembly);
-	proto_dump(*proto_assembly);
+
+    if (cmdid_assembly) 
+        CmdIdDump(*cmdid_assembly, ".\\output\\cmdid.json");
+    else
+        printf("[ERROR] Assembly-CSharp not foundn");
+
+    if (proto_assembly)
+        ProtoDump(*proto_assembly, ".\\output\\dump.proto");
+    else
+        printf("[ERROR] RPG.Network.Proto not found\n");
 }
 
 DWORD WINAPI MainThread(LPVOID) {
     SetUnhandledExceptionFilter(GlobalExceptionFilter);
-    DebugPrintA("[INFO] RuntimeDumper\n");
-    DebugPrintA("[INFO] Waiting for GameAssembly.dll...\n");
+    DebugPrintA("[INFO] CerydraDumper\n");
+    DebugPrintA("[INFO] Waiting for GameAssembly.dll ...\n");
 
     while (!GetModuleHandle(L"GameAssembly.dll")) {
         Sleep(200);
@@ -318,7 +298,7 @@ DWORD WINAPI MainThread(LPVOID) {
 
     int countdown = 15;
     for (int i = countdown; i > 0; --i) {
-        DebugPrintA("\r[INFO] Wait for %d seconds before starting il2cpp dump...  ", i);
+        DebugPrintA("\r[INFO] Wait for %d seconds before starting il2cpp dump ...  ", i);
         Sleep(1000);
     }
 	DebugPrintA("\n");
@@ -326,7 +306,7 @@ DWORD WINAPI MainThread(LPVOID) {
 
     InitIl2CppFunctions();
     InitCache();
-    TestPrintAllImageNames_Wrapper();
+    TestPrintAllImageNamesWrapper();
 
     TestWrapper();
     yep();

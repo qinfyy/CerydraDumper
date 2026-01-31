@@ -127,7 +127,9 @@ public:
 
     static const CIl2CppObject NULL_OBJ;
 
-    static CIl2CppObject from_uintptr(uintptr_t p) { return CIl2CppObject(p); }
+    static CIl2CppObject from_uintptr(uintptr_t p) {
+        return CIl2CppObject(p);
+    }
 
     CIl2CppClass get_class() const;
 
@@ -144,19 +146,34 @@ class CIl2CppArray : public CIl2CppWrapBase
 public:
     using CIl2CppWrapBase::CIl2CppWrapBase;
 
-    inline CIl2CppClass klass() const;
-    inline uintptr_t monitor() const;
-    inline uintptr_t bounds() const;
+    CIl2CppClass klass() const
+    {
+        return CIl2CppClass(*reinterpret_cast<uintptr_t*>(ptr));
+    }
+
+    // +0x08 monitor
+    uintptr_t monitor() const
+    {
+        return *reinterpret_cast<uintptr_t*>(ptr + 0x08);
+    }
+
+    // +0x10 bounds
+    uintptr_t bounds() const
+    {
+        return *reinterpret_cast<uintptr_t*>(ptr + 0x10);
+    }
 
     // +0x18 length
-    __forceinline size_t length() const {
+    size_t length() const {
         return *reinterpret_cast<const size_t*>(ptr + 0x18);
     }
 
-    inline bool empty() const { return length() == 0; }
+    bool empty() const {
+        return length() == 0;
+    }
 
     // raw data
-    inline uintptr_t first_item_ptr() const
+    uintptr_t first_item_ptr() const
     {
         // data starts at +0x20
         return ptr + 0x20;
@@ -166,7 +183,7 @@ public:
     // element access
 
     template<typename T>
-    inline const T& get(size_t index) const
+    const T& get(size_t index) const
     {
         static_assert(!std::is_void_v<T>, "T must not be void");
         return *reinterpret_cast<const T*>(
@@ -175,14 +192,14 @@ public:
     }
 
     template<typename T>
-    inline T& get_mut(size_t index)
+    T& get_mut(size_t index)
     {
         static_assert(!std::is_void_v<T>, "T must not be void");
         return *reinterpret_cast<T*>(first_item_ptr() + index * sizeof(T));
     }
 
     template<typename T>
-    inline std::vector<T> to_vec() const
+    std::vector<T> to_vec() const
     {
         static_assert(std::is_copy_constructible_v<T>,
             "T must be copyable");
@@ -192,7 +209,7 @@ public:
     }
 
     template<typename T>
-    inline std::vector<T> to_vec_sized(size_t size) const
+    std::vector<T> to_vec_sized(size_t size) const
     {
         static_assert(std::is_copy_constructible_v<T>,
             "T must be copyable");
@@ -202,30 +219,29 @@ public:
     }
 };
 
-
 class CNativeList : public CIl2CppWrapBase {
 public:
     CNativeList() : CIl2CppWrapBase() {}
     explicit CNativeList(uintptr_t p) : CIl2CppWrapBase(p) {}
 
     // 获取 Il2CppClass
-    inline CIl2CppClass Class() const {
+    CIl2CppClass Class() const {
         return CIl2CppClass(*reinterpret_cast<uintptr_t*>(ptr));
     }
 
     // 获取 monitor
-    inline uintptr_t Monitor() const {
+    uintptr_t Monitor() const {
         return *reinterpret_cast<uintptr_t*>(ptr + 0x8);
     }
 
     // 获取 items
-    inline CIl2CppArray Items() const {
+    CIl2CppArray Items() const {
         uintptr_t items_ptr = *reinterpret_cast<uintptr_t*>(ptr + 0x10);
         return CIl2CppArray(items_ptr);
     }
 
     // 获取 size
-    inline int Size() const {
+    int Size() const {
         return *reinterpret_cast<int*>(ptr + 0x18);
     }
 
@@ -238,7 +254,7 @@ public:
     }
 
     // 调用 Add 方法
-    inline bool Add(const CIl2CppObject& item, const std::string& class_name) const {
+    bool Add(const CIl2CppObject& item, const std::string& class_name) const {
         CIl2CppClass cls = CIl2CppObject(ptr).get_class();
         auto method = cls.find_method("Add", { class_name });
         if (!method)
@@ -341,7 +357,7 @@ public:
 
     // 实例方法
 
-    inline int find_entry(const TKey& key) const {
+    int find_entry(const TKey& key) const {
         if (!entries) return -1;
         auto arr = reinterpret_cast<CEntry<TKey, TValue>*>(entries);
         for (int i = 0; i < count; i++) {
@@ -350,11 +366,11 @@ public:
         return -1;
     }
 
-    inline bool contains_key(const TKey& key) const {
+    bool contains_key(const TKey& key) const {
         return find_entry(key) >= 0;
     }
 
-    inline bool contains_value(const TValue& value) const {
+    bool contains_value(const TValue& value) const {
         if (!entries) return false;
         auto arr = reinterpret_cast<CEntry<TKey, TValue>*>(entries);
         for (int i = 0; i < count; i++) {
@@ -363,7 +379,7 @@ public:
         return false;
     }
 
-    inline TValue try_get_value(const TKey& key, bool* found = nullptr) const {
+    TValue try_get_value(const TKey& key, bool* found = nullptr) const {
         int i = find_entry(key);
         if (i >= 0) {
             if (found) *found = true;
@@ -374,19 +390,19 @@ public:
         return TValue{};
     }
 
-    inline TValue get_value_or_default(const TKey& key) const {
+    TValue get_value_or_default(const TKey& key) const {
         return try_get_value(key);
     }
 
-    inline TValue get_item(const TKey& key) const {
+    TValue get_item(const TKey& key) const {
         return try_get_value(key);
     }
 
-    inline int get_count() const { return count; }
-    inline uintptr_t get_comparer() const { return comparer; }
+    int get_count() const { return count; }
+    uintptr_t get_comparer() const { return comparer; }
 
     // 调用 C# Remove 方法
-    inline static bool remove(uintptr_t dict_ptr, uintptr_t key_ptr, const std::string& class_name) {
+    static bool remove(uintptr_t dict_ptr, uintptr_t key_ptr, const std::string& class_name) {
         Il2CppClass* cls_rp = il2cpp_object_get_class((Il2CppObject*)dict_ptr);
 		auto cls = CIl2CppClass((uintptr_t)cls_rp);
         auto method = cls.find_method("Remove", { class_name });
@@ -411,13 +427,13 @@ class CKeysCollection {
 public:
     CNativeDictionary<TKey, TValue>* dictionary;
 
-    inline TKey get(size_t index) const {
+    TKey get(size_t index) const {
         if (!dictionary || !dictionary->entries) return TKey{};
         auto arr = reinterpret_cast<CEntry<TKey, TValue>*>(dictionary->entries->first_item_ptr());
         return arr[index].key;
     }
 
-    inline int get_count() const {
+    int get_count() const {
         return dictionary ? dictionary->get_count() : 0;
     }
 };
@@ -428,13 +444,13 @@ class CValuesCollection {
 public:
     CNativeDictionary<TKey, TValue>* dictionary;
 
-    inline TValue get(size_t index) const {
+    TValue get(size_t index) const {
         if (!dictionary || !dictionary->entries) return TValue{};
         auto arr = reinterpret_cast<CEntry<TKey, TValue>*>(dictionary->entries->first_item_ptr());
         return arr[index].value;
     }
 
-    inline int get_count() const {
+    int get_count() const {
         return dictionary ? dictionary->get_count() : 0;
     }
 };

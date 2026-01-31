@@ -378,8 +378,8 @@ void DumpClass(std::ostream& os, const CIl2CppClass& klass, size_t tdi, std::str
     bool is_valuetype = klass.is_value_type();
 
     if (!is_valuetype && !parent.is_null()) {
-		DebugPrintA("[DumpCs] is_valuetype %d\n", is_valuetype);
-        DebugPrintA("[DumpCs] parent: %s\n", parent.name().c_str());
+		//DebugPrintA("[DumpCs] is_valuetype %d\n", is_valuetype);
+  //      DebugPrintA("[DumpCs] parent: %s\n", parent.name().c_str());
         CIl2CppType parent_type = parent.byval_arg();
 
         if (parent_type.formatted_name() != "object") {
@@ -439,7 +439,9 @@ void DumpClasses(std::ostream& os) {
     }
 }
 
-void DumpCs(std::string path) {
+void DumpCs(const char* path) {
+    DebugPrintA("[DumpCs] Start dumping ...\n");
+
     std::filesystem::path filePath(path);
     std::filesystem::path directory = filePath.parent_path();
     if (!std::filesystem::exists(directory))
@@ -447,12 +449,12 @@ void DumpCs(std::string path) {
 
     std::ofstream file(path);
     if (!file.is_open()) {
-        printf("[ERROR] Failed to open file: %s\n", path.c_str());
+        DebugPrintA("[ERROR] Failed to open file: %s\n", path);
         return;
     }
 
     std::ostringstream ss;
-	ss << "// CerydraDumper\n\n";
+	ss << "// Create by CerydraDumper\n\n";
 
     DumpCsHeader(ss);
     DumpClasses(ss);
@@ -460,5 +462,5 @@ void DumpCs(std::string path) {
     file << ss.str();
     file.close();
 
-    printf("[DumpCs] Dump done: %s\n", path.c_str());
+    DebugPrintA("[DumpCs] Dump done.\n");
 }

@@ -12,7 +12,7 @@ public:
 
     CS_CLASS("System.Array");
 
-    inline int GetLength() {
+    int GetLength() {
         return CallIl2CppInstanceObjectMethod<int>(
             this->ptr,                // instance 指针
             "System.Array",           // 类名
@@ -21,7 +21,7 @@ public:
         );
     }
 
-    inline size_t GetValue(int index) {
+    size_t GetValue(int index) {
         return CallIl2CppInstanceObjectMethod<size_t>(
             this->ptr,                // instance 指针
             "System.Array",           // 类名

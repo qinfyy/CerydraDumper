@@ -19,7 +19,7 @@ public:
         *this = PtrToStringAnsi(str);
     }
 
-    inline bool operator==(const char* rhs) const {
+    bool operator==(const char* rhs) const {
         if (!rhs)
             return this->is_null();
 
@@ -29,7 +29,7 @@ public:
         return this->AsString() == rhs;
     }
 
-    inline bool operator!=(const char* rhs) const {
+    bool operator!=(const char* rhs) const {
         return !(*this == rhs);
     }
 

@@ -1,4 +1,4 @@
 #pragma once
 #include <string>
 
-void DumpCs(std::string path);
+void DumpCs(const char* path);

@@ -15,7 +15,7 @@ public:
 
 	CS_CLASS("Google.Protobuf.Reflection.OriginalNameAttribute");
 
-	inline CSystemString GetName() const {
+	CSystemString GetName() const {
 		return CallIl2CppInstanceObjectMethod<CSystemString>(
 			this->ptr,
 			"Google.Protobuf.Reflection.OriginalNameAttribute",

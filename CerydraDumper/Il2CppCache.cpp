@@ -6,6 +6,8 @@
 
 void InitCache() {
     std::call_once(INIT_ONCE_FLAG, [=]() {
+		DebugPrintA("[Cache] Caching classes ...\n");
+
         CIl2CppDomain domain = CIl2CppDomain::get();
 
         il2cpp_thread_attach(domain);
@@ -27,4 +29,14 @@ void InitCache() {
         }
         DebugPrintA("[Cache] Cached\n");
     });
+}
+
+CIl2CppMethod* GetNativeMethod(const std::string& key) {
+    auto it = FUNCTIONS_TABLE.find(key);
+    return it != FUNCTIONS_TABLE.end() ? &it->second : nullptr;
+}
+
+CIl2CppClass* GetCachedClass(const std::string& key) {
+    auto it = TYPE_TABLE.find(key);
+    return it != TYPE_TABLE.end() ? &it->second : nullptr;
 }

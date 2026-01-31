@@ -44,10 +44,10 @@ void InitIl2CppFunctions()
 
     if (target != 0) {
         API_BASE_PTR = ExtractQwordTarget(target);
-        DebugPrintA("[INFO] IL2CPP functions table: %p\n", API_BASE_PTR);
+        DebugPrintA("[INFO] il2cpp functions table: %p\n", API_BASE_PTR);
     }
     else {
-        MessageBoxA(NULL, "Failed to find IL2CPP functions table!", "Error", MB_OK | MB_ICONERROR);
+        MessageBoxA(NULL, "Failed to find il2cpp functions table!", "Error", MB_OK | MB_ICONERROR);
         ExitProcess(1);
     }
 }

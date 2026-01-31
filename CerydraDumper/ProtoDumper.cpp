@@ -12,11 +12,12 @@
 #include <regex>
 #include <DbgHelp.h>
 #include <iostream>
+#include <filesystem>
 
-std::string dump_csharp_type(CRuntimeType t) {
+std::string DumpCsharpType(CRuntimeType t) {
     std::ostringstream out;
 
-    std::string runtime_type_name = get_runtime_type_name(t, false);
+    std::string runtime_type_name = GetRuntimeTypeName(t, false);
     if (runtime_type_name.ends_with("Attribute")) {
         return "";
     }
@@ -109,7 +110,7 @@ std::string dump_csharp_type(CRuntimeType t) {
                 }
                 else if (full_name_field.find(d_field_name) != std::string::npos) {
                     auto inner_fields = field.FieldType().GetFields(60);
-                    auto count = count_occurrences(full_name_field, "+");
+                    auto count = CountOccurrences(full_name_field, "+");
 
                     if (count == 1) {
                         inner << "\toneof " << field.Name().AsString() << " {\n";
@@ -200,26 +201,26 @@ std::string dump_csharp_type(CRuntimeType t) {
                 if (d_property_name == t.Name().AsString()) {
                     auto it = field_ids.find(static_cast<int32_t>(j));
                     if (it != field_ids.end()) {
-                        auto type_Name = get_runtime_type_name(property.PropertyType(), true);
+                        auto type_Name = GetRuntimeTypeName(property.PropertyType(), true);
                         if (type_Name.find('.') != std::string::npos) {
                             auto pos = type_Name.rfind('.');
                             if (pos != std::string::npos) {
                                 type_Name = type_Name.substr(pos + 1);
                             }
                         }
-                        for (auto& [k, v] : get_field_type_map()) {
-                            type_Name = replace_all(type_Name, k, v);
+                        for (auto& [k, v] : GetFieldTypeMap()) {
+                            type_Name = ReplaceAll(type_Name, k, v);
                         }
 
                         if (type_Name.find("repeated") != std::string::npos) {
-                            type_Name = replace_all(type_Name, ">", "");
+                            type_Name = ReplaceAll(type_Name, ">", "");
                         }
 
                         if (skip_types.count(property.Name().AsString())) {
                             std::string from = "int32 " + property.Name().AsString();
                             std::string to = type_Name + " " + property.Name().AsString();
                             // 我cnm的
-                            std::string tmp = replace_all(out.str(), from, to);
+                            std::string tmp = ReplaceAll(out.str(), from, to);
                             out.str("");
                             out << tmp;
                         }
@@ -239,24 +240,29 @@ std::string dump_csharp_type(CRuntimeType t) {
     return out.str();
 }
 
-void proto_dump(CMonoAssembly mono_assembly)
+void ProtoDump(CMonoAssembly mono_assembly, const char* path)
 {
-    DebugPrintA("[ProtoDump] Dumping raw proto...\n");
+    DebugPrintA("[ProtoDump] Dumping proto ...\n");
 
-    std::ofstream ofs("dump.proto", std::ios::out | std::ios::trunc);
+    std::filesystem::path filePath(path);
+    std::filesystem::path directory = filePath.parent_path();
+    if (!std::filesystem::exists(directory))
+        std::filesystem::create_directories(directory);
+
+    std::ofstream ofs(path, std::ios::out | std::ios::trunc);
     if (!ofs.is_open()) {
-        DebugPrintA("[ProtoDump] Failed to open dump.proto\n");
+        DebugPrintA("[ERROR] Failed to open file: %s\n", path);
         return;
     }
 
     std::ostringstream final_str;
 
-    final_str << "// Create by Cerydra Dumper.\n";
+    final_str << "// Create by CerydraDumper\n\n";
     final_str << "syntax = \"proto3\";\n";
 
     auto types = mono_assembly.GetTypes(60 != 0);
 
-    DebugPrintA("[ProtoDump] Enumerating runtime types...\n");
+    DebugPrintA("[ProtoDump] Enumerating runtime types ...\n");
 
     for (size_t i = 0; i < types.length(); ++i) {
         uintptr_t type_ptr = types.get<uintptr_t>(i);
@@ -266,10 +272,10 @@ void proto_dump(CMonoAssembly mono_assembly)
             continue;
 
         std::string full_name = runtime_type.FullName().AsString();
-        DebugPrintA(("[ProtoDump] Processing: " + full_name + "\n").c_str());
+        DebugPrintA(("[ProtoDump] Dumping: " + full_name + "\n").c_str());
 
         try {
-            std::string output = dump_csharp_type(runtime_type);
+            std::string output = DumpCsharpType(runtime_type);
             if (!output.empty()) {
                 final_str << output;
             }
@@ -288,5 +294,5 @@ void proto_dump(CMonoAssembly mono_assembly)
     ofs << final_str.str();
     ofs.close();
 
-    DebugPrintA("[ProtoDump] Finished dumping raw proto.\n");
+    DebugPrintA("[ProtoDump] Dump done.\n");
 }

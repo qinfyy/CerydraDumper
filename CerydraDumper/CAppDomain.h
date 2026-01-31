@@ -12,7 +12,7 @@ public:
 
     CS_CLASS("System.AppDomain");
 
-    inline CIl2CppArray GetAssemblies() {
+    CIl2CppArray GetAssemblies() {
         return CallIl2CppInstanceObjectMethod<CIl2CppArray>(ptr, "System.AppDomain", "GetAssemblies", {});
     }
 

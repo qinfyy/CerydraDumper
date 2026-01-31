@@ -2,4 +2,4 @@
 #include <string>
 #include "CMonoAssembly.h"
 
-void proto_dump(CMonoAssembly mono_assembly);
+void ProtoDump(CMonoAssembly mono_assembly, const char* path);

@@ -8,10 +8,11 @@
 #include "CRspHandler.h"
 #include <algorithm>
 #include <fstream>
+#include <filesystem>
 
 void AddPacket(CMonoAssembly& mono_assembly)
 {
-    std::cout << "[AddPacket] Add packet handlers...\n";
+    DebugPrintA("[AddPacket] Add packet handlers ...\n");
 
     auto types = mono_assembly.GetTypes(60 != 0);
 
@@ -67,7 +68,7 @@ void AddPacket(CMonoAssembly& mono_assembly)
             }
         }
     }
-    std::cout << "[AddPacket] Finished add packet handlers...\n";
+    DebugPrintA("[AddPacket] Finished add packet handlers\n");
 }
 
 std::string NormalizeName(const std::string& name)
@@ -89,7 +90,7 @@ std::string NormalizeName(const std::string& name)
 
 static std::unordered_map<std::string, uintptr_t> CMDID;
 
-void DumpRespAndNotify(CMonoAssembly& mono_assembly)
+void DumpRespAndNotify(CMonoAssembly& mono_assembly, const char* path)
 {
     DebugPrintA("[DumpRespAndNotify] Start Dump response and notify\n");
 
@@ -215,10 +216,16 @@ void DumpRespAndNotify(CMonoAssembly& mono_assembly)
         }
     }
 
-    std::ofstream file("cmdid.json");
+    std::filesystem::path filePath(path);
+    std::filesystem::path directory = filePath.parent_path();
+    if (!std::filesystem::exists(directory))
+        std::filesystem::create_directories(directory);
+
+    std::ofstream file(path);
+
     if (!file.is_open())
     {
-        DebugPrintA("[DumpRespAndNotify] [ERROR] 打不开 cmdid.json\n");
+        DebugPrintA("[ERROR] Failed to open file: %s\n", path);
     }
     else
     {
@@ -234,13 +241,13 @@ void DumpRespAndNotify(CMonoAssembly& mono_assembly)
         file << "\n}\n";
         file.close();
 
-        DebugPrintA("[DumpRespAndNotify] cmdid.json written successfully, %zu items\n", CMDID.size());
+        DebugPrintA("[DumpRespAndNotify] cmdid written successfully, %zu items\n", CMDID.size());
     }
 
     DebugPrintA("[DumpRespAndNotify] Dump response complete\n");
 }
 
-void CmdIdDump(CMonoAssembly& mono_assembly) {
+void CmdIdDump(CMonoAssembly& mono_assembly, const char* path) {
     AddPacket(mono_assembly);
-    DumpRespAndNotify(mono_assembly);
+    DumpRespAndNotify(mono_assembly, path);
 }
