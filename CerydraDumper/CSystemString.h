@@ -11,7 +11,7 @@ public:
 
     CS_CLASS("System.Runtime.InteropServices.Marshal");
 
-    CS_METHOD_STATIC_AUTO_CTOR(PtrToStringAnsi, "PtrToStringAnsi", {"System.IntPtr"}, CSystemString, (const char* charPtr), (charPtr));
+    CS_METHOD_STATIC(PtrToStringAnsi, "PtrToStringAnsi", {"System.IntPtr"}, CSystemString, (const char* charPtr), (charPtr));
 
     std::string AsString() const;
 

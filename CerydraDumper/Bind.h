@@ -4,6 +4,8 @@
 #include <stdexcept>
 #include <sstream>
 
+void InitSehTranslator();
+
 #define FN_ARGS(...) { __VA_ARGS__ }
 
 #define CS_CLASS(cs_name_literal) \
@@ -20,58 +22,30 @@ public: \
         return CIl2CppObject(ptr); \
     }
 
-#define CS_METHOD_STATIC(fn_name, method_name, fnArgs, ret_type, args_decl, args_name) \
-static ret_type fn_name args_decl { \
-    auto klass = GetClass(); \
-    auto method_info = klass.find_method(method_name, fnArgs); \
-    if (method_info.is_null()) { \
-        throw std::runtime_error(std::string("No such static method: ") + method_name); \
-    } \
-    auto func = reinterpret_cast<ret_type(__fastcall*) args_decl>(method_info.va()); \
-    try { \
-        auto result = func args_name; \
-        return result; \
-    } catch (...) { \
-        throw std::runtime_error(std::string("Exception in static method: ") + method_name); \
-    } \
-}
-
-#define CS_METHOD_STATIC_AUTO_CTOR(fn_name, method_name, fnArgs, ret_type, args_decl, args_name) \
-static ret_type fn_name args_decl { \
-    auto klass = GetClass(); \
-    auto method_info = klass.find_method(method_name, fnArgs); \
-    if (method_info.is_null()) { \
-        throw std::runtime_error(std::string("No such static method: ") + method_name); \
-    } \
-    auto func = reinterpret_cast<uintptr_t(__fastcall*) args_decl>(method_info.va()); \
-    try { \
-        auto result = func args_name; \
-        return ret_type(result); \
-    } catch (...) { \
-        throw std::runtime_error(std::string("Exception in static method: ") + method_name); \
-    } \
-}
-
-void InitSehTranslator();
-
-template<typename RetOrWrapper, typename... Args>
-RetOrWrapper CallIl2CppInstanceObjectMethod(uintptr_t instance,
-    const char* class_name,
+template<bool isStatic, typename RetOrWrapper, typename... Args>
+RetOrWrapper CallIl2CppInternal(
+	uintptr_t thisPtr, // 静态方法会忽略此参数
+    CIl2CppClass* klass,
     const char* method_name,
     const std::vector<std::string>& arg_types,
     Args... args)
 {
-    InitSehTranslator();
-
-    auto klass = GetCachedClass(class_name);
-    if (klass->is_null()) {
-        throw std::runtime_error("No such class: " + std::string(class_name));
+    if (!klass || klass->is_null()) {
+        std::ostringstream msg;
+        msg << "No such class | method: " << method_name
+            << " | this ptr: " << std::hex << thisPtr;
+        throw std::runtime_error(msg.str());
     }
 
-    // 获取方法
+    auto class_name = klass->name();
+
     auto method_info = klass->find_method(method_name, arg_types);
     if (method_info.is_null()) {
-        throw std::runtime_error("No such method: " + std::string(method_name));
+        std::ostringstream msg;
+        msg << "No such method: " << method_name
+            << " | class: " << class_name
+            << " | this ptr: " << std::hex << thisPtr;
+        throw std::runtime_error(msg.str());
     }
 
     auto function_va = method_info.va();
@@ -79,110 +53,132 @@ RetOrWrapper CallIl2CppInstanceObjectMethod(uintptr_t instance,
         std::ostringstream msg;
         msg << "Method VA is null! Cannot call method: " << method_name
             << " | class: " << class_name
-            << " | instance ptr: " << std::hex << instance;
+            << " | this ptr: " << std::hex << thisPtr;
         throw std::runtime_error(msg.str());
     }
 
-    // 这tm谁来了都看不懂啊
-    using FnType = std::conditional_t<
-        std::is_base_of_v<CIl2CppWrapBase, RetOrWrapper>,
-        uintptr_t(__fastcall*)(uintptr_t, Args...),
-        std::conditional_t<
-            std::is_same_v<RetOrWrapper, void>,
-            void(__fastcall*)(uintptr_t, Args...),
-            RetOrWrapper(__fastcall*)(uintptr_t, Args...)
-        >
-    >;
-
-    auto func = reinterpret_cast<FnType>(function_va);
-    auto func_raw = reinterpret_cast<void*>(function_va);
-
     try {
-        if constexpr (std::is_base_of_v<CIl2CppWrapBase, RetOrWrapper>) {
-            auto func = reinterpret_cast<uintptr_t(__fastcall*)(uintptr_t, Args...)>(func_raw);
-            uintptr_t ret = func(instance, args...);
-            return RetOrWrapper(ret); // wrap
-        }
-        else if constexpr (std::is_same_v<RetOrWrapper, void>) {
-            auto func = reinterpret_cast<void(__fastcall*)(uintptr_t, Args...)>(func_raw);
-            func(instance, args...);
-            return;
+        if constexpr (isStatic) {
+            // 静态函数
+            using FnType = std::conditional_t<
+                std::is_base_of_v<CIl2CppWrapBase, RetOrWrapper>,
+                uintptr_t(__fastcall*)(Args...),
+                std::conditional_t<
+                    std::is_same_v<RetOrWrapper, void>,
+                    void(__fastcall*)(Args...),
+                    RetOrWrapper(__fastcall*)(Args...)
+                >
+            >;
+
+            auto func = reinterpret_cast<FnType>(function_va);
+
+            if constexpr (std::is_base_of_v<CIl2CppWrapBase, RetOrWrapper>) {
+                uintptr_t result = func(args...);
+                return RetOrWrapper(result);
+            }
+            else if constexpr (std::is_same_v<RetOrWrapper, void>) {
+                func(args...);
+                return;
+            }
+            else {
+                auto result = func(args...);
+                return result;
+            }
         }
         else {
-            auto func = reinterpret_cast<RetOrWrapper(__fastcall*)(uintptr_t, Args...)>(func_raw);
-            return func(instance, args...);
+            // 动态函数
+            using FnType = std::conditional_t<
+                std::is_base_of_v<CIl2CppWrapBase, RetOrWrapper>,
+                uintptr_t(__fastcall*)(uintptr_t, Args...),
+                std::conditional_t<
+                    std::is_same_v<RetOrWrapper, void>,
+                    void(__fastcall*)(uintptr_t, Args...),
+                    RetOrWrapper(__fastcall*)(uintptr_t, Args...)
+                >
+            >;
+
+            auto func = reinterpret_cast<FnType>(function_va);
+
+            if constexpr (std::is_base_of_v<CIl2CppWrapBase, RetOrWrapper>) {
+                uintptr_t result = func(thisPtr, args...);
+                return RetOrWrapper(result);
+            }
+            else if constexpr (std::is_same_v<RetOrWrapper, void>) {
+                func(thisPtr, args...);
+                return;
+            }
+            else {
+                auto result = func(thisPtr, args...);
+                return result;
+            }
         }
     }
     catch (...) {
         std::ostringstream msg;
         msg << "Unknown exception in method: " << method_name
             << " | class: " << class_name
-            << " | instance ptr: " << std::hex << instance
+            << " | instance ptr: " << std::hex << thisPtr
             << " | method RVA: " << method_info.rva();
         throw std::runtime_error(msg.str());
     }
 }
 
 template<typename RetOrWrapper, typename... Args>
-RetOrWrapper CallIl2CppInstanceObjectMethodDynamic(uintptr_t instance,
+RetOrWrapper CallIl2CppStaticMethodInternal(
+    CIl2CppClass klass,
     const char* method_name,
     const std::vector<std::string>& arg_types,
     Args... args)
 {
     InitSehTranslator();
+    return CallIl2CppInternal<true, RetOrWrapper>(0, &klass, method_name, arg_types, args...);
+}
 
-    auto obj_class = CIl2CppObject(instance).get_class();
-	auto class_name = (obj_class.is_null()) ? "<null>" : obj_class.name();
-    if (obj_class.is_null()) {
-        throw std::runtime_error("Instance class is null!");
-    }
+template<typename RetOrWrapper, typename... Args>
+RetOrWrapper CallIl2CppStaticMethod(
+    const char* class_name,
+    const char* method_name,
+    const std::vector<std::string>& arg_types,
+    Args... args)
+{
+    InitSehTranslator();
+    auto klass = GetCachedClass(class_name);
+    return CallIl2CppStaticMethodInternal<RetOrWrapper>(klass, method_name, arg_types, args...);
+}
 
-    auto method_info = obj_class.find_method(method_name, arg_types);
-    if (method_info.is_null()) {
-        throw std::runtime_error("No such method: " + std::string(method_name));
-    }
+template<typename RetOrWrapper, typename... Args>
+RetOrWrapper CallIl2CppInstanceObjectMethod(
+    uintptr_t instance,
+    const char* class_name,
+    const char* method_name,
+    const std::vector<std::string>& arg_types,
+    Args... args)
+{
+    InitSehTranslator();
+    auto klass = GetCachedClass(class_name);
+    return CallIl2CppInternal<false, RetOrWrapper>(instance, klass, method_name, arg_types, args...);
+}
 
-    auto function_va = method_info.va();
-    if (!function_va) {
-        std::ostringstream msg;
-        msg << "Method VA is null! Cannot call method: " << method_name
-            << " | class: " << class_name
-            << " | instance ptr: " << std::hex << instance;
-        throw std::runtime_error(msg.str());
-    }
+template<typename RetOrWrapper, typename... Args>
+RetOrWrapper CallIl2CppInstanceObjectMethodDynamic(
+    uintptr_t instance,
+    const char* method_name,
+    const std::vector<std::string>& arg_types,
+    Args... args)
+{
+    InitSehTranslator();
+    auto klass = CIl2CppObject(instance).get_class();
+    return CallIl2CppInternal<false, RetOrWrapper>(instance, &klass, method_name, arg_types, args...);
+}
 
-    using FnType = std::conditional_t<
-        std::is_base_of_v<CIl2CppWrapBase, RetOrWrapper>,
-        uintptr_t(__fastcall*)(uintptr_t, Args...),
-        std::conditional_t<
-            std::is_same_v<RetOrWrapper, void>,
-            void(__fastcall*)(uintptr_t, Args...),
-            RetOrWrapper(__fastcall*)(uintptr_t, Args...)
-        >
-    >;
+#define CS_METHOD_STATIC_NOARGS(fn_name, method_name, fnArgs, ret_type) \
+static ret_type fn_name() { \
+    return CallIl2CppStaticMethodInternal<ret_type>(GetClass(), method_name, fnArgs); \
+}
 
-    auto func = reinterpret_cast<FnType>(function_va);
-
-    try {
-        if constexpr (std::is_base_of_v<CIl2CppWrapBase, RetOrWrapper>) {
-            uintptr_t ret = func(instance, args...);
-            return RetOrWrapper(ret);
-        }
-        else if constexpr (std::is_same_v<RetOrWrapper, void>) {
-            func(instance, args...);
-            return;
-        }
-        else {
-            return func(instance, args...);
-        }
-    }
-    catch (...) {
-        std::ostringstream msg;
-        msg << "Unknown exception in method: " + std::string(method_name) << " | class: " << class_name
-            << " | instance ptr: " << std::hex << instance
-            << " | method RVA: " << method_info.rva();
-        throw std::runtime_error(msg.str());
-    }
+#define CS_METHOD_STATIC(fn_name, method_name, fnArgs, ret_type, args_decl, args_name) \
+static ret_type fn_name args_decl { \
+    return CallIl2CppStaticMethodInternal<ret_type>(GetClass(), method_name, fnArgs, args_name); \
 }
 
 // 用于实例字段

@@ -12,6 +12,6 @@ public:
 
     CS_CLASS("System.Type");
 
-    CS_METHOD_STATIC_AUTO_CTOR(GetTypeFromHandle, "GetTypeFromHandle", FN_ARGS("System.RuntimeTypeHandle"), CSystemType, (Il2CppType* ty), (ty));
+    CS_METHOD_STATIC(GetTypeFromHandle, "GetTypeFromHandle", FN_ARGS("System.RuntimeTypeHandle"), CSystemType, (Il2CppType* ty), (ty));
 };
 

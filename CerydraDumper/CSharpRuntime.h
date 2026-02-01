@@ -18,7 +18,7 @@ public:
 
     CS_CLASS("System.RuntimeType");
 
-    // 属性封装（对应 Rust cs_property!）
+    // 属性
     CRuntimeType BaseType() const {
         return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
@@ -74,7 +74,6 @@ public:
         );
     }
 
-    // 返回 System.String 类型封装
     CSystemString Namespace() const {
         return CallIl2CppInstanceObjectMethod<CSystemString>(
             this->ptr,
@@ -439,7 +438,6 @@ public:
 
     CS_CLASS("System.Object");
 
-    // 对应 Rust 的 get_type
     CRuntimeType GetType() const {
         return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
@@ -505,9 +503,8 @@ public:
             throw std::runtime_error("SystemDynamic::ToString: object class is null");
         }
 
-        return CallIl2CppInstanceObjectMethod<CSystemString>(
+        return CallIl2CppInstanceObjectMethodDynamic<CSystemString>(
             this->ptr,
-            obj_class.byval_arg().name().c_str(), // 动态类名
             "ToString",
             {}
         );
