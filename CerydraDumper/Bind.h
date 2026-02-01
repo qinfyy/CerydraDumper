@@ -3,6 +3,7 @@
 #include "Il2CppCache.h"
 #include <stdexcept>
 #include <sstream>
+#include "Util.h"
 
 void InitSehTranslator();
 
@@ -113,11 +114,30 @@ RetOrWrapper CallIl2CppInternal(
             }
         }
     }
+    catch (Il2CppExceptionWrapper& e)
+    {
+        std::ostringstream msg;
+        msg << "Il2CppExceptionWrapper in method: " << method_name
+            << " | class: " << class_name
+            << " | this ptr: " << std::hex << thisPtr
+            << " | method RVA: " << method_info.rva();
+
+        Il2CppException* ex = e.ex;
+        if (ex->message)
+        {
+            std::string exceptionMessage = Il2CppStringToAnsiString(ex->message);
+            msg << " | Exception Message: " << exceptionMessage;
+            throw std::runtime_error(msg.str());
+        }
+
+        msg << " | Exception Message: Unknown";
+        throw std::runtime_error(msg.str());
+    }
     catch (...) {
         std::ostringstream msg;
         msg << "Unknown exception in method: " << method_name
             << " | class: " << class_name
-            << " | instance ptr: " << std::hex << thisPtr
+            << " | this ptr: " << std::hex << thisPtr
             << " | method RVA: " << method_info.rva();
         throw std::runtime_error(msg.str());
     }
@@ -143,7 +163,15 @@ RetOrWrapper CallIl2CppStaticMethod(
 {
     InitSehTranslator();
     auto klass = GetCachedClass(class_name);
-    return CallIl2CppStaticMethodInternal<RetOrWrapper>(klass, method_name, arg_types, args...);
+
+	// 解引用需要检查空指针
+    if (!klass || klass->is_null()) {
+        std::ostringstream msg;
+        msg << "No such class | static method: " << method_name;
+        throw std::runtime_error(msg.str());
+    }
+
+    return CallIl2CppStaticMethodInternal<RetOrWrapper>(*klass, method_name, arg_types, args...);
 }
 
 template<typename RetOrWrapper, typename... Args>

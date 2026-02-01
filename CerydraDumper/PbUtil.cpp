@@ -54,8 +54,8 @@ size_t CountOccurrences(const std::string& s, const std::string& sub) {
 std::string GetReflectedType(CRuntimeType t) {
     if (!t) return "";
 
-    std::string name = t.Name().AsString();
-    CRuntimeType rt = t.ReflectedType();
+    std::string name = t.GetName().AsString();
+    CRuntimeType rt = t.GetReflectedType();
 
     if (!t.IsGenericType() && rt && rt.raw_ptr() != 0) {
         std::string parent = GetReflectedType(rt);
@@ -72,9 +72,9 @@ std::string GetRuntimeTypeName(CRuntimeType t, bool alias) {
 
     // array
     if (t.IsArray()) {
-        CRuntimeType elem = t.ElementType();
+        CRuntimeType elem = t.GetElementType();
         std::string out = GetRuntimeTypeName(elem, alias);
-        int rank = t.ArrayRank();
+        int rank = t.GetArrayRank();
         out.push_back('[');
         if (rank > 1) {
             out.append(rank - 1, ',');
@@ -85,25 +85,25 @@ std::string GetRuntimeTypeName(CRuntimeType t, bool alias) {
 
     // pointer
     if (t.IsPointer()) {
-        CRuntimeType elem = t.ElementType();
+        CRuntimeType elem = t.GetElementType();
         return GetRuntimeTypeName(elem, alias) + "*";
     }
 
     // by-ref
     if (t.IsByRef()) {
-        CRuntimeType elem = t.ElementType();
+        CRuntimeType elem = t.GetElementType();
         return GetRuntimeTypeName(elem, alias) + "&";
     }
 
     // generic
     if (t.IsGenericType()) {
-        std::string name = t.Name().AsString();
+        std::string name = t.GetName().AsString();
         auto pos = name.find('`');
         if (pos != std::string::npos) {
             name = name.substr(0, pos);
         }
 
-        auto args = t.GenericArguments();
+        auto args = t.GetGenericArguments();
         std::vector<std::string> parts;
         for (size_t i = 0; i < args.length(); ++i) {
             parts.push_back(GetRuntimeTypeName(args.get<CRuntimeType>(i), alias));
@@ -123,7 +123,7 @@ std::string GetRuntimeTypeName(CRuntimeType t, bool alias) {
         CIl2CppObject obj(t.raw_ptr());
         std::string ns = obj.get_class().namespace_name();
         if (ns == "System") {
-            std::string full = t.FullName().AsString();
+            std::string full = t.GetFullName().AsString();
             const auto& map = GetSystemTypeMap();
             auto it = map.find(full);
             if (it != map.end()) {

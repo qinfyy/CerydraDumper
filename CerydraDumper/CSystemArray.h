@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Il2CppApiWrapper.h"
 #include "Bind.h"
 #include <string>
@@ -14,20 +14,20 @@ public:
 
     int GetLength() {
         return CallIl2CppInstanceObjectMethod<int>(
-            this->ptr,                // instance Ö¸Õë
-            "System.Array",           // ÀàÃû
-            "get_Length",             // ·½·¨Ãû
-            {}                        // ²ÎÊıÀàĞÍ£¬ÕâÀïÃ»ÓĞ²ÎÊı
+            this->ptr,                // instance æŒ‡é’ˆ
+            "System.Array",           // ç±»å
+            "get_Length",             // æ–¹æ³•å
+            {}                        // å‚æ•°ç±»å‹ï¼Œè¿™é‡Œæ²¡æœ‰å‚æ•°
         );
     }
 
     size_t GetValue(int index) {
         return CallIl2CppInstanceObjectMethod<size_t>(
-            this->ptr,                // instance Ö¸Õë
-            "System.Array",           // ÀàÃû
-            "GetValue",               // ·½·¨Ãû
-            { "int" },                // ²ÎÊıÀàĞÍ
-            index                     // Êµ²Î
+            this->ptr,                // instance æŒ‡é’ˆ
+            "System.Array",           // ç±»å
+            "GetValue",               // æ–¹æ³•å
+            { "int" },                // å‚æ•°ç±»å‹
+            index                     // å®å‚
         );
     }
 };

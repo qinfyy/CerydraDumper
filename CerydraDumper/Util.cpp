@@ -4,15 +4,19 @@
 #include <iomanip>
 #include <unordered_map>
 
-std::wstring Il2CppToWString(Il2CppString* str) {
+std::wstring Il2CppStringToWString(Il2CppString* str) {
     if (!str || str->length <= 0)
         return {};
 
     return std::wstring(str->chars, str->length);
 }
 
-std::string Il2CppToUtf8String(Il2CppString* str) {
-    return Utf16ToUtf8(Il2CppToWString(str));
+std::string Il2CppStringToUtf8String(Il2CppString* str) {
+    return Utf16ToUtf8(Il2CppStringToWString(str));
+}
+
+std::string Il2CppStringToAnsiString(Il2CppString* str) {
+    return Utf16ToAnsi(Il2CppStringToWString(str));
 }
 
 Il2CppString* CreateIl2CppString(const std::wstring& ws, Il2CppString* original)

@@ -152,11 +152,11 @@ void TestWrapper()
 
         DebugPrintA("[Type] System.String ptr: %p\n", stringType.raw_ptr());
 
-        DebugPrintA("[Type] Name: %s\n", stringType.Name().AsString().c_str());
+        DebugPrintA("[Type] Name: %s\n", stringType.GetName().AsString().c_str());
 
-        DebugPrintA("[Type] FullName: %s\n", stringType.FullName().AsString().c_str());
+        DebugPrintA("[Type] FullName: %s\n", stringType.GetFullName().AsString().c_str());
 
-        DebugPrintA("[Type] Namespace: %s\n", stringType.Namespace().AsString().c_str());
+        DebugPrintA("[Type] Namespace: %s\n", stringType.GetNamespace().AsString().c_str());
 
         DebugPrintA("[Type] IsEnum: %s\n", stringType.IsEnum() ? "true" : "false");
 
@@ -164,8 +164,8 @@ void TestWrapper()
 
         DebugPrintA("[Type] IsValueType: %s\n", stringType.IsValueType() ? "true" : "false");
 
-        auto baseType = stringType.BaseType();
-        DebugPrintA("[Type] BaseType: %s\n", baseType.FullName().AsString().c_str());
+        auto baseType = stringType.GetBaseType();
+        DebugPrintA("[Type] BaseType: %s\n", baseType.GetFullName().AsString().c_str());
     }
     catch (const std::exception& e) {
         DebugPrintA("[Type] Exception: %s\n", e.what());
@@ -179,15 +179,15 @@ void TestWrapper()
         // Public | Static | FlattenHierarchy = 0x10 | 0x08 | 0x40 = 0x58
         auto field = stringType._GetField("Empty", 0x58);
 
-        DebugPrintA("[Field] Name: %s\n", field->Name().AsString().c_str());
+        DebugPrintA("[Field] Name: %s\n", field->GetName().AsString().c_str());
 
-        DebugPrintA("[Field] DeclaringType: %s\n", field->DeclaringType().FullName().AsString().c_str());
+        DebugPrintA("[Field] DeclaringType: %s\n", field->GetDeclaringType().GetFullName().AsString().c_str());
 
-        DebugPrintA("[Field] FieldType: %s\n", field->FieldType().FullName().AsString().c_str());
+        DebugPrintA("[Field] FieldType: %s\n", field->GetFieldType().GetFullName().AsString().c_str());
 
         DebugPrintA("[Field] IsLiteral: %s\n", field->IsLiteral() ? "true" : "false");
 
-        DebugPrintA("[Field] MetadataToken: %d\n", field->MetadataToken());
+        DebugPrintA("[Field] MetadataToken: %d\n", field->GetMetadataToken());
 
         // static field → obj = nullptr
         auto emptyObj = field->GetValue(0);
@@ -206,11 +206,11 @@ void TestWrapper()
 
         DebugPrintA("[Property] ptr: %p\n", prop->raw_ptr());
 
-        DebugPrintA("[Property] Name: %s\n", prop->Name().AsString().c_str());
+        DebugPrintA("[Property] Name: %s\n", prop->GetName().AsString().c_str());
 
-        DebugPrintA("[Property] DeclaringType: %s\n", prop->DeclaringType().FullName().AsString().c_str());
+        DebugPrintA("[Property] DeclaringType: %s\n", prop->GetDeclaringType().GetFullName().AsString().c_str());
 
-        DebugPrintA("[Property] PropertyType: %s\n",  prop->PropertyType().FullName().AsString().c_str());
+        DebugPrintA("[Property] PropertyType: %s\n",  prop->GetPropertyType().GetFullName().AsString().c_str());
 
         // 构造一个 string 实例测试 GetValue
         CSystemString testStr = CSystemString::PtrToStringAnsi("abcdef");
@@ -277,12 +277,12 @@ void yep() {
     if (cmdid_assembly) 
         CmdIdDump(*cmdid_assembly, ".\\output\\cmdid.json");
     else
-        printf("[ERROR] Assembly-CSharp not foundn");
+        DebugPrintA("[ERROR] Assembly-CSharp not foundn");
 
     if (proto_assembly)
         ProtoDump(*proto_assembly, ".\\output\\dump.proto");
     else
-        printf("[ERROR] RPG.Network.Proto not found\n");
+        DebugPrintA("[ERROR] RPG.Network.Proto not found\n");
 }
 
 DWORD WINAPI MainThread(LPVOID) {

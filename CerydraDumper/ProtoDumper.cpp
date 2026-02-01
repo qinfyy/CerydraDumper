@@ -39,12 +39,12 @@ std::string DumpCsharpType(CRuntimeType t) {
         if (fields.length() > 0) {
             for (size_t i = 0; i < fields.length(); ++i) {
                 auto field = fields.get<CMonoField>(i);
-                auto fieldType = field.FieldType();
-                auto full_name_field = fieldType.FullName().AsString();
+                auto fieldType = field.GetFieldType();
+                auto full_name_field = fieldType.GetFullName().AsString();
 
-                auto d_field_name = field.DeclaringType().Name().AsString();
+                auto d_field_name = field.GetDeclaringType().GetName().AsString();
                 std::optional<std::string> enum_key;
-                if (d_field_name == t.Name().AsString()) {
+                if (d_field_name == t.GetName().AsString()) {
                     auto attrs = field.GetCustomAttributes(true);
                     if (attrs.length() > 0) {
                         for (int j = 0; j < attrs.length(); j++) {
@@ -93,12 +93,12 @@ std::string DumpCsharpType(CRuntimeType t) {
 
                     if (attrs.empty() && t.IsEnum() && field.IsLiteral()) {
                         is_enum_type = true;
-                        enum_key = t.Name().AsString() + "_" + field.Name().AsString();
+                        enum_key = t.GetName().AsString() + "_" + field.GetName().AsString();
                     }
                 }
 
                 if (field.IsLiteral()) {
-                    uintptr_t value_ptr = field.RawConstantValue();
+                    uintptr_t value_ptr = field.GetRawConstantValue();
                     auto n_int32 = CSystemDynamic(value_ptr);
                     std::string value = n_int32.ToString().AsString();
 
@@ -109,30 +109,30 @@ std::string DumpCsharpType(CRuntimeType t) {
                     }
                 }
                 else if (full_name_field.find(d_field_name) != std::string::npos) {
-                    auto inner_fields = field.FieldType().GetFields(60);
+                    auto inner_fields = field.GetFieldType().GetFields(60);
                     auto count = CountOccurrences(full_name_field, "+");
 
                     if (count == 1) {
-                        inner << "\toneof " << field.Name().AsString() << " {\n";
+                        inner << "\toneof " << field.GetName().AsString() << " {\n";
                         for (int j = 0; j < inner_fields.length(); j++) {
                             auto one_of_field_ptr = inner_fields.get<uintptr_t>(j);
                             CMonoField oneof_field(one_of_field_ptr);
 
                             if (oneof_field.IsLiteral()) {
-                                auto int32_ptr = oneof_field.RawConstantValue();
+                                auto int32_ptr = oneof_field.GetRawConstantValue();
                                 std::string value = CSystemDynamic(int32_ptr).ToString().AsString();
 
                                 if (!value.empty() && value != "0") {
-                                    inner << "\t\tint32 " << oneof_field.Name().AsString() << " = " << value << ";\n";
+                                    inner << "\t\tint32 " << oneof_field.GetName().AsString() << " = " << value << ";\n";
                                 }
 
-                                skip_types[oneof_field.Name().AsString()] = true;
+                                skip_types[oneof_field.GetName().AsString()] = true;
                             }
                         }
                         inner << "\t}\n";
                     }
                     else if (count == 2) {
-                        inner << "\tenum " << field.FieldType().Name().AsString() << " {\n";
+                        inner << "\tenum " << field.GetFieldType().GetName().AsString() << " {\n";
                         for (int j = 0; j < inner_fields.length(); j++) {
                             auto nested_field_ptr = inner_fields.get<uintptr_t>(j);
                             CMonoField nested_field(nested_field_ptr);
@@ -145,7 +145,7 @@ std::string DumpCsharpType(CRuntimeType t) {
                                         auto n_enum_key = OriginalNameAttribute(n_rt).GetName().AsString();
                                         if (nested_field.IsLiteral()) {
                                             auto int32_ptr =
-                                                nested_field.RawConstantValue();
+                                                nested_field.GetRawConstantValue();
                                             auto value = CSystemDynamic(int32_ptr).ToString().AsString();
                                             if (!value.empty()) {
                                                 if (!n_enum_key.empty()) {
@@ -159,8 +159,8 @@ std::string DumpCsharpType(CRuntimeType t) {
                             }
 
                             if (attrs.length() == 0 && nested_field.IsLiteral()) {
-                                auto n_enum_key = field.FieldType().Name().AsString() + "_" + nested_field.Name().AsString();
-                                auto int32_ptr = nested_field.RawConstantValue();
+                                auto n_enum_key = field.GetFieldType().GetName().AsString() + "_" + nested_field.GetName().AsString();
+                                auto int32_ptr = nested_field.GetRawConstantValue();
                                 auto value = CSystemDynamic(int32_ptr).ToString().AsString();
                                 if (value != "") {
                                     if (!n_enum_key.empty()) {
@@ -197,11 +197,11 @@ std::string DumpCsharpType(CRuntimeType t) {
             for (int j = 0; j < properties.length(); j++) {
                 auto property_ptr = properties.get<uintptr_t>(j);
                 auto property = CMonoProperty(property_ptr);
-                auto d_property_name = property.DeclaringType().Name().AsString();
-                if (d_property_name == t.Name().AsString()) {
+                auto d_property_name = property.GetDeclaringType().GetName().AsString();
+                if (d_property_name == t.GetName().AsString()) {
                     auto it = field_ids.find(static_cast<int32_t>(j));
                     if (it != field_ids.end()) {
-                        auto type_Name = GetRuntimeTypeName(property.PropertyType(), true);
+                        auto type_Name = GetRuntimeTypeName(property.GetPropertyType(), true);
                         if (type_Name.find('.') != std::string::npos) {
                             auto pos = type_Name.rfind('.');
                             if (pos != std::string::npos) {
@@ -216,9 +216,9 @@ std::string DumpCsharpType(CRuntimeType t) {
                             type_Name = ReplaceAll(type_Name, ">", "");
                         }
 
-                        if (skip_types.count(property.Name().AsString())) {
-                            std::string from = "int32 " + property.Name().AsString();
-                            std::string to = type_Name + " " + property.Name().AsString();
+                        if (skip_types.count(property.GetName().AsString())) {
+                            std::string from = "int32 " + property.GetName().AsString();
+                            std::string to = type_Name + " " + property.GetName().AsString();
                             // 我cnm的
                             std::string tmp = ReplaceAll(out.str(), from, to);
                             out.str("");
@@ -226,7 +226,7 @@ std::string DumpCsharpType(CRuntimeType t) {
                         }
                         else if (it->second != "0") {
                             out << "\t" << type_Name
-                                << " " << property.Name().AsString()
+                                << " " << property.GetName().AsString()
                                 << " = " << it->second << ";\n";
                         }
                     }
@@ -271,7 +271,7 @@ void ProtoDump(CMonoAssembly mono_assembly, const char* path)
         if (runtime_type.IsGenericType())
             continue;
 
-        std::string full_name = runtime_type.FullName().AsString();
+        std::string full_name = runtime_type.GetFullName().AsString();
         DebugPrintA(("[ProtoDump] Dumping: " + full_name + "\n").c_str());
 
         try {

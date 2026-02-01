@@ -25,14 +25,14 @@ void AddPacket(CMonoAssembly& mono_assembly)
             continue;
         }
 
-        if (runtime_type.Name() == "GlobalVars") {
+        if (runtime_type.GetName() == "GlobalVars") {
             auto fields = runtime_type.GetFields(60);
 
             for (size_t j = 0; j < fields.length(); ++j)
             {
                 CMonoField field = fields.get<CMonoField>(j);
 
-                if (field.Name() == "s_ModuleManager") {
+                if (field.GetName() == "s_ModuleManager") {
                     auto module_manager_obj = CModuleManager(field.GetValue(0).raw_ptr());
 
                     auto list_module = module_manager_obj.Modules().ToVector<CBaseModule>();
@@ -109,7 +109,7 @@ void DumpRespAndNotify(CMonoAssembly& mono_assembly, const char* path)
         if (runtime_type.IsInterface())
             continue;
 
-        if (runtime_type.Name().AsString() != "NotifyManager")
+        if (runtime_type.GetName().AsString() != "NotifyManager")
             continue;
 
         //DebugPrintA("[DumpRespAndNotify] 找到 NotifyManager 类型\n");
@@ -126,7 +126,7 @@ void DumpRespAndNotify(CMonoAssembly& mono_assembly, const char* path)
 
             CMonoField field(field_ptr);
 
-            if (field.Name() != "_RspHandlers")
+            if (field.GetName() != "_RspHandlers")
                 continue;
 
             //DebugPrintA("[DumpRespAndNotify]  找到字段 _RspHandlers\n");

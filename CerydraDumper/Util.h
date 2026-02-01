@@ -3,6 +3,7 @@
 #include <vector>
 #include <sstream>
 
+// System.String
 struct Il2CppString // sizeof=0x58
 {
     void* m_pClass;
@@ -15,9 +16,11 @@ struct Il2CppString // sizeof=0x58
     // padding byte
 };
 
-std::wstring Il2CppToWString(Il2CppString* str);
+std::wstring Il2CppStringToWString(Il2CppString* str);
 
-std::string Il2CppToUtf8String(Il2CppString* str);
+std::string Il2CppStringToUtf8String(Il2CppString* str);
+
+std::string Il2CppStringToAnsiString(Il2CppString* str);
 
 bool ReplaceIl2CppStringChars(Il2CppString* target, const std::wstring& ws);
 

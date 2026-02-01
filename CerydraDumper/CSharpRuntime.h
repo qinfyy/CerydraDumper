@@ -19,7 +19,7 @@ public:
     CS_CLASS("System.RuntimeType");
 
     // 属性
-    CRuntimeType BaseType() const {
+    CRuntimeType GetBaseType() const {
         return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
             "System.RuntimeType",
@@ -47,7 +47,7 @@ public:
     }
 
 	// 必须是数组类型才能调用此函数
-    int ArrayRank() const {
+    int GetArrayRank() const {
         return CallIl2CppInstanceObjectMethod<int>(
             this->ptr,
             "System.Type",
@@ -56,7 +56,7 @@ public:
         );
     }
 
-    CRuntimeType ReflectedType() const {
+    CRuntimeType GetReflectedType() const {
         return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
             "System.RuntimeType",
@@ -65,7 +65,7 @@ public:
         );
     }
 
-    CRuntimeType ElementType() const {
+    CRuntimeType GetElementType() const {
         return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
             "System.RuntimeType",
@@ -74,7 +74,7 @@ public:
         );
     }
 
-    CSystemString Namespace() const {
+    CSystemString GetNamespace() const {
         return CallIl2CppInstanceObjectMethod<CSystemString>(
             this->ptr,
             "System.RuntimeType",
@@ -83,7 +83,7 @@ public:
         );
     }
 
-    CSystemString Name() const {
+    CSystemString GetName() const {
         return CallIl2CppInstanceObjectMethod<CSystemString>(
             this->ptr,
             "System.RuntimeType",
@@ -92,7 +92,7 @@ public:
         );
     }
 
-    CSystemString FullName() const {
+    CSystemString GetFullName() const {
         return CallIl2CppInstanceObjectMethod<CSystemString>(
             this->ptr,
             "System.RuntimeType",
@@ -101,7 +101,7 @@ public:
         );
     }
 
-    CIl2CppObject TypeHandle() const {
+    CIl2CppObject GetTypeHandle() const {
         return CallIl2CppInstanceObjectMethod<CIl2CppObject>(
             this->ptr,
             "System.RuntimeType",
@@ -110,7 +110,7 @@ public:
         );
     }
 
-    CIl2CppArray GenericArguments() const {
+    CIl2CppArray GetGenericArguments() const {
         return CallIl2CppInstanceObjectMethod<CIl2CppArray>(
             this->ptr,
             "System.RuntimeType",
@@ -245,7 +245,7 @@ public:
 
     CS_CLASS("System.RuntimeFieldHandle");
 
-    uintptr_t Value() const {
+    uintptr_t GetValue() const {
         return CallIl2CppInstanceObjectMethod<uintptr_t>(
             this->ptr,
             "System.RuntimeFieldHandle",
@@ -262,7 +262,7 @@ public:
     CS_CLASS("System.Reflection.MonoField");
 
     // 属性
-    CRuntimeType DeclaringType() const {
+    CRuntimeType GetDeclaringType() const {
         return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
             "System.Reflection.MonoField",
@@ -271,7 +271,7 @@ public:
         );
     }
 
-    CRuntimeType FieldType() const {
+    CRuntimeType GetFieldType() const {
         return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
             "System.Reflection.MonoField",
@@ -280,7 +280,7 @@ public:
         );
     }
 
-    CSystemString Name() const {
+    CSystemString GetName() const {
         return CallIl2CppInstanceObjectMethod<CSystemString>(
             this->ptr,
             "System.Reflection.MonoField",
@@ -289,7 +289,7 @@ public:
         );
     }
 
-    CRuntimeFieldHandle FieldHandle() const {
+    CRuntimeFieldHandle GetFieldHandle() const {
         return CallIl2CppInstanceObjectMethod<CRuntimeFieldHandle>(
             this->ptr,
             "System.Reflection.MonoField",
@@ -298,7 +298,7 @@ public:
         );
     }
 
-    uintptr_t RawConstantValue() const {
+    uintptr_t GetRawConstantValue() const {
         return CallIl2CppInstanceObjectMethod<uintptr_t>(
             this->ptr,
             "System.Reflection.MonoField",
@@ -337,7 +337,7 @@ public:
         );
     }
 
-    int32_t MetadataToken() const {
+    int32_t GetMetadataToken() const {
         return CallIl2CppInstanceObjectMethod<int32_t>(
             this->ptr,
             "System.Reflection.MemberInfo",
@@ -371,7 +371,7 @@ public:
     CS_CLASS("System.Reflection.MonoProperty");
 
     // 属性
-    CRuntimeType DeclaringType() const {
+    CRuntimeType GetDeclaringType() const {
         return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
             "System.Reflection.MonoProperty",
@@ -380,7 +380,7 @@ public:
         );
     }
 
-    CRuntimeType PropertyType() const {
+    CRuntimeType GetPropertyType() const {
         return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
             "System.Reflection.MonoProperty",
@@ -389,7 +389,7 @@ public:
         );
     }
 
-    CSystemString Name() const {
+    CSystemString GetName() const {
         return CallIl2CppInstanceObjectMethod<CSystemString>(
             this->ptr,
             "System.Reflection.MonoProperty",

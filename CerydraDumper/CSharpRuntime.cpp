@@ -10,7 +10,7 @@ CIl2CppField CRuntimeType::GetField(const char* name) const {
         }
 
         // 再尝试基类
-        auto base_type = this->BaseType();
+        auto base_type = this->GetBaseType();
         if (!base_type.is_null()) {
             auto base_field_ptr = base_type._GetField(name, 60);
             if (base_field_ptr && !base_field_ptr->is_null()) {
@@ -21,7 +21,7 @@ CIl2CppField CRuntimeType::GetField(const char* name) const {
     catch (...) {
         // 如果当前类型失败，尝试基类
         try {
-            auto base_type = this->BaseType();
+            auto base_type = this->GetBaseType();
             if (!base_type.is_null()) {
                 auto base_field_ptr = base_type._GetField(name, 60);
                 if (base_field_ptr && !base_field_ptr->is_null()) {

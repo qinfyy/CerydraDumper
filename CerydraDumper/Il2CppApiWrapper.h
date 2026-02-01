@@ -1,12 +1,13 @@
-#pragma once
+Ôªø#pragma once
 #include <cstdint>
 #include <string>
 #include <vector>
 #include <stdexcept>
 #include "Il2CppFunctions.h"
 #include "PrintHelper.h"
+#include "Util.h"
 
-// Ã·«∞…˘√˜
+// ÊèêÂâçÂ£∞Êòé
 class CIl2CppAssembly;
 class CIl2CppImage;
 class CIl2CppClass;
@@ -92,7 +93,7 @@ class CIl2CppMethod : public CIl2CppWrapBase {
 public:
     using CIl2CppWrapBase::CIl2CppWrapBase;
 
-    ::MethodInfo* method_info() const;
+    MethodInfo* method_info() const;
     std::string name() const;
     CIl2CppType return_type() const;
     CIl2CppClass class_ptr() const;
@@ -136,7 +137,7 @@ public:
     template<typename T>
     T unbox() const {
         if (is_null()) throw std::runtime_error("Attempt to unbox null object");
-        return *(T*)(ptr + 16); // ∆´“∆ +16
+        return *(T*)(ptr + 16); // ÂÅèÁßª +16
     }
 };
 
@@ -186,9 +187,8 @@ public:
     const T& get(size_t index) const
     {
         static_assert(!std::is_void_v<T>, "T must not be void");
-        return *reinterpret_cast<const T*>(
-            first_item_ptr() + index * sizeof(T)
-            );
+
+        return *reinterpret_cast<const T*>(first_item_ptr() + index * sizeof(T));
     }
 
     template<typename T>
@@ -201,8 +201,7 @@ public:
     template<typename T>
     std::vector<T> to_vec() const
     {
-        static_assert(std::is_copy_constructible_v<T>,
-            "T must be copyable");
+        static_assert(std::is_copy_constructible_v<T>, "T must be copyable");
 
         const T* begin = reinterpret_cast<const T*>(first_item_ptr());
         return std::vector<T>(begin, begin + length());
@@ -211,8 +210,7 @@ public:
     template<typename T>
     std::vector<T> to_vec_sized(size_t size) const
     {
-        static_assert(std::is_copy_constructible_v<T>,
-            "T must be copyable");
+        static_assert(std::is_copy_constructible_v<T>, "T must be copyable");
 
         const T* begin = reinterpret_cast<const T*>(first_item_ptr());
         return std::vector<T>(begin, begin + size);
@@ -224,28 +222,28 @@ public:
     CNativeList() : CIl2CppWrapBase() {}
     explicit CNativeList(uintptr_t p) : CIl2CppWrapBase(p) {}
 
-    // ªÒ»° Il2CppClass
+    // Ëé∑Âèñ Il2CppClass
     CIl2CppClass Class() const {
         return CIl2CppClass(*reinterpret_cast<uintptr_t*>(ptr));
     }
 
-    // ªÒ»° monitor
+    // Ëé∑Âèñ monitor
     uintptr_t Monitor() const {
         return *reinterpret_cast<uintptr_t*>(ptr + 0x8);
     }
 
-    // ªÒ»° items
+    // Ëé∑Âèñ items
     CIl2CppArray Items() const {
         uintptr_t items_ptr = *reinterpret_cast<uintptr_t*>(ptr + 0x10);
         return CIl2CppArray(items_ptr);
     }
 
-    // ªÒ»° size
+    // Ëé∑Âèñ size
     int Size() const {
         return *reinterpret_cast<int*>(ptr + 0x18);
     }
 
-    // ◊™ std::vector
+    // ËΩ¨ std::vector
     template<typename T>
     std::vector<T> ToVector() const {
         CIl2CppArray items = Items();
@@ -253,7 +251,7 @@ public:
         return std::vector<T>(reinterpret_cast<T*>(first), reinterpret_cast<T*>(first) + Size());
     }
 
-    // µ˜”√ Add ∑Ω∑®
+    // Ë∞ÉÁî® Add ÊñπÊ≥ï
     bool Add(const CIl2CppObject& item, const std::string& class_name) const {
         CIl2CppClass cls = CIl2CppObject(ptr).get_class();
         auto method = cls.find_method("Add", { class_name });
@@ -267,7 +265,7 @@ public:
             func(ptr, item);
         }
         catch (...) {
-			DebugPrintA("[NativeList] µ˜”√ Add ∫Ø ˝≥ˆœ÷“Ï≥£\n");
+			DebugPrintA("[NativeList] Ë∞ÉÁî® Add ÂáΩÊï∞Âá∫Áé∞ÂºÇÂ∏∏\n");
             return false;
         }
         return true;
@@ -294,7 +292,7 @@ public:
         static_assert(sizeof(vector) / sizeof(T) >= 65535, "Array too small!");
     }
 
-    // ∞≤»´∑√Œ 
+    // ÂÆâÂÖ®ËÆøÈóÆ
     T get(size_t index) const {
         if (index >= static_cast<size_t>(max_length)) {
             throw std::out_of_range("CNativeArray index out of bounds");
@@ -302,13 +300,13 @@ public:
         return vector[index];
     }
 
-    // ≥¢ ‘ªÒ»°£¨∑µªÿ÷∏’Î nullptr »Áπ˚‘ΩΩÁ
+    // Â∞ùËØïËé∑ÂèñÔºåËøîÂõûÊåáÈíà nullptr Â¶ÇÊûúË∂äÁïå
     const T* get_ptr(size_t index) const {
         if (index >= static_cast<size_t>(max_length)) return nullptr;
         return &vector[index];
     }
 
-    //  «∑Ò∞¸∫¨
+    // ÊòØÂê¶ÂåÖÂê´
     bool contains(const T& item) const {
         for (int32_t i = 0; i < max_length; i++) {
             if (vector[i] == item) {
@@ -318,11 +316,16 @@ public:
         return false;
     }
 
-    // ªÒ»°≥§∂»
-    int32_t length() const { return max_length; }
+    // Ëé∑ÂèñÈïøÂ∫¶
+    int32_t length() const {
+        return max_length;
+    }
 
-    // operator[]£¨ø…÷±Ω”∑√Œ µ´≤ª∞≤»´
-    T operator[](size_t index) const { return get(index); }
+    // operator[]ÔºåÂèØÁõ¥Êé•ËÆøÈóÆ‰ΩÜ‰∏çÂÆâÂÖ®
+    T operator[](size_t index) const {
+        return get(index);
+    }
+
     T& operator[](size_t index) {
         if (index >= static_cast<size_t>(max_length)) throw std::out_of_range("CNativeArray index out of bounds");
         return vector[index];
@@ -355,13 +358,16 @@ public:
     void* values;          // 0x40
     uintptr_t sync_root;   // 0x48
 
-    //  µ¿˝∑Ω∑®
+    // ÂÆû‰æãÊñπÊ≥ï
 
     int find_entry(const TKey& key) const {
-        if (!entries) return -1;
+        if (!entries)
+            return -1;
+
         auto arr = reinterpret_cast<CEntry<TKey, TValue>*>(entries);
         for (int i = 0; i < count; i++) {
-            if (arr[i].key == key) return i;
+            if (arr[i].key == key)
+                return i;
         }
         return -1;
     }
@@ -371,10 +377,13 @@ public:
     }
 
     bool contains_value(const TValue& value) const {
-        if (!entries) return false;
+        if (!entries)
+            return false;
+
         auto arr = reinterpret_cast<CEntry<TKey, TValue>*>(entries);
         for (int i = 0; i < count; i++) {
-            if (arr[i].hash_code >= 0 && arr[i].value == value) return true;
+            if (arr[i].hash_code >= 0 && arr[i].value == value)
+                return true;
         }
         return false;
     }
@@ -382,11 +391,15 @@ public:
     TValue try_get_value(const TKey& key, bool* found = nullptr) const {
         int i = find_entry(key);
         if (i >= 0) {
-            if (found) *found = true;
+            if (found)
+                *found = true;
+
             auto arr = reinterpret_cast<CEntry<TKey, TValue>*>(entries);
             return arr[i].value;
         }
-        if (found) *found = false;
+        if (found)
+            *found = false;
+
         return TValue{};
     }
 
@@ -401,12 +414,13 @@ public:
     int get_count() const { return count; }
     uintptr_t get_comparer() const { return comparer; }
 
-    // µ˜”√ C# Remove ∑Ω∑®
+    // Ë∞ÉÁî® C# Remove ÊñπÊ≥ï
     static bool remove(uintptr_t dict_ptr, uintptr_t key_ptr, const std::string& class_name) {
         Il2CppClass* cls_rp = il2cpp_object_get_class((Il2CppObject*)dict_ptr);
 		auto cls = CIl2CppClass((uintptr_t)cls_rp);
         auto method = cls.find_method("Remove", { class_name });
-        if (!method.va()) return false;
+        if (!method.va())
+            return false;
 
         using FuncType = bool(__fastcall*)(uintptr_t, uintptr_t);
         FuncType func = reinterpret_cast<FuncType>(method.va());
@@ -428,7 +442,9 @@ public:
     CNativeDictionary<TKey, TValue>* dictionary;
 
     TKey get(size_t index) const {
-        if (!dictionary || !dictionary->entries) return TKey{};
+        if (!dictionary || !dictionary->entries)
+            return TKey{};
+
         auto arr = reinterpret_cast<CEntry<TKey, TValue>*>(dictionary->entries->first_item_ptr());
         return arr[index].key;
     }
@@ -445,7 +461,9 @@ public:
     CNativeDictionary<TKey, TValue>* dictionary;
 
     TValue get(size_t index) const {
-        if (!dictionary || !dictionary->entries) return TValue{};
+        if (!dictionary || !dictionary->entries)
+            return TValue{};
+
         auto arr = reinterpret_cast<CEntry<TKey, TValue>*>(dictionary->entries->first_item_ptr());
         return arr[index].value;
     }
@@ -455,3 +473,47 @@ public:
     }
 };
 
+struct Il2CppException
+{
+    // Il2CppObject
+    void* klass;
+    void* monitor;
+
+    // Il2CppException
+#if !IL2CPP_TINY
+    Il2CppString* className;
+    Il2CppString* message;
+    Il2CppObject* _data;
+    Il2CppException* inner_ex;
+    Il2CppString* _helpURL;
+    void* trace_ips; // Il2CppArray
+    Il2CppString* stack_trace;
+    Il2CppString* remote_stack_trace;
+    int remote_stack_index;
+    Il2CppObject* _dynamicMethods;
+    int hresult; // il2cpp_hresult_t
+    Il2CppString* source;
+    Il2CppObject* safeSerializationManager;
+    void* captured_traces; // Il2CppArray
+    void* native_trace_ips; // Il2CppArray
+    int32_t caught_in_unmanaged;
+#else
+    Il2CppString* message;
+    union
+    {
+        // Stack trace is the field at this position,
+        // but we'll define inner_ex and hresult to reduce the number of defines we need in vm::Exception.cpp
+        Il2CppString* stack_trace;
+        Il2CppException* inner_ex;
+        int hresult; // il2cpp_hresult_t
+    };
+#endif
+};
+
+struct Il2CppExceptionWrapper
+{
+    Il2CppException* ex;
+#ifdef __cplusplus
+    Il2CppExceptionWrapper(Il2CppException* ex) : ex(ex) {}
+#endif //__cplusplus
+};
