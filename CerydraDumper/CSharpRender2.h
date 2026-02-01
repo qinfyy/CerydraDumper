@@ -1,4 +1,3 @@
-//#pragma once
-//#include <string>
-//
-//void DumpCs2(std::string path);
+#pragma once
+
+void DumpCs2(const char* path);

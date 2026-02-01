@@ -13,6 +13,7 @@
 #include <optional>
 #include "CmdIdOut.h"
 #include "ProtoDumper.h"
+#include "CSharpRender2.h"
 
 #include <DbgHelp.h>
 #pragma comment(lib, "DbgHelp.lib")
@@ -273,6 +274,7 @@ void yep() {
     }
 
     DumpCs(".\\output\\dump.cs");
+    //DumpCs2(".\\output\\dump.cs");
 
     if (cmdid_assembly) 
         CmdIdDump(*cmdid_assembly, ".\\output\\cmdid.json");

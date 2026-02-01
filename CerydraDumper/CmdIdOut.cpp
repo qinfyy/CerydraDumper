@@ -229,16 +229,20 @@ void DumpRespAndNotify(CMonoAssembly& mono_assembly, const char* path)
     }
     else
     {
-        file << "{\n";
+		std::ostringstream ss;
+        ss << "{\n";
         bool first = true;
         for (const auto& [name, key] : CMDID)
         {
             if (!first)
-                file << ",\n";
-            file << "  \"" << name << "\": " << key;
+                ss << ",\n";
+            ss << "  \"" << name << "\": " << key;
             first = false;
         }
-        file << "\n}\n";
+
+        ss << "\n}\n";
+
+		file << ss.str();
         file.close();
 
         DebugPrintA("[DumpRespAndNotify] cmdid written successfully, %zu items\n", CMDID.size());

@@ -243,14 +243,16 @@ std::string GetTypeName(const CIl2CppType& type) {
 void DumpCsHeader(std::ostream& os)
 {
     CIl2CppDomain domain = CIl2CppDomain::get();
-    if (domain.is_null()) return;
+    if (domain.is_null())
+        return;
 
     auto assemblies = domain.assemblies();
     uint32_t runningOffset = 0;
 
     for (size_t i = 0; i < assemblies.size(); i++) {
         CIl2CppImage image = assemblies[i].get_image();
-        if (image.is_null()) continue;
+        if (image.is_null())
+            continue;
 
         size_t classCount = image.class_count();
 
@@ -329,7 +331,7 @@ void DumpMethods(std::ostream& os, CIl2CppClass klass) {
         uintptr_t va = (uintptr_t)method.va();
         uintptr_t rva = method.rva();
 
-        os << "\t// RVA: 0x" << std::hex << rva << " VA: 0x" << va << std::dec << " // Slot: " << i << "\n";
+        os << std::uppercase << "\t// RVA: 0x" << std::hex << rva << " VA: 0x" << va << std::dec << " // Slot: " << i << "\n";
 
         auto returnType = method.return_type();
         auto flags = method.get_flags();
@@ -427,7 +429,8 @@ void DumpClass(std::ostream& os, const CIl2CppClass& klass, size_t tdi, std::str
 
 void DumpClasses(std::ostream& os) {
     CIl2CppDomain domain = CIl2CppDomain::get();
-    if (domain.is_null()) return;
+    if (domain.is_null())
+        return;
 
     auto assemblies = domain.assemblies();
     for (auto& assembly : assemblies) {
