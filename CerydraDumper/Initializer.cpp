@@ -13,7 +13,7 @@
 #include <optional>
 #include "CmdIdOut.h"
 #include "ProtoDumper.h"
-#include "CSharpRender2.h"
+#include "DumpCs2.h"
 
 #include <DbgHelp.h>
 #pragma comment(lib, "DbgHelp.lib")

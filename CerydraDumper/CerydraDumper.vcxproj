@@ -174,7 +174,6 @@
     <ClInclude Include="CBaseModule.h" />
     <ClInclude Include="CmdIdOut.h" />
     <ClInclude Include="CRspHandler.h" />
-    <ClInclude Include="CSharpRender3.h" />
     <ClInclude Include="CSharpRuntime.h" />
     <ClInclude Include="CSystemArray.h" />
     <ClInclude Include="CSystemType.h" />
@@ -211,7 +210,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="PrintHelper.h" />
     <ClInclude Include="ProtoDumper.h" />
-    <ClInclude Include="CSharpRender2.h" />
+    <ClInclude Include="DumpCs2.h" />
     <ClInclude Include="CSystemString.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="Version.h" />
@@ -223,7 +222,6 @@
     <ClCompile Include="CBaseModule.cpp" />
     <ClCompile Include="CmdIdOut.cpp" />
     <ClCompile Include="CRspHandler.cpp" />
-    <ClCompile Include="CSharpRender3.cpp" />
     <ClCompile Include="CSharpRuntime.cpp" />
     <ClCompile Include="CSystemArray.cpp" />
     <ClCompile Include="CSystemType.cpp" />
@@ -248,7 +246,7 @@
     </ClCompile>
     <ClCompile Include="PrintHelper.cpp" />
     <ClCompile Include="ProtoDumper.cpp" />
-    <ClCompile Include="CSharpRender2.cpp" />
+    <ClCompile Include="DumpCs2.cpp" />
     <ClCompile Include="CSystemString.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="Version.cpp" />
