@@ -12,8 +12,9 @@ public:
 
     CS_CLASS("System.Runtime.InteropServices.Marshal");
 
-    CSystemString GetFullName() {
-        return CallIl2CppInstanceObjectMethod<CSystemString>(ptr, "System.Reflection.Assembly", "get_FullName",{});
+    CSystemString GetName() {
+        auto an = CallIl2CppInstanceObjectMethod<uintptr_t>(ptr, "System.Reflection.Assembly", "GetName", {});
+        return CallIl2CppInstanceObjectMethod<CSystemString>(an, "System.Reflection.AssemblyName", "get_Name", {});
     }
 
     CIl2CppArray GetTypes(bool flags) {

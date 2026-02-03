@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "CSharpRender2.h"
+#include "DumpCs2.h"
 #include <sstream>
 #include <fstream>
 #include <filesystem>
@@ -36,7 +36,7 @@ static std::string ToBinary32(uint32_t value) {
     return result;
 }
 
-static void RenderDumper(std::ostringstream& os) {
+static void CSharpRender(std::ostringstream& os) {
     os << "// Create by CerydraDumper\n\n";
 
     CIl2CppDomain domain = CIl2CppDomain::get();
@@ -135,7 +135,7 @@ void DumpCs2(const char* path) {
         DebugPrintA("[DumpCs2] dumping...\n");
 
         std::ostringstream ss;
-        RenderDumper(ss);
+        CSharpRender(ss);
 
         file << ss.str();
         file.close();

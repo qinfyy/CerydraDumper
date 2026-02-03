@@ -4,14 +4,7 @@
 #include <iostream>
 #include "Memory.h"
 #include "PrintHelper.h"
-
-static uintptr_t API_BASE_PTR = 0;
-
-uintptr_t GetUnityPlayerModuleBase()
-{
-    HMODULE mod = GetModuleHandleA("UnityPlayer.dll");
-    return reinterpret_cast<uintptr_t>(mod);
-}
+#include <sstream>
 
 uintptr_t GetGameAssemblyModuleBase()
 {
@@ -19,35 +12,36 @@ uintptr_t GetGameAssemblyModuleBase()
     return reinterpret_cast<uintptr_t>(mod);
 }
 
-uintptr_t GetApiBase()
-{
-    return API_BASE_PTR;
-}
-
-uintptr_t ExtractQwordTarget(uintptr_t instruction_address) {
-    int32_t relative_offset = *reinterpret_cast<int32_t*>(instruction_address + 3);
-    uintptr_t next_instruction = instruction_address + 7;
-    return next_instruction + relative_offset;
-}
-
 void InitIl2CppFunctions()
 {
-    HMODULE hUnityPlayer = (HMODULE)GetUnityPlayerModuleBase();
-    if (!hUnityPlayer) {
-        MessageBoxA(NULL, "UnityPlayer.dll not found!", "Error", MB_OK | MB_ICONERROR);
+    HMODULE hGameAssembly = reinterpret_cast<HMODULE>(GetGameAssemblyModuleBase());
+    if (!hGameAssembly) {
+        MessageBoxA(NULL, "GameAssembly.dll not found!", "Error", MB_OK | MB_ICONERROR);
         ExitProcess(1);
         return;
     }
 
-    uintptr_t target = Scan(hUnityPlayer, "48 8B 05 ? ? ? ? 48 8D 0D ? ? ? ? FF D0");
-    DebugPrintA("[INFO] Target: %p, RVA: 0x%llX\n", target, target - GetUnityPlayerModuleBase());
+    int totalApi = 0;
+    int failedApi = 0;
 
-    if (target != 0) {
-        API_BASE_PTR = ExtractQwordTarget(target);
-        DebugPrintA("[INFO] il2cpp functions table: %p\n", API_BASE_PTR);
-    }
-    else {
-        MessageBoxA(NULL, "Failed to find il2cpp functions table!", "Error", MB_OK | MB_ICONERROR);
+#define DO_API(r, n, p) \
+    totalApi++; \
+    n = (r (*) p) GetProcAddress(hGameAssembly, #n); \
+    DebugPrintA("[IL2CPP] %-55s -> %p\n", #n, n); \
+    if (!n) failedApi++;
+
+#define DO_API_NO_RETURN(r, n, p) DO_API(r, n, p)
+#include "il2cpp-api-functions.h"
+#undef DO_API
+#undef DO_API_NO_RETURN
+
+    if (failedApi > 0) {
+        std::stringstream ss;
+        ss << "Detected " << failedApi << "/" << totalApi
+            << " IL2CPP APIs failed to load!" << std::endl
+            << "Please check your game Unity version or whether the game is encrypted/protected.";
+
+        MessageBoxA(NULL, ss.str().c_str(), "IL2CPP API Binding Error", MB_OK | MB_ICONERROR);
         ExitProcess(1);
     }
 }

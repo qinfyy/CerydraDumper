@@ -13,9 +13,10 @@
 #include <optional>
 #include "CmdIdOut.h"
 #include "ProtoDumper.h"
-#include "CSharpRender2.h"
+#include "DumpCs2.h"
 
 #include <DbgHelp.h>
+#include "Pb.h"
 #pragma comment(lib, "DbgHelp.lib")
 
 void WriteFullDump(EXCEPTION_POINTERS* ep)
@@ -61,7 +62,7 @@ void TestPrintAllImageNames()
 
     // 获取域里的程序集
     size_t assemblyCount = 0;
-    Il2CppAssembly** assemblies = il2cpp_domain_get_assemblies(domain, &assemblyCount);
+    const Il2CppAssembly** assemblies = il2cpp_domain_get_assemblies(domain, &assemblyCount);
     if (!assemblies || assemblyCount == 0) {
         DebugPrintA("[Test] [ERROR] No assemblies found.\n");
         return;
@@ -72,11 +73,11 @@ void TestPrintAllImageNames()
     // 遍历所有程序集
     for (size_t i = 0; i < assemblyCount; i++)
     {
-        Il2CppAssembly* assembly = assemblies[i];
+        const Il2CppAssembly* assembly = assemblies[i];
         if (!assembly) continue;
 
         // 获取程序集对应的 image
-        Il2CppImage* image = il2cpp_assembly_get_image(assembly);
+        const Il2CppImage* image = il2cpp_assembly_get_image(assembly);
         if (!image) continue;
 
         // 获取 image 名称
@@ -153,7 +154,7 @@ void TestWrapper()
 
         DebugPrintA("[Type] System.String ptr: %p\n", stringType.raw_ptr());
 
-        DebugPrintA("[Type] Name: %s\n", stringType.GetName().AsString().c_str());
+        //DebugPrintA("[Type] Name: %s\n", stringType.GetName().AsString().c_str());
 
         DebugPrintA("[Type] FullName: %s\n", stringType.GetFullName().AsString().c_str());
 
@@ -248,43 +249,49 @@ void TestWrapper()
 }
 
 void yep() {
-    auto domain = CAppDomain::GetCurrentDomain();
-    auto assemblies = domain.GetAssemblies().to_vec<CMonoAssembly>();
+    try {
+        auto domain = CAppDomain::GetCurrentDomain();
+        auto assemblies = domain.GetAssemblies().to_vec<CMonoAssembly>();
 
-    std::optional<CMonoAssembly> proto_assembly;
-    std::optional<CMonoAssembly> excel_assembly;
-    std::optional<CMonoAssembly> cmdid_assembly;
+        std::optional<CMonoAssembly> proto_assembly;
+        std::optional<CMonoAssembly> excel_assembly;
+        std::optional<CMonoAssembly> cmdid_assembly;
 
-    for (size_t i = 0; i < assemblies.size(); ++i) {
-        if (proto_assembly && excel_assembly && cmdid_assembly)
-            break;
+        for (size_t i = 0; i < assemblies.size(); ++i) {
+            if (proto_assembly && excel_assembly && cmdid_assembly)
+                break;
 
-        CMonoAssembly mono_assembly(assemblies[i]);
-        std::string assembly_name = mono_assembly.GetFullName().AsString();
+            CMonoAssembly mono_assembly(assemblies[i]);
+            std::string assembly_name = mono_assembly.GetName().AsString();
+            DebugPrintA("[yep] Assembly: %s\n", assembly_name.c_str());
 
-        if (assembly_name.rfind("RPG.Network.Proto,", 0) == 0) { // starts_with
-            proto_assembly = mono_assembly;
+            if (assembly_name.rfind("Assembly-CSharp", 0) == 0) { // starts_with
+                proto_assembly = mono_assembly;
+            }
+            else if (assembly_name.rfind("RPG.GameCore.Config,", 0) == 0) {
+                excel_assembly = mono_assembly;
+            }
+            else if (assembly_name.rfind("Assembly-CSharp", 0) == 0) {
+                cmdid_assembly = mono_assembly;
+            }
         }
-        else if (assembly_name.rfind("RPG.GameCore.Config,", 0) == 0) {
-            excel_assembly = mono_assembly;
-        }
-        else if (assembly_name.rfind("Assembly-CSharp,", 0) == 0) {
-            cmdid_assembly = mono_assembly;
-        }
+
+        //DumpCs(".\\output\\dump.cs");
+        //DumpCs2(".\\output\\dump.cs");
+
+        //if (cmdid_assembly) 
+        //    CmdIdDump(*cmdid_assembly, ".\\output\\cmdid.json");
+        //else
+        //    DebugPrintA("[ERROR] Assembly-CSharp not foundn");
+
+        if (proto_assembly)
+            Pb(*proto_assembly, ".\\output\\dump.proto");
+        else
+            DebugPrintA("[ERROR] RPG.Network.Proto not found\n");
     }
-
-    DumpCs(".\\output\\dump.cs");
-    //DumpCs2(".\\output\\dump.cs");
-
-    if (cmdid_assembly) 
-        CmdIdDump(*cmdid_assembly, ".\\output\\cmdid.json");
-    else
-        DebugPrintA("[ERROR] Assembly-CSharp not foundn");
-
-    if (proto_assembly)
-        ProtoDump(*proto_assembly, ".\\output\\dump.proto");
-    else
-        DebugPrintA("[ERROR] RPG.Network.Proto not found\n");
+    catch (const std::exception& e) {
+        DebugPrintA("[yep] Exception: %s\n", e.what());
+    }
 }
 
 DWORD WINAPI MainThread(LPVOID) {
@@ -308,6 +315,8 @@ DWORD WINAPI MainThread(LPVOID) {
 
     InitIl2CppFunctions();
     InitCache();
+
+    //DumpCs(".\\output\\dump.cs");
     TestPrintAllImageNamesWrapper();
 
     TestWrapper();

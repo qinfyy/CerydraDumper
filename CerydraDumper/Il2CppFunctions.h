@@ -1,13 +1,7 @@
 #pragma once
 #include <cstdint>
 
-uintptr_t GetUnityPlayerModuleBase();
-
-uintptr_t GetApiBase();
-
 uintptr_t GetGameAssemblyModuleBase();
-
-void InitIl2CppFunctions();
 
 typedef void Il2CppDomain;
 typedef void Il2CppClass;
@@ -18,49 +12,196 @@ typedef void Il2CppImage;
 typedef void FieldInfo;
 typedef void Il2CppThread;
 
-typedef struct MethodInfo {
-    void* invoker_method;
-    void* method_pointer;
-    uint8_t _pad[0x20];
-    uint16_t flags;
+typedef struct MethodInfo
+{
+    void* method_pointer; // 0x00
+    uint8_t _pad[0x44];
+    uint16_t flags; // 0x4C
+
 } MethodInfo;
 
-#define IL2CPP_API(i, name, ret, params, args) \
-__declspec(noinline) inline ret name params { \
-    using FuncType = ret(__fastcall*) params; \
-    uintptr_t addr = GetApiBase() + 8 * (i); \
-    FuncType fn = reinterpret_cast<FuncType>(*reinterpret_cast<uintptr_t*>(addr)); \
-    return fn args; \
-}
 
-IL2CPP_API(22, il2cpp_assembly_get_image, Il2CppImage*, (Il2CppAssembly* assembly), (assembly))
-IL2CPP_API(31, il2cpp_class_get_fields, FieldInfo*, (Il2CppClass* klass, void** iter), (klass, iter))
-IL2CPP_API(33, il2cpp_class_get_interface, uintptr_t, (Il2CppClass* klass), (klass))
-IL2CPP_API(35, il2cpp_class_get_methods, MethodInfo*, (Il2CppClass* klass, void** iter), (klass, iter))
-IL2CPP_API(37, il2cpp_class_get_name, const char*, (Il2CppClass* klass), (klass))
-IL2CPP_API(39, il2cpp_class_get_namespace, const char*, (Il2CppClass* klass), (klass))
-IL2CPP_API(40, il2cpp_class_get_parent, Il2CppClass*, (Il2CppClass* klass), (klass))
-IL2CPP_API(43, il2cpp_class_is_valuetype, bool, (Il2CppClass* klass), (klass))
-IL2CPP_API(45, il2cpp_class_get_flags, int32_t, (Il2CppClass* klass), (klass))
-IL2CPP_API(49, il2cpp_class_from_type, Il2CppClass*, (const Il2CppType* type), (type))
-IL2CPP_API(53, il2cpp_class_is_enum, bool, (Il2CppClass* klass), (klass))
-IL2CPP_API(63, il2cpp_domain_get, Il2CppDomain*, (), ())
-IL2CPP_API(64, il2cpp_domain_assembly_open, Il2CppAssembly*, (Il2CppDomain* domain, char* name), (domain, name))
-IL2CPP_API(65, il2cpp_domain_get_assemblies, Il2CppAssembly**, (Il2CppDomain* domain, size_t* size), (domain, size))
-IL2CPP_API(72, il2cpp_field_get_flags, int32_t, (FieldInfo* field), (field))
-IL2CPP_API(73, il2cpp_field_get_name, const char*, (FieldInfo* field), (field))
-IL2CPP_API(75, il2cpp_field_get_offset, size_t, (FieldInfo* field), (field))
-IL2CPP_API(76, il2cpp_field_get_type, Il2CppType*, (FieldInfo* field), (field))
-IL2CPP_API(77, il2cpp_field_get_value_object, Il2CppObject*, (FieldInfo* field, Il2CppObject* obj), (field, obj));
-IL2CPP_API(116, il2cpp_method_get_return_type, Il2CppType*, (const MethodInfo* method), (method))
-IL2CPP_API(117, il2cpp_method_get_name, const char*, (const MethodInfo* method), (method))
-IL2CPP_API(123, il2cpp_method_get_param_count, uint32_t, (const MethodInfo* method), (method))
-IL2CPP_API(124, il2cpp_method_get_param, Il2CppType*, (const MethodInfo* method, uint32_t index), (method, index))
-IL2CPP_API(127, il2cpp_object_get_class, Il2CppClass*, (Il2CppObject* obj), (obj));
-IL2CPP_API(154, il2cpp_thread_attach, Il2CppThread*, (Il2CppDomain* domain), (domain));
-IL2CPP_API(161, il2cpp_type_get_name, const char*, (Il2CppType* type), (type))
-IL2CPP_API(162, il2cpp_type_is_byref, bool, (Il2CppType* type), (type))
-IL2CPP_API(163, il2cpp_type_get_attrs, uint32_t, (Il2CppType* type), (type))
-IL2CPP_API(168, il2cpp_image_get_name, const char*, (Il2CppImage* image), (image))
-IL2CPP_API(169, il2cpp_image_get_class_count, size_t, (Il2CppImage* image), (image))
-IL2CPP_API(170, il2cpp_image_get_class, Il2CppClass*, (Il2CppImage* image, size_t index), (image, index))
+typedef struct EventInfo EventInfo;
+typedef struct MethodInfo MethodInfo;
+typedef struct PropertyInfo PropertyInfo;
+
+typedef struct Il2CppArray Il2CppArray;
+typedef struct Il2CppDelegate Il2CppDelegate;
+typedef struct Il2CppException Il2CppException;
+typedef struct Il2CppProfiler Il2CppProfiler;
+typedef struct Il2CppReflectionMethod Il2CppReflectionMethod;
+typedef struct Il2CppReflectionType Il2CppReflectionType;
+typedef struct Il2CppString Il2CppString;
+typedef struct Il2CppAsyncResult Il2CppAsyncResult;
+typedef struct Il2CppManagedMemorySnapshot Il2CppManagedMemorySnapshot;
+typedef struct Il2CppCustomAttrInfo Il2CppCustomAttrInfo;
+
+typedef enum
+{
+    IL2CPP_PROFILE_NONE = 0,
+    IL2CPP_PROFILE_APPDOMAIN_EVENTS = 1 << 0,
+    IL2CPP_PROFILE_ASSEMBLY_EVENTS = 1 << 1,
+    IL2CPP_PROFILE_MODULE_EVENTS = 1 << 2,
+    IL2CPP_PROFILE_CLASS_EVENTS = 1 << 3,
+    IL2CPP_PROFILE_JIT_COMPILATION = 1 << 4,
+    IL2CPP_PROFILE_INLINING = 1 << 5,
+    IL2CPP_PROFILE_EXCEPTIONS = 1 << 6,
+    IL2CPP_PROFILE_ALLOCATIONS = 1 << 7,
+    IL2CPP_PROFILE_GC = 1 << 8,
+    IL2CPP_PROFILE_THREADS = 1 << 9,
+    IL2CPP_PROFILE_REMOTING = 1 << 10,
+    IL2CPP_PROFILE_TRANSITIONS = 1 << 11,
+    IL2CPP_PROFILE_ENTER_LEAVE = 1 << 12,
+    IL2CPP_PROFILE_COVERAGE = 1 << 13,
+    IL2CPP_PROFILE_INS_COVERAGE = 1 << 14,
+    IL2CPP_PROFILE_STATISTICAL = 1 << 15,
+    IL2CPP_PROFILE_METHOD_EVENTS = 1 << 16,
+    IL2CPP_PROFILE_MONITOR_EVENTS = 1 << 17,
+    IL2CPP_PROFILE_IOMAP_EVENTS = 1 << 18, /* this should likely be removed, too */
+    IL2CPP_PROFILE_GC_MOVES = 1 << 19,
+    IL2CPP_PROFILE_FILEIO = 1 << 20
+} Il2CppProfileFlags;
+
+typedef enum
+{
+    IL2CPP_PROFILE_FILEIO_WRITE = 0,
+    IL2CPP_PROFILE_FILEIO_READ
+} Il2CppProfileFileIOKind;
+
+typedef enum
+{
+    IL2CPP_GC_EVENT_START,
+    IL2CPP_GC_EVENT_MARK_START,
+    IL2CPP_GC_EVENT_MARK_END,
+    IL2CPP_GC_EVENT_RECLAIM_START,
+    IL2CPP_GC_EVENT_RECLAIM_END,
+    IL2CPP_GC_EVENT_END,
+    IL2CPP_GC_EVENT_PRE_STOP_WORLD,
+    IL2CPP_GC_EVENT_POST_STOP_WORLD,
+    IL2CPP_GC_EVENT_PRE_START_WORLD,
+    IL2CPP_GC_EVENT_POST_START_WORLD
+} Il2CppGCEvent;
+
+typedef enum
+{
+    IL2CPP_GC_MODE_DISABLED = 0,
+    IL2CPP_GC_MODE_ENABLED = 1,
+    IL2CPP_GC_MODE_MANUAL = 2
+} Il2CppGCMode;
+
+typedef enum
+{
+    IL2CPP_STAT_NEW_OBJECT_COUNT,
+    IL2CPP_STAT_INITIALIZED_CLASS_COUNT,
+    //IL2CPP_STAT_GENERIC_VTABLE_COUNT,
+    //IL2CPP_STAT_USED_CLASS_COUNT,
+    IL2CPP_STAT_METHOD_COUNT,
+    //IL2CPP_STAT_CLASS_VTABLE_SIZE,
+    IL2CPP_STAT_CLASS_STATIC_DATA_SIZE,
+    IL2CPP_STAT_GENERIC_INSTANCE_COUNT,
+    IL2CPP_STAT_GENERIC_CLASS_COUNT,
+    IL2CPP_STAT_INFLATED_METHOD_COUNT,
+    IL2CPP_STAT_INFLATED_TYPE_COUNT,
+    //IL2CPP_STAT_DELEGATE_CREATIONS,
+    //IL2CPP_STAT_MINOR_GC_COUNT,
+    //IL2CPP_STAT_MAJOR_GC_COUNT,
+    //IL2CPP_STAT_MINOR_GC_TIME_USECS,
+    //IL2CPP_STAT_MAJOR_GC_TIME_USECS
+} Il2CppStat;
+
+typedef enum
+{
+    IL2CPP_UNHANDLED_POLICY_LEGACY,
+    IL2CPP_UNHANDLED_POLICY_CURRENT
+} Il2CppRuntimeUnhandledExceptionPolicy;
+
+typedef struct Il2CppStackFrameInfo
+{
+    const MethodInfo* method;
+    uintptr_t raw_ip;
+    int sourceCodeLineNumber;
+    int ilOffset;
+    const char* filePath;
+} Il2CppStackFrameInfo;
+
+typedef void(*Il2CppMethodPointer)();
+
+typedef struct Il2CppMethodDebugInfo
+{
+    Il2CppMethodPointer methodPointer;
+    int32_t code_size;
+    const char* file;
+} Il2CppMethodDebugInfo;
+
+typedef struct
+{
+    void* (*malloc_func)(size_t size);
+    void* (*aligned_malloc_func)(size_t size, size_t alignment);
+    void (*free_func)(void* ptr);
+    void (*aligned_free_func)(void* ptr);
+    void* (*calloc_func)(size_t nmemb, size_t size);
+    void* (*realloc_func)(void* ptr, size_t size);
+    void* (*aligned_realloc_func)(void* ptr, size_t size, size_t alignment);
+} Il2CppMemoryCallbacks;
+
+typedef struct
+{
+    const char* name;
+    void(*connect)(const char* address);
+    int(*wait_for_attach)(void);
+    void(*close1)(void);
+    void(*close2)(void);
+    int(*send)(void* buf, int len);
+    int(*recv)(void* buf, int len);
+} Il2CppDebuggerTransport;
+
+#if !__SNC__ // SNC doesn't like the following define: "warning 1576: predefined meaning of __has_feature discarded"
+#ifndef __has_feature // clang specific __has_feature check
+#define __has_feature(x) 0 // Compatibility with non-clang compilers.
+#endif
+#endif
+
+#if _MSC_VER
+typedef wchar_t Il2CppChar;
+#elif __has_feature(cxx_unicode_literals)
+typedef char16_t Il2CppChar;
+#else
+typedef uint16_t Il2CppChar;
+#endif
+
+#if _MSC_VER
+typedef wchar_t Il2CppNativeChar;
+#define IL2CPP_NATIVE_STRING(str) L##str
+#else
+typedef char Il2CppNativeChar;
+#define IL2CPP_NATIVE_STRING(str) str
+#endif
+
+typedef void (*il2cpp_register_object_callback)(Il2CppObject** arr, int size, void* userdata);
+typedef void* (*il2cpp_liveness_reallocate_callback)(void* ptr, size_t size, void* userdata);
+typedef void (*Il2CppFrameWalkFunc) (const Il2CppStackFrameInfo* info, void* user_data);
+typedef void (*Il2CppProfileFunc) (Il2CppProfiler* prof);
+typedef void (*Il2CppProfileMethodFunc) (Il2CppProfiler* prof, const MethodInfo* method);
+typedef void (*Il2CppProfileAllocFunc) (Il2CppProfiler* prof, Il2CppObject* obj, Il2CppClass* klass);
+typedef void (*Il2CppProfileGCFunc) (Il2CppProfiler* prof, Il2CppGCEvent event, int generation);
+typedef void (*Il2CppProfileGCResizeFunc) (Il2CppProfiler* prof, int64_t new_size);
+typedef void (*Il2CppProfileFileIOFunc) (Il2CppProfiler* prof, Il2CppProfileFileIOKind kind, int count);
+typedef void (*Il2CppProfileThreadFunc) (Il2CppProfiler* prof, unsigned long tid);
+
+typedef const Il2CppNativeChar* (*Il2CppSetFindPlugInCallback)(const Il2CppNativeChar*);
+typedef void (*Il2CppLogCallback)(const char*);
+
+typedef size_t(*Il2CppBacktraceFunc) (Il2CppMethodPointer* buffer, size_t maxSize);
+
+struct Il2CppManagedMemorySnapshot;
+
+typedef uintptr_t il2cpp_array_size_t;
+#define ARRAY_LENGTH_AS_INT32(a) ((int32_t)a)
+
+#define DO_API(r, n, p) inline r (*n) p = nullptr;
+#define DO_API_NO_RETURN(r, n, p) inline r (*n) p = nullptr;
+#include "il2cpp-api-functions.h"
+#undef DO_API
+#undef DO_API_NO_RETURN
+
+void InitIl2CppFunctions();

@@ -85,6 +85,7 @@
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <IncludePath>$(ProjectDir)il2cpp;$(IncludePath)</IncludePath>
     <TargetName>version</TargetName>
+    <OutDir>E:\UintyTest\My project\x64 Il2Cpp</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LibraryPath>$(LibraryPath)</LibraryPath>
@@ -172,9 +173,9 @@
     <ClInclude Include="CActivator.h" />
     <ClInclude Include="CAppDomain.h" />
     <ClInclude Include="CBaseModule.h" />
+    <ClInclude Include="CICollection.h" />
     <ClInclude Include="CmdIdOut.h" />
     <ClInclude Include="CRspHandler.h" />
-    <ClInclude Include="CSharpRender3.h" />
     <ClInclude Include="CSharpRuntime.h" />
     <ClInclude Include="CSystemArray.h" />
     <ClInclude Include="CSystemType.h" />
@@ -207,11 +208,12 @@
     <ClInclude Include="CMonoAssembly.h" />
     <ClInclude Include="CModuleManager.h" />
     <ClInclude Include="OriginalNameAttribute.h" />
+    <ClInclude Include="Pb.h" />
     <ClInclude Include="PbUtil.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PrintHelper.h" />
     <ClInclude Include="ProtoDumper.h" />
-    <ClInclude Include="CSharpRender2.h" />
+    <ClInclude Include="DumpCs2.h" />
     <ClInclude Include="CSystemString.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="Version.h" />
@@ -221,9 +223,9 @@
     <ClCompile Include="CActivator.cpp" />
     <ClCompile Include="CAppDomain.cpp" />
     <ClCompile Include="CBaseModule.cpp" />
+    <ClCompile Include="CICollection.cpp" />
     <ClCompile Include="CmdIdOut.cpp" />
     <ClCompile Include="CRspHandler.cpp" />
-    <ClCompile Include="CSharpRender3.cpp" />
     <ClCompile Include="CSharpRuntime.cpp" />
     <ClCompile Include="CSystemArray.cpp" />
     <ClCompile Include="CSystemType.cpp" />
@@ -239,6 +241,7 @@
     <ClCompile Include="CMonoAssembly.cpp" />
     <ClCompile Include="CModuleManager.cpp" />
     <ClCompile Include="OriginalNameAttribute.cpp" />
+    <ClCompile Include="Pb.cpp" />
     <ClCompile Include="PbUtil.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -248,7 +251,7 @@
     </ClCompile>
     <ClCompile Include="PrintHelper.cpp" />
     <ClCompile Include="ProtoDumper.cpp" />
-    <ClCompile Include="CSharpRender2.cpp" />
+    <ClCompile Include="DumpCs2.cpp" />
     <ClCompile Include="CSystemString.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="Version.cpp" />

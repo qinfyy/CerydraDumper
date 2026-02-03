@@ -111,10 +111,7 @@
     <ClInclude Include="ProtoDumper.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="CSharpRender2.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="CSharpRender3.h">
+    <ClInclude Include="DumpCs2.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Il2CppApiWrapper.h">
@@ -168,6 +165,12 @@
     <ClInclude Include="OriginalNameAttribute.h">
       <Filter>头文件\CSharp</Filter>
     </ClInclude>
+    <ClInclude Include="Pb.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CICollection.h">
+      <Filter>头文件\CSharp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -203,10 +206,7 @@
     <ClCompile Include="ProtoDumper.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="CSharpRender2.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="CSharpRender3.cpp">
+    <ClCompile Include="DumpCs2.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Il2CppApiWrapper.cpp">
@@ -258,6 +258,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="OriginalNameAttribute.cpp">
+      <Filter>源文件\CSharp</Filter>
+    </ClCompile>
+    <ClCompile Include="Pb.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CICollection.cpp">
       <Filter>源文件\CSharp</Filter>
     </ClCompile>
   </ItemGroup>

@@ -206,6 +206,16 @@ public:
         );
     }
 
+    uintptr_t GetConstructor(uintptr_t Types) {
+        return CallIl2CppInstanceObjectMethod<bool>(
+            this->ptr,
+            "System.Type",
+            "GetConstructor",
+            {"System.Type[]"},
+            Types
+        );
+    }
+
     std::unique_ptr<CMonoField> _GetField(CSystemString name, int binding_flags) const {
         auto ptr = CallIl2CppInstanceObjectMethod<uintptr_t>(
             this->ptr,
@@ -259,13 +269,13 @@ class CMonoField : public CIl2CppWrapBase {
 public:
     using CIl2CppWrapBase::CIl2CppWrapBase;
 
-    CS_CLASS("System.Reflection.MonoField");
+    CS_CLASS("System.Reflection.RuntimeFieldInfo");
 
     // 属性
     CRuntimeType GetDeclaringType() const {
         return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
-            "System.Reflection.MonoField",
+            "System.Reflection.RuntimeFieldInfo",
             "get_DeclaringType",
             {}
         );
@@ -274,7 +284,7 @@ public:
     CRuntimeType GetFieldType() const {
         return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
-            "System.Reflection.MonoField",
+            "System.Reflection.RuntimeFieldInfo",
             "get_FieldType",
             {}
         );
@@ -283,7 +293,7 @@ public:
     CSystemString GetName() const {
         return CallIl2CppInstanceObjectMethod<CSystemString>(
             this->ptr,
-            "System.Reflection.MonoField",
+            "System.Reflection.RuntimeFieldInfo",
             "get_Name",
             {}
         );
@@ -292,7 +302,7 @@ public:
     CRuntimeFieldHandle GetFieldHandle() const {
         return CallIl2CppInstanceObjectMethod<CRuntimeFieldHandle>(
             this->ptr,
-            "System.Reflection.MonoField",
+            "System.Reflection.RuntimeFieldInfo",
             "get_FieldHandle",
             {}
         );
@@ -301,7 +311,7 @@ public:
     uintptr_t GetRawConstantValue() const {
         return CallIl2CppInstanceObjectMethod<uintptr_t>(
             this->ptr,
-            "System.Reflection.MonoField",
+            "System.Reflection.RuntimeFieldInfo",
             "GetRawConstantValue",
             {}
         );
@@ -311,7 +321,7 @@ public:
     CIl2CppArray GetCustomAttributes(bool inherit) const {
         return CallIl2CppInstanceObjectMethod<CIl2CppArray>(
             this->ptr,
-            "System.Reflection.MonoField",
+            "System.Reflection.RuntimeFieldInfo",
             "GetCustomAttributes",
             { "bool" },
             inherit
@@ -321,7 +331,7 @@ public:
     CIl2CppObject GetValue(uintptr_t obj) const {
         return CallIl2CppInstanceObjectMethod<CIl2CppObject>(
             this->ptr,
-            "System.Reflection.MonoField",
+            "System.Reflection.RuntimeFieldInfo",
             "GetValue",
             { "object" },
             obj
@@ -340,7 +350,7 @@ public:
     int32_t GetMetadataToken() const {
         return CallIl2CppInstanceObjectMethod<int32_t>(
             this->ptr,
-            "System.Reflection.MemberInfo",
+            "System.Reflection.RuntimeFieldInfo",
             "get_MetadataToken",
             {}
         );
@@ -368,13 +378,13 @@ class CMonoProperty : public CIl2CppWrapBase {
 public:
     using CIl2CppWrapBase::CIl2CppWrapBase;
 
-    CS_CLASS("System.Reflection.MonoProperty");
+    CS_CLASS("System.Reflection.RuntimePropertyInfo");
 
     // 属性
     CRuntimeType GetDeclaringType() const {
         return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
-            "System.Reflection.MonoProperty",
+            "System.Reflection.RuntimePropertyInfo",
             "get_DeclaringType",
             {}
         );
@@ -383,7 +393,7 @@ public:
     CRuntimeType GetPropertyType() const {
         return CallIl2CppInstanceObjectMethod<CRuntimeType>(
             this->ptr,
-            "System.Reflection.MonoProperty",
+            "System.Reflection.RuntimePropertyInfo",
             "get_PropertyType",
             {}
         );
@@ -392,7 +402,7 @@ public:
     CSystemString GetName() const {
         return CallIl2CppInstanceObjectMethod<CSystemString>(
             this->ptr,
-            "System.Reflection.MonoProperty",
+            "System.Reflection.RuntimePropertyInfo",
             "get_Name",
             {}
         );
