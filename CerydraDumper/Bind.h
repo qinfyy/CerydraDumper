@@ -221,14 +221,3 @@ ConverterType fn_name() const { \
     if (!value_obj) throw std::runtime_error("Field " field_name_literal " is null"); \
     return ConverterType(value_obj.raw_ptr()); \
 }
-
-// 用于静态字段
-#define CS_FIELD_STATIC(fn_name, field_name_literal, ConverterType) \
-static ConverterType fn_name() { \
-    auto klass = GetClass(); \
-    auto field_info = klass.get_field(field_name_literal); \
-    if (!field_info) throw std::runtime_error("No such static field: " field_name_literal); \
-    auto value_obj = field_info.get_value_object(CIl2CppObject(0)); \
-    if (!value_obj) throw std::runtime_error("Static field " field_name_literal " is null"); \
-    return ConverterType(value_obj.raw_ptr()); \
-}

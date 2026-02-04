@@ -10,7 +10,7 @@ class CMonoAssembly : public CIl2CppWrapBase {
 public:
     using CIl2CppWrapBase::CIl2CppWrapBase;
 
-    CS_CLASS("System.Runtime.InteropServices.Marshal");
+    CS_CLASS("System.Reflection.Assembly");
 
     CSystemString GetFullName() {
         return CallIl2CppInstanceObjectMethod<CSystemString>(ptr, "System.Reflection.Assembly", "get_FullName",{});
