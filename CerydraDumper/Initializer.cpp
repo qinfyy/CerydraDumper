@@ -17,6 +17,8 @@
 
 #include <DbgHelp.h>
 #include "Pb.h"
+#include "PbD.h"
+#include "PbE.h"
 #pragma comment(lib, "DbgHelp.lib")
 
 void WriteFullDump(EXCEPTION_POINTERS* ep)
@@ -285,7 +287,7 @@ void yep() {
         //    DebugPrintA("[ERROR] Assembly-CSharp not foundn");
 
         if (proto_assembly)
-            Pb(*proto_assembly, ".\\output\\dump.proto");
+            DumpProtos2(*proto_assembly, ".\\output\\dump.proto");
         else
             DebugPrintA("[ERROR] RPG.Network.Proto not found\n");
     }

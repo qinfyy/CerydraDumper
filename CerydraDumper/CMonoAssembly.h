@@ -1,6 +1,7 @@
 #pragma once
 #include "Il2CppApiWrapper.h"
 #include "CSystemString.h"
+#include "CSharpRuntime.h"
 #include "Bind.h"
 #include <string>
 #include <vector>
@@ -19,6 +20,10 @@ public:
 
     CIl2CppArray GetTypes(bool flags) {
         return CallIl2CppInstanceObjectMethod<CIl2CppArray, bool>(ptr, "System.Reflection.Assembly", "GetTypes",{ "bool" }, flags);
+    }
+
+    CRuntimeType GetTypeByName(CSystemString name) {
+        return CallIl2CppInstanceObjectMethod<CRuntimeType>(this->ptr, "System.Reflection.Assembly", "GetType", { "string" }, name);
     }
 };
 

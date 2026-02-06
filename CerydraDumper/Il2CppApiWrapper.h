@@ -24,6 +24,10 @@ public:
     CIl2CppWrapBase() : ptr(0) {}
     explicit CIl2CppWrapBase(uintptr_t p) : ptr(p) {}
 
+    explicit operator bool() const { return ptr != 0; }
+
+    bool operator!() const { return ptr == 0; }
+
     bool is_null() const { return ptr == 0; }
 
     operator void* () const { return reinterpret_cast<void*>(ptr); }

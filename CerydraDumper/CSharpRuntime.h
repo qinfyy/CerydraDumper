@@ -207,12 +207,33 @@ public:
     }
 
     uintptr_t GetConstructor(uintptr_t Types) {
-        return CallIl2CppInstanceObjectMethod<bool>(
+        return CallIl2CppInstanceObjectMethod<uintptr_t>(
             this->ptr,
             "System.Type",
             "GetConstructor",
             {"System.Type[]"},
             Types
+        );
+    }
+
+    //public override bool IsAssignableFrom(System.Type c); 
+    bool IsAssignableFrom(uintptr_t Types) {
+        return CallIl2CppInstanceObjectMethod<bool>(
+            this->ptr,
+            "System.RuntimeType",
+            "IsAssignableFrom",
+            { "System.Type" },
+            Types
+        );
+    }
+
+    //public override System.Type[] GetInterfaces();
+    CIl2CppArray GetInterfaces() {
+        return CallIl2CppInstanceObjectMethod<CIl2CppArray>(
+            this->ptr,
+            "System.RuntimeType",
+            "GetInterfaces",
+            {}
         );
     }
 
