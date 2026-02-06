@@ -26,6 +26,10 @@ public:
 
     bool is_null() const { return ptr == 0; }
 
+    explicit operator bool() const { return ptr != 0; }
+
+    bool operator!() const { return ptr == 0; }
+
     operator void* () const { return reinterpret_cast<void*>(ptr); }
     operator uintptr_t() const { return ptr; }
 
