@@ -33,4 +33,7 @@ public:
         return !(*this == rhs);
     }
 
+    operator std::string() const {
+        return AsString();
+    }
 };

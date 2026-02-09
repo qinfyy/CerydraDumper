@@ -14,6 +14,7 @@
 #include "CmdIdOut.h"
 #include "ProtoDumper.h"
 #include "DumpCs2.h"
+#include "UnityResolve.hpp"
 
 #include <DbgHelp.h>
 #include "Pb.h"
@@ -267,7 +268,7 @@ void yep() {
             std::string assembly_name = mono_assembly.GetName().AsString();
             DebugPrintA("[yep] Assembly: %s\n", assembly_name.c_str());
 
-            if (assembly_name.rfind("Assembly-CSharp", 0) == 0) { // starts_with
+            if (assembly_name == "Game") { // starts_with
                 proto_assembly = mono_assembly;
             }
             else if (assembly_name.rfind("RPG.GameCore.Config,", 0) == 0) {
@@ -301,7 +302,8 @@ DWORD WINAPI MainThread(LPVOID) {
     DebugPrintA("[INFO] CerydraDumper\n");
     DebugPrintA("[INFO] Waiting for GameAssembly.dll ...\n");
 
-    while (!GetModuleHandle(L"GameAssembly.dll")) {
+    HMODULE base;
+    while (!(base = GetModuleHandle(L"GameAssembly.dll"))) {
         Sleep(200);
     }
 
@@ -314,6 +316,8 @@ DWORD WINAPI MainThread(LPVOID) {
     }
 	DebugPrintA("\n");
     DebugPrintA("[INFO] Start il2cpp dump!\n");
+
+    UnityResolve::Init(base, UnityResolve::Mode::Mono);
 
     InitIl2CppFunctions();
     InitCache();

@@ -237,6 +237,17 @@ public:
         );
     }
 
+    CRuntimeType GetDeclaringType() {
+        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
+            this->ptr,
+            "System.RuntimeType",
+            "get_DeclaringType",
+            {}
+        );
+    }
+
+    CSystemString GetAssemblyName();
+
     std::unique_ptr<CMonoField> _GetField(CSystemString name, int binding_flags) const {
         auto ptr = CallIl2CppInstanceObjectMethod<uintptr_t>(
             this->ptr,

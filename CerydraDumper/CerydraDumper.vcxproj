@@ -217,6 +217,7 @@
     <ClInclude Include="ProtoDumper.h" />
     <ClInclude Include="DumpCs2.h" />
     <ClInclude Include="CSystemString.h" />
+    <ClInclude Include="UnityResolve.hpp" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="Version.h" />
   </ItemGroup>

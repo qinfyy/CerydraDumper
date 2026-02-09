@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "CSharpRuntime.h"
+#include "CMonoAssembly.h"
 
 CIl2CppField CRuntimeType::GetField(const char* name) const {
     try {
@@ -37,4 +38,16 @@ CIl2CppField CRuntimeType::GetField(const char* name) const {
     throw std::runtime_error(
         "No such field " + std::string(name) + " in " + this->GetIl2CppType().name()
     );
+}
+
+
+CSystemString CRuntimeType::GetAssemblyName() {
+    auto monoAssembly = CallIl2CppInstanceObjectMethod<CMonoAssembly>(
+        ptr,
+        "System.RuntimeType",
+        "get_Assembly",
+        {}
+    );
+
+    return monoAssembly.GetName();
 }
