@@ -264,7 +264,7 @@ public:
     CIl2CppField GetField(const char* name) const;
 
     static CRuntimeType FromClass(CIl2CppClass klass) {
-        uintptr_t type_ptr = CSystemType::GetTypeFromHandle((Il2CppType*)klass.byval_arg());
+        uintptr_t type_ptr = CSystemType::GetTypeFromHandle(reinterpret_cast<Il2CppType*>(klass.byval_arg().raw_ptr()));
         return CRuntimeType(type_ptr);
     }
 

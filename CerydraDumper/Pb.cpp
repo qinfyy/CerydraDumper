@@ -427,7 +427,7 @@ uintptr_t create_input_stream(BYTE* data, int32_t len) {
         throw std::runtime_error("failed to find Google.Protobuf.CodedInputStream");
 	}
 
-    auto coded_input_stream_obj = CIl2CppObject::from_uintptr((uintptr_t)il2cpp_object_new(coded_input_stream));
+    auto coded_input_stream_obj = CIl2CppObject::from_uintptr(reinterpret_cast<uintptr_t>(il2cpp_object_new(reinterpret_cast<const Il2CppClass*>(coded_input_stream->raw_ptr()))));
     auto constructor = coded_input_stream->find_method(".ctor", { "System.Byte[]" });
     if (constructor.is_null()) {
         throw std::runtime_error("failed to find CodedInputStream(byte[]) constructor");

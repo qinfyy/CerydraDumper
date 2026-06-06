@@ -183,7 +183,7 @@ static std::string GetFieldTypeString(CIl2CppObject field)
     if (!field)
         return "unknown";
 
-    Il2CppClass* fieldClass = il2cpp_object_get_class(field);
+    Il2CppClass* fieldClass = il2cpp_object_get_class(reinterpret_cast<Il2CppObject*>(field.raw_ptr()));
     if (!fieldClass)
         return "unknown";
 
