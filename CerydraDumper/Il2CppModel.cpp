@@ -187,6 +187,23 @@ namespace Cerydra::IL2CPP
         return nullptr;
     }
 
+    bool Class::Implements(const Class* interfaceClass) const
+    {
+        if (!interfaceClass) {
+            return false;
+        }
+
+        for (auto* current = this; current; current = current->parentClass) {
+            for (auto* iface : current->interfaces) {
+                if (iface == interfaceClass) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     void* Class::GetTypeObject()
     {
         if (objType) {

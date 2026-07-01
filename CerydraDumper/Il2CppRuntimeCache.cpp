@@ -97,6 +97,7 @@ void Il2CppRuntimeCache::Init()
                 }
             }
         }
+        BuildInterfaces();
 
         g_initialized = true;
         DebugPrintA(
@@ -346,6 +347,28 @@ void Il2CppRuntimeCache::BuildMethods(Class* klass)
         g_methods.push_back(method);
         g_methodByAddress[method->address] = method;
         g_methodBySignature[method->SignatureKey()] = method;
+    }
+}
+
+void Il2CppRuntimeCache::BuildInterfaces()
+{
+    for (auto* klass : g_classes) {
+        if (!klass || !klass->address) {
+            continue;
+        }
+
+        void* iter = nullptr;
+        while (true) {
+            auto* nativeInterface = il2cpp_class_get_interfaces(reinterpret_cast<Il2CppClass*>(klass->address), &iter);
+            if (!nativeInterface) {
+                break;
+            }
+
+            auto it = g_classByAddress.find(nativeInterface);
+            if (it != g_classByAddress.end()) {
+                klass->interfaces.push_back(it->second);
+            }
+        }
     }
 }
 

@@ -1,567 +1,438 @@
 ﻿#include "pch.h"
-//#include "PbE.h"
-//#include "Il2CppFunctions.h"
-//#include <vector>
-//#include <sstream>
-//#include "PrintHelper.h"
-//#include "Util.h"
-//#include <filesystem>
-//#include <unordered_map>
-//#include <fstream>
-//#include <windows.h>
-//#include "CAppDomain.h"
-//#include <sstream>
-//#include <string>
-//#include <vector>
-//#include "CSharpRuntime.h"
-//#include "PbUtil.h"
-//#include <optional>
-//#include "OriginalNameAttribute.h"
-//#include <regex>
-//#include <DbgHelp.h>
-//#include <iostream>
-//#include <filesystem>
-//
-//static const bool FIX_ENUM = true;
-//static const char* PROTOBUF_IMAGE = "Assembly-CSharp.dll";
-//
-//static Il2CppClass* _originalNameAttr = nullptr;
-//
-//std::optional<CMonoAssembly> HasGoogleProtobuf()
-//{
-//    auto domain = CAppDomain::GetCurrentDomain();
-//    auto assemblies = domain.GetAssemblies().to_vec<CMonoAssembly>();
-//
-//    for (size_t i = 0; i < assemblies.size(); ++i)
-//    {
-//        CMonoAssembly mono_assembly(assemblies[i]);
-//        std::string assembly_name = mono_assembly.GetName();
-//
-//        if (assembly_name.rfind("Google.Protobuf", 0) == 0)
-//        {
-//            DebugPrintA("[ProtoDump] Found Google.Protobuf Assembly: %s\n", assembly_name.c_str());
-//            return mono_assembly;
-//        }
-//
-//        auto types = mono_assembly.GetTypes(true);
-//        for (size_t j = 0; j < types.length(); ++j)
-//        {
-//            auto type_ptr = types.get<uintptr_t>(j);
-//            CRuntimeType type(type_ptr);
-//
-//            auto typeNsp = type.GetNamespace().AsString();
-//            auto typeName = type.GetName().AsString();
-//            if (typeNsp.rfind("Google.Protobuf", 0) == 0)
-//            {
-//                DebugPrintA("[ProtoDump] Found Google.Protobuf namespace in %s (%s.%s)\n", assembly_name.c_str(), typeNsp.c_str(), typeName.c_str());
-//                return mono_assembly;
-//            }
-//        }
-//    }
-//
-//    return std::nullopt;
-//}
-//
-//static std::vector<CRuntimeType> GetAllProtobufMessages(CMonoAssembly monoAssembly, CMonoAssembly gpb)
-//{
-//    std::vector<CRuntimeType> messages;
-//
-//    auto _iMessageType = gpb.GetTypeByName("Google.Protobuf.IMessage");
-//
-//    auto types = monoAssembly.GetTypes(60 != 0);
-//    for (size_t i = 0; i < types.length(); ++i) {
-//        uintptr_t type_ptr = types.get<uintptr_t>(i);
-//        CRuntimeType runtime_type(type_ptr);
-//
-//        if (runtime_type.IsGenericType() || runtime_type.IsEnum() || !runtime_type.GetDeclaringType().is_null())
-//            continue;
-//
-//        // 获取当前类型的接口
-//        auto ifnsVec = runtime_type.GetInterfaces().to_vec<CRuntimeType>();
-//        bool isMessageType = false;
-//        for (size_t j = 0; j < ifnsVec.size(); ++j) {
-//            CRuntimeType ifn_type(ifnsVec[j]);
-//            if (_iMessageType.IsAssignableFrom(ifn_type)) {
-//                isMessageType = true;
-//                break;
-//            }
-//        }
-//
-//        if (isMessageType) {
-//            messages.push_back(runtime_type);
-//        }
-//    }
-//
-//    return messages;
-//}
-//
-//static std::vector<CRuntimeType> GetAllProtobufEnums(CMonoAssembly monoAssembly)
-//{
-//    std::vector<CRuntimeType> enums;
-//
-//    // 获取 assembly 内所有类型
-//    auto types = monoAssembly.GetTypes(60 != 0); // length 或者 max 60
-//    for (size_t i = 0; i < types.length(); ++i) {
-//        uintptr_t type_ptr = types.get<uintptr_t>(i);
-//        CRuntimeType t(type_ptr);
-//        DebugPrintA("CRuntimeType Name: %s\n", t.GetName().AsString().c_str());
-//
-//        // 必须是 enum，且没有 DeclaringType（顶层 enum）
-//        if (!t.IsEnum() || !t.GetDeclaringType().is_null())
-//            continue;
-//
-//        bool hasOriginalName = false;
-//
-//        // 遍历字段
-//        auto fields = t.GetFields(60); // 60 = 最大字段数
-//        for (size_t j = 0; j < fields.length(); ++j) {
-//            auto field_ptr = fields.get<uintptr_t>(j);
-//            CMonoField field(field_ptr);
-//
-//            // 跳过非字面量字段（Enum 成员）
-//            if (!field.IsLiteral())
-//                continue;
-//
-//            // 检查 OriginalNameAttribute
-//            auto attrs = field.GetCustomAttributes(true);
-//            for (size_t k = 0; k < attrs.length(); ++k) {
-//                CIl2CppObject attrObj = attrs.get<CIl2CppObject>(k);
-//                if (!attrObj)
-//                    continue;
-//
-//                auto className = attrObj.get_class().name();
-//                if (className == "OriginalNameAttribute") {
-//                    hasOriginalName = true;
-//                    break;
-//                }
-//            }
-//
-//            if (hasOriginalName)
-//                break;
-//        }
-//
-//        if (hasOriginalName)
-//            enums.push_back(t);
-//    }
-//
-//    return enums;
-//}
-//
-//static std::string EnumToString(CRuntimeType enumType, int value)
-//{
-//    if (!enumType)
-//        return "";
-//
-//    void* iter = nullptr;
-//    FieldInfo* field = nullptr;
-//
-//    auto fields = enumType.GetFields(60);
-//
-//    for (auto i = 0; i < fields.length(); i++) {
-//        auto field = fields.get<CMonoField>(i);
-//
-//        if (!field.IsLiteral())
-//            continue;
-//
-//        uintptr_t enum_val_ptr = field.GetRawConstantValue();
-//        CIl2CppObject enum_val_obj(enum_val_ptr);
-//        int32_t fieldValue = enum_val_obj.unbox<int32_t>();
-//        //il2cpp_field_static_get_value(field, &fieldValue);
-//
-//        if (fieldValue == value)
-//        {
-//            return field.GetName();
-//        }
-//    }
-//
-//    return "";
-//}
-//
-//// 获取 FieldType 名称
-//static std::string GetFieldTypeString(CIl2CppObject field)
-//{
-//    if (!field)
-//        return "unknown";
-//
-//    Il2CppClass* fieldClass = il2cpp_object_get_class(reinterpret_cast<Il2CppObject*>(field.raw_ptr()));
-//    if (!fieldClass)
-//        return "unknown";
-//
-//    // 获取 FieldType 枚举值
-//    int fieldTypeInt = CallIl2CppInstanceObjectMethodDynamic<int>(field, "get_FieldType", {});
-//
-//    auto enumT = CRuntimeType::FromName("Google.Protobuf.Reflection.FieldType");
-//    std::string fieldTypeName = EnumToString(enumT, fieldTypeInt);
-//
-//
-//    for (auto& c : fieldTypeName) c = tolower(c); // 转小写
-//    std::string FieldType = fieldTypeName;
-//
-//    // 处理基本类型
-//    if (FieldType == "int32") return "int32";
-//    if (FieldType == "int64") return "int64";
-//    if (FieldType == "uint32") return "uint32";
-//    if (FieldType == "uint64") return "uint64";
-//    if (FieldType == "sint32") return "sint32";
-//    if (FieldType == "sint64") return "sint64";
-//    if (FieldType == "fixed32") return "fixed32";
-//    if (FieldType == "fixed64") return "fixed64";
-//    if (FieldType == "sfixed32") return "sfixed32";
-//    if (FieldType == "sfixed64") return "sfixed64";
-//    if (FieldType == "float") return "float";
-//    if (FieldType == "double") return "double";
-//    if (FieldType == "bool") return "bool";
-//    if (FieldType == "string") return "string";
-//    if (FieldType == "bytes") return "bytes";
-//
-//
-//    // enum 类型
-//    if (FieldType == "enum")
-//    {
-//        // 获取 EnumDescriptor
-//        CIl2CppObject enumDescriptor = CallIl2CppInstanceObjectMethodDynamic<CIl2CppObject>(field, "get_EnumType", {});
-//
-//        if (!enumDescriptor)
-//            return "unknown_enum";
-//
-//        CSystemString nameObj = CallIl2CppInstanceObjectMethodDynamic<CSystemString>(enumDescriptor, "get_Name", {});
-//        if (!enumDescriptor)
-//            return "unknown_enum";
-//
-//        return nameObj;
-//    }
-//
-//
-//    if (FieldType == "message")
-//    {
-//
-//        CIl2CppObject enumDescriptor = CallIl2CppInstanceObjectMethodDynamic<CIl2CppObject>(field, "get_MessageType", {});
-//
-//        if (!enumDescriptor)
-//            return "unknown_message";
-//
-//        CSystemString nameObj = CallIl2CppInstanceObjectMethodDynamic<CSystemString>(enumDescriptor, "get_Name", {});
-//        if (!enumDescriptor)
-//            return "unknown_message";
-//
-//        return nameObj;
-//    }
-//
-//    return FieldType;
-//}
-//
-//static std::vector<CIl2CppObject> GetAllFields(CIl2CppObject messageDescriptor)
-//{
-//    std::vector<CIl2CppObject> fields;
-//
-//    if (!messageDescriptor)
-//        return fields;
-//
-//    //CIl2CppObject fieldCollection = GetFieldsCollection(messageDescriptor);
-//    
-//    //class FieldCollection
-//    uintptr_t fieldCollection = CallIl2CppInstanceObjectMethodDynamic<uintptr_t>(messageDescriptor, "get_Fields", {});
-//
-//    auto fieldList = CallIl2CppInstanceObjectMethodDynamic<CNativeList>(fieldCollection, "InDeclarationOrder", {});
-//    if (!fieldList)
-//        return fields;
-//
-//    auto fieldArr = fieldList.Items();
-//    for (auto i = 0; i < fieldArr.length(); i++) {
-//        auto obj_ptr = fieldArr.get<uintptr_t>(i);
-//        CIl2CppObject obj(obj_ptr);
-//        fields.push_back(obj);
-//    }
-//
-//    return fields;
-//}
-//
-//static std::string GetFieldDefinition(CIl2CppObject field)
-//{
-//    if (!field) return "";
-//
-//    auto sysstrFieldName = CallIl2CppInstanceObjectMethodDynamic<CSystemString>(field, "get_Name", {});
-//    auto fieldName = sysstrFieldName.AsString();
-//
-//    int fieldNumber = CallIl2CppInstanceObjectMethodDynamic<int>(field, "get_FieldNumber", {});
-//
-//    auto isMap = CallIl2CppInstanceObjectMethodDynamic<bool>(field, "get_IsMap", {});
-//
-//    if (isMap)
-//    {
-//        CIl2CppObject mapEntryDescriptor = CallIl2CppInstanceObjectMethodDynamic<CIl2CppObject>(field, "get_MessageType", {});
-//
-//        CIl2CppObject mapFieldsCollection = CallIl2CppInstanceObjectMethodDynamic<CIl2CppObject>(mapEntryDescriptor, "get_Fields", {});
-//        if (!mapFieldsCollection)
-//            return "// Error: Map FieldCollection missing";
-//
-//        auto mapFields = GetAllFields(mapEntryDescriptor);
-//        if (mapFields.size() < 2)
-//            return "// Error: Map fields count != 2";
-//        std::string keyType = GetFieldTypeString(mapFields[0]);
-//        std::string valueType = GetFieldTypeString(mapFields[1]);
-//
-//        return "map<" + keyType + ", " + valueType + "> " + fieldName + " = " + std::to_string(fieldNumber) + ";";
-//    }
-//    else
-//    {
-//        auto isRepeated = CallIl2CppInstanceObjectMethodDynamic<bool>(field, "get_IsRepeated", {});
-//
-//        std::string typeStr = GetFieldTypeString(field);
-//        std::string repeatedStr = isRepeated ? "repeated " : "";
-//
-//        return repeatedStr + typeStr + " " + fieldName + " = " + std::to_string(fieldNumber) + ";";
-//    }
-//}
-//
-//static std::string GetIndent(int indentLevel)
-//{
-//    return std::string(indentLevel * 4, ' ');
-//}
-//
-//static void GenerateEnumDefinitionByDescriptor(CIl2CppObject enumDescriptor, std::stringstream& out, int indentLevel = 0)
-//{
-//    if (!enumDescriptor)
-//        return;
-//
-//    std::string indent = GetIndent(indentLevel);
-//
-//    std::string enumName = CallIl2CppInstanceObjectMethodDynamic<CSystemString>(enumDescriptor, "get_Name", {});
-//
-//    out << indent << "// Enum Descriptor Generation\n";
-//    out << indent << "enum " << enumName << " {\n";
-//
-//    auto valueListObj = CallIl2CppInstanceObjectMethodDynamic<CNativeList>(enumDescriptor, "get_Values", {});
-//    auto valueArrayObj = valueListObj.Items();
-//    auto count = valueArrayObj.length();
-//
-//    for (int i = 0; i < count; ++i)
-//    {
-//        uintptr_t obj_ptr = valueArrayObj.get<uintptr_t>(i);
-//        if (obj_ptr)
-//        {
-//            std::string sName = CallIl2CppInstanceObjectMethodDynamic<CSystemString>(obj_ptr, "get_Name", {});
-//            auto iNum = CallIl2CppInstanceObjectMethodDynamic<int>(obj_ptr, "get_Number", {});
-//
-//            out << indent << "    " << sName << " = " << iNum << ";\n";
-//        }
-//    }
-//
-//    out << indent << "}\n\n";
-//}
-//
-//static void GenerateMessageDefinitionByDescriptor(CIl2CppObject descriptor, std::stringstream& out, int indentLevel = 0)
-//{
-//    if (!descriptor) return;
-//
-//    auto klass = descriptor.get_class();
-//    CSystemString systemString = CallIl2CppInstanceObjectMethodDynamic<CSystemString>(descriptor, "get_Name", {});
-//    std::string name = systemString;
-//
-//    if (name.empty()) {
-//        DebugPrintA("[ProtoDump] Message descriptor has no name\n");
-//        out << "// Error: Message descriptor has no name\n";
-//        return;
-//    }
-//
-//    if (name.size() >= 5 && std::equal(name.end() - 5, name.end(), L"Entry"))
-//        return;
-//
-//    std::string indent = GetIndent(indentLevel);
-//
-//    out << indent << "// Message Descriptor Generation\n";
-//    out << indent << "message " << name << " {\n";
-//
-//    auto fields = GetAllFields(descriptor);
-//    std::unordered_map<CIl2CppObject*, std::vector<CIl2CppObject>> oneofGroups;
-//
-//    for (auto field : fields)
-//    {
-//        //FieldCollection
-//
-//        auto name = field.get_class().name();
-//
-//        CIl2CppObject containingOneof = CallIl2CppInstanceObjectMethodDynamic<CIl2CppObject>(field, "get_ContainingOneof", {});
-//
-//        if (containingOneof)
-//            oneofGroups[&containingOneof].push_back(field);
-//    }
-//
-//    for (auto& [oneofDesc, fieldList] : oneofGroups)
-//    {
-//        auto cls = oneofDesc->get_class();
-//        auto sysstrOneofName = CallIl2CppInstanceObjectMethodDynamic<CSystemString>(*oneofDesc, "get_Name", {});
-//        auto oneofName = sysstrOneofName.AsString();
-//        out << indent << "    oneof " << oneofName << " {\n";
-//        for (auto field : fieldList)
-//            out << indent << "        " << GetFieldDefinition(field) << "\n";
-//        out << indent << "    }\n\n";
-//    }
-//
-//    for (auto field : fields)
-//    {
-//        CIl2CppObject containingOneof = CallIl2CppInstanceObjectMethodDynamic<CIl2CppObject>(field, "get_ContainingOneof", {});
-//        if (containingOneof)
-//            continue;
-//
-//        out << indent << "    " << GetFieldDefinition(field) << "\n";
-//    }
-//
-//    //// 嵌套枚举
-//    std::vector<CIl2CppObject> nestedEnums;
-//    auto enumListObj = CallIl2CppInstanceObjectMethodDynamic<CNativeList>(descriptor, "get_EnumTypes", {});
-//    auto enumArrayObj = enumListObj.Items();
-//    auto enumArrayCount = enumArrayObj.length();
-//    for (int i = 0; i < enumArrayCount; ++i)
-//    {
-//        uintptr_t obj_ptr = enumArrayObj.get<uintptr_t>(i);
-//        CIl2CppObject obj(obj_ptr);
-//        if (obj)
-//            nestedEnums.push_back(obj);
-//    }
-//
-//    for (auto e : nestedEnums)
-//        GenerateEnumDefinitionByDescriptor(e, out, indentLevel + 1);
-//
-//    // 嵌套消息
-//    std::vector<CIl2CppObject> nestedMessages;
-//    auto messageListObj = CallIl2CppInstanceObjectMethodDynamic<CNativeList>(descriptor, "get_NestedTypes", {});
-//    auto messageArrayObj = messageListObj.Items();
-//    auto messageArrayCount = messageArrayObj.length();
-//    for (int i = 0; i < messageArrayCount; ++i)
-//    {
-//        uintptr_t obj_ptr = messageArrayObj.get<uintptr_t>(i);
-//        CIl2CppObject obj(obj_ptr);
-//        if (obj)
-//            nestedMessages.push_back(obj);
-//    }
-//
-//    for (auto nested : nestedMessages)
-//        GenerateMessageDefinitionByDescriptor(nested, out, indentLevel + 1);
-//
-//    out << indent << "}\n\n";
-//}
-//
-//static void GenerateEnumDefinition(CRuntimeType rt, std::stringstream& out, int indentLevel = 0)
-//{
-//    std::string indent = GetIndent(indentLevel);
-//    std::string className = rt.GetName();
-//    std::string nsp = rt.GetNamespace();
-//    //auto* clsImage = il2cpp_class_get_image(enumClass);
-//    std::string assemblyName = rt.GetAssemblyName();
-//
-//    out << indent << "// Class: " << className << ", Namespaze: " << nsp << ", Assembly: " << assemblyName << "\n";
-//    out << indent << "// Il2Cpp Class Generation\n";
-//    out << indent << "enum " << className << " {\n";
-//
-//    void* iter = nullptr;
-//    FieldInfo* field = nullptr;
-//
-//    auto fields = rt.GetFields(60);
-//    size_t i = 0;
-//    for (size_t i = 0; i < fields.length(); ++i) {
-//        auto field = fields.get<CMonoField>(i);
-//        if (!field) continue;
-//
-//        auto fieldType = field.GetFieldType();
-//        auto full_name_field = fieldType.GetFullName().AsString();
-//        if (field.GetDeclaringType().GetName().AsString() != rt.GetName().AsString()) continue;
-//
-//        if (!field.IsLiteral())
-//            continue;
-//
-//        std::optional<std::string> enum_key;
-//        auto attrs = field.GetCustomAttributes(true);
-//        for (int j = 0; j < attrs.length(); ++j) {
-//            auto n_rt = CIl2CppObject(attrs.get<uintptr_t>(j));
-//            if (n_rt.get_class().name() == "OriginalNameAttribute") {
-//                enum_key = OriginalNameAttribute(n_rt.raw_ptr()).GetName();
-//            }
-//        }
-//        if (!enum_key.has_value()) enum_key = field.GetName();
-//
-//        uintptr_t ptr = field.GetRawConstantValue();
-//        CIl2CppObject obj_val(ptr);
-//        int enum_value = obj_val.unbox<int32_t>();
-//
-//        std::string strName = *enum_key;
-//        if (FIX_ENUM) 
-//            strName = rt.GetName().AsString() + "_" + strName;
-//
-//        out << indent << "    " << strName << " = " << enum_value << ";\n";
-//    }
-//
-//    out << indent << "}\n\n";
-//}
-//
-//static void GenerateMessageDefinition(CRuntimeType rt, std::stringstream& out, int indentLevel = 0)
-//{
-//    if (!rt)
-//        return;
-//
-//    auto il2cppClass = rt.GetIl2CppType().get_class();
-//    uintptr_t descriptor_ptr = CallIl2CppStaticMethodInternal<uintptr_t>(il2cppClass, "get_Descriptor", {});
-//    CIl2CppObject descriptor(descriptor_ptr);
-//
-//    std::string indent = GetIndent(indentLevel);
-//    std::string className = rt.GetName();
-//    std::string nsp = rt.GetNamespace();
-//    std::string assemblyName = rt.GetAssemblyName();
-//
-//    out << indent << "// Class: " << className << ", Namespaze: " << nsp << ", Assembly: " << assemblyName << "\n";
-//
-//    // 解析 descriptor 生成 proto
-//    GenerateMessageDefinitionByDescriptor(descriptor, out, indentLevel);
-//}
-//
-//// 主函数
-//void DumpProtos2(CMonoAssembly mono_assembly, const char* path)
-//{
-//    std::filesystem::path filePath(path);
-//    std::filesystem::path directory = filePath.parent_path();
-//    if (!std::filesystem::exists(directory)) {
-//        std::filesystem::create_directories(directory);
-//    }
-//
-//    auto gpb = HasGoogleProtobuf();
-//
-//    if (!gpb.has_value())
-//    {
-//        DebugPrintA("[ProtoDump] Google.Protobuf not found, skip proto dump\n");
-//        return;
-//    }
-//
-//    std::ofstream file(path);
-//    if (file.is_open()) {
-//        auto messages = GetAllProtobufMessages(mono_assembly, gpb.value());
-//        auto enums = GetAllProtobufEnums(mono_assembly);
-//        DebugPrintA("enums count: %d\n", enums.size());
-//        DebugPrintA("messages count: %d\n", messages.size());
-//
-//        std::stringstream ss;
-//        ss << "// CerydarDumper\n\n";
-//        ss << "syntax = \"proto3\";\n\n";
-//
-//        for (auto e : enums) {
-//            auto enumName = e.GetName().AsString();
-//            auto enumNsp = e.GetNamespace().AsString();
-//            DebugPrintA("messagesEnum: %s.%s\n", enumNsp.c_str(), enumName.c_str());
-//            GenerateEnumDefinition(e, ss);
-//        }
-//
-//        for (auto m : messages) {
-//            auto enumName = m.GetName().AsString();
-//            auto enumNsp = m.GetNamespace().AsString();
-//            DebugPrintA("[ProtoDump] Message: %s.%s\n", enumNsp.c_str(), enumName.c_str());
-//           GenerateMessageDefinition(m, ss);
-//        }
-//
-//        file << ss.str();
-//        file.close();
-//        DebugPrintA("[ProtoDump] dump done!\n");
-//    }
-//    else
-//    {
-//        DebugPrintA("[ProtoDump] [ERROR] Failed to open file for writing: %s\n", path);
-//    }
-//}
+#include "PbE.h"
+#include "OriginalNameAttribute.h"
+#include "PrintHelper.h"
+#include "RuntimeType.h"
+#include <algorithm>
+#include <filesystem>
+#include <fstream>
+#include <optional>
+#include <sstream>
+#include <unordered_map>
+
+using namespace Cerydra::CSharp;
+using namespace Cerydra::IL2CPP;
+
+namespace
+{
+    constexpr bool FIX_ENUM = true;
+
+    std::string GetIndent(int indentLevel)
+    {
+        return std::string(indentLevel * 4, ' ');
+    }
+
+    std::string ToLower(std::string value)
+    {
+        std::transform(value.begin(), value.end(), value.begin(), [](unsigned char ch) {
+            return static_cast<char>(std::tolower(ch));
+        });
+        return value;
+    }
+
+    bool IsTopLevelClass(const Class* klass)
+    {
+        return klass && klass->name.find('/') == std::string::npos && klass->name.find('+') == std::string::npos;
+    }
+
+    Assembly* FindGoogleProtobufAssembly()
+    {
+        for (auto* assembly : Il2CppRuntimeCache::Assemblies()) {
+            if (!assembly || !assembly->image) {
+                continue;
+            }
+
+            if (assembly->name.rfind("Google.Protobuf", 0) == 0) {
+                DebugPrintA("[ProtoDump] Found Google.Protobuf Assembly: %s\n", assembly->name.c_str());
+                return assembly;
+            }
+
+            for (auto* klass : assembly->image->classes) {
+                if (klass && klass->namespaze.rfind("Google.Protobuf", 0) == 0) {
+                    DebugPrintA("[ProtoDump] Found Google.Protobuf namespace in %s (%s.%s)\n",
+                        assembly->name.c_str(),
+                        klass->namespaze.c_str(),
+                        klass->name.c_str());
+                    return assembly;
+                }
+            }
+        }
+
+        return nullptr;
+    }
+
+    std::vector<Class*> GetAllProtobufMessages(Assembly* targetAssembly)
+    {
+        std::vector<Class*> messages;
+        auto* iMessageClass = Il2CppRuntimeCache::GetClass("Google.Protobuf.IMessage");
+        if (!targetAssembly || !targetAssembly->image || !iMessageClass) {
+            return messages;
+        }
+
+        for (auto* klass : targetAssembly->image->classes) {
+            if (!klass || klass->isEnum || klass->isInterface || !IsTopLevelClass(klass)) {
+                continue;
+            }
+
+            if (klass->Implements(iMessageClass)) {
+                messages.push_back(klass);
+            }
+        }
+
+        return messages;
+    }
+
+    bool HasOriginalNameAttribute(const Field* field)
+    {
+        if (!field || !field->isLiteral) {
+            return false;
+        }
+
+        RuntimeType enumType = RuntimeType::FromClass(field->klass);
+        auto fieldObject = enumType.GetFieldObject(SystemString::PtrToStringAnsi(field->name.c_str()), 60);
+        if (!fieldObject || fieldObject->IsNull()) {
+            return false;
+        }
+
+        auto attrs = fieldObject->GetCustomAttributes(true);
+        for (size_t i = 0; i < attrs.Length(); ++i) {
+            RuntimeObject attr = attrs.Get<RuntimeObject>(i);
+            auto* nativeClass = attr.GetNativeClass();
+            auto* attrClass = Il2CppRuntimeCache::GetClassByAddress(reinterpret_cast<uintptr_t>(nativeClass));
+            if (attrClass && attrClass->fullName == "Google.Protobuf.Reflection.OriginalNameAttribute") {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    std::vector<Class*> GetAllProtobufEnums(Assembly* targetAssembly)
+    {
+        std::vector<Class*> enums;
+        if (!targetAssembly || !targetAssembly->image) {
+            return enums;
+        }
+
+        for (auto* klass : targetAssembly->image->classes) {
+            if (!klass || !klass->isEnum || !IsTopLevelClass(klass)) {
+                continue;
+            }
+
+            const bool hasOriginalName = std::any_of(klass->fields.begin(), klass->fields.end(), HasOriginalNameAttribute);
+            if (hasOriginalName) {
+                enums.push_back(klass);
+            }
+        }
+
+        return enums;
+    }
+
+    std::string EnumToString(RuntimeType enumType, int value)
+    {
+        if (!enumType) {
+            return "";
+        }
+
+        auto fields = enumType.GetFields(60);
+        for (size_t i = 0; i < fields.Length(); ++i) {
+            MonoField field(fields.Get<uintptr_t>(i));
+            if (!field || !field.IsLiteral()) {
+                continue;
+            }
+
+            auto enumValueObj = field.GetRawConstantValue();
+            if (enumValueObj && enumValueObj.Unbox<int32_t>() == value) {
+                return field.GetName().AsString();
+            }
+        }
+
+        return "";
+    }
+
+    template <typename Ret, typename... Args>
+    Ret InvokeObject(RuntimeObject obj, const char* methodName, const std::vector<std::string>& argTypes = {}, Args... args)
+    {
+        return InvokeDynamic<Ret>(obj.RawPtr(), methodName, argTypes, args...);
+    }
+
+    NativeList DescriptorList(RuntimeObject obj, const char* getter)
+    {
+        return InvokeObject<NativeList>(obj, getter);
+    }
+
+    std::vector<RuntimeObject> ListToObjects(NativeList list)
+    {
+        std::vector<RuntimeObject> result;
+        if (!list) {
+            return result;
+        }
+
+        auto items = list.Items();
+        for (size_t i = 0; i < items.Length(); ++i) {
+            RuntimeObject obj(items.Get<uintptr_t>(i));
+            if (obj) {
+                result.push_back(obj);
+            }
+        }
+        return result;
+    }
+
+    std::vector<RuntimeObject> GetAllFields(RuntimeObject messageDescriptor)
+    {
+        if (!messageDescriptor) {
+            return {};
+        }
+
+        auto fieldCollection = InvokeObject<RuntimeObject>(messageDescriptor, "get_Fields");
+        auto fieldList = InvokeObject<NativeList>(fieldCollection, "InDeclarationOrder");
+        return ListToObjects(fieldList);
+    }
+
+    std::string GetFieldTypeString(RuntimeObject field)
+    {
+        if (!field) {
+            return "unknown";
+        }
+
+        const int fieldTypeInt = InvokeObject<int>(field, "get_FieldType");
+        auto enumType = RuntimeType::FromName("Google.Protobuf.Reflection.FieldType");
+        auto fieldType = ToLower(EnumToString(enumType, fieldTypeInt));
+
+        if (fieldType == "int32" || fieldType == "int64" || fieldType == "uint32" || fieldType == "uint64"
+            || fieldType == "sint32" || fieldType == "sint64" || fieldType == "fixed32" || fieldType == "fixed64"
+            || fieldType == "sfixed32" || fieldType == "sfixed64" || fieldType == "float" || fieldType == "double"
+            || fieldType == "bool" || fieldType == "string" || fieldType == "bytes") {
+            return fieldType;
+        }
+
+        if (fieldType == "enum") {
+            auto enumDescriptor = InvokeObject<RuntimeObject>(field, "get_EnumType");
+            return enumDescriptor ? InvokeObject<SystemString>(enumDescriptor, "get_Name").AsString() : "unknown_enum";
+        }
+
+        if (fieldType == "message") {
+            auto messageDescriptor = InvokeObject<RuntimeObject>(field, "get_MessageType");
+            return messageDescriptor ? InvokeObject<SystemString>(messageDescriptor, "get_Name").AsString() : "unknown_message";
+        }
+
+        return fieldType;
+    }
+
+    std::string GetFieldDefinition(RuntimeObject field)
+    {
+        if (!field) {
+            return "";
+        }
+
+        const auto fieldName = InvokeObject<SystemString>(field, "get_Name").AsString();
+        const int fieldNumber = InvokeObject<int>(field, "get_FieldNumber");
+        const bool isMap = InvokeObject<bool>(field, "get_IsMap");
+
+        if (isMap) {
+            auto mapEntryDescriptor = InvokeObject<RuntimeObject>(field, "get_MessageType");
+            auto mapFields = GetAllFields(mapEntryDescriptor);
+            if (mapFields.size() < 2) {
+                return "// Error: Map fields count != 2";
+            }
+
+            return "map<" + GetFieldTypeString(mapFields[0]) + ", " + GetFieldTypeString(mapFields[1]) + "> "
+                + fieldName + " = " + std::to_string(fieldNumber) + ";";
+        }
+
+        const bool isRepeated = InvokeObject<bool>(field, "get_IsRepeated");
+        return std::string(isRepeated ? "repeated " : "") + GetFieldTypeString(field) + " "
+            + fieldName + " = " + std::to_string(fieldNumber) + ";";
+    }
+
+    void GenerateEnumDefinitionByDescriptor(RuntimeObject enumDescriptor, std::stringstream& out, int indentLevel = 0)
+    {
+        if (!enumDescriptor) {
+            return;
+        }
+
+        const auto indent = GetIndent(indentLevel);
+        const auto enumName = InvokeObject<SystemString>(enumDescriptor, "get_Name").AsString();
+
+        out << indent << "// Enum Descriptor Generation\n";
+        out << indent << "enum " << enumName << " {\n";
+
+        for (auto valueObj : ListToObjects(DescriptorList(enumDescriptor, "get_Values"))) {
+            const auto name = InvokeObject<SystemString>(valueObj, "get_Name").AsString();
+            const auto number = InvokeObject<int>(valueObj, "get_Number");
+            out << indent << "    " << name << " = " << number << ";\n";
+        }
+
+        out << indent << "}\n\n";
+    }
+
+    void GenerateMessageDefinitionByDescriptor(RuntimeObject descriptor, std::stringstream& out, int indentLevel = 0)
+    {
+        if (!descriptor) {
+            return;
+        }
+
+        const auto name = InvokeObject<SystemString>(descriptor, "get_Name").AsString();
+        if (name.empty()) {
+            DebugPrintA("[ProtoDump] Message descriptor has no name\n");
+            out << "// Error: Message descriptor has no name\n";
+            return;
+        }
+
+        if (name.size() >= 5 && name.ends_with("Entry")) {
+            return;
+        }
+
+        const auto indent = GetIndent(indentLevel);
+        out << indent << "// Message Descriptor Generation\n";
+        out << indent << "message " << name << " {\n";
+
+        auto fields = GetAllFields(descriptor);
+        std::unordered_map<uintptr_t, std::vector<RuntimeObject>> oneofGroups;
+        std::unordered_map<uintptr_t, RuntimeObject> oneofDescriptors;
+
+        for (auto field : fields) {
+            auto containingOneof = InvokeObject<RuntimeObject>(field, "get_ContainingOneof");
+            if (containingOneof) {
+                oneofGroups[containingOneof.RawPtr()].push_back(field);
+                oneofDescriptors[containingOneof.RawPtr()] = containingOneof;
+            }
+        }
+
+        for (auto& [oneofAddress, fieldList] : oneofGroups) {
+            auto oneofDescriptor = oneofDescriptors[oneofAddress];
+            const auto oneofName = InvokeObject<SystemString>(oneofDescriptor, "get_Name").AsString();
+            out << indent << "    oneof " << oneofName << " {\n";
+            for (auto field : fieldList) {
+                out << indent << "        " << GetFieldDefinition(field) << "\n";
+            }
+            out << indent << "    }\n\n";
+        }
+
+        for (auto field : fields) {
+            if (InvokeObject<RuntimeObject>(field, "get_ContainingOneof")) {
+                continue;
+            }
+            out << indent << "    " << GetFieldDefinition(field) << "\n";
+        }
+
+        for (auto nestedEnum : ListToObjects(DescriptorList(descriptor, "get_EnumTypes"))) {
+            GenerateEnumDefinitionByDescriptor(nestedEnum, out, indentLevel + 1);
+        }
+
+        for (auto nestedMessage : ListToObjects(DescriptorList(descriptor, "get_NestedTypes"))) {
+            GenerateMessageDefinitionByDescriptor(nestedMessage, out, indentLevel + 1);
+        }
+
+        out << indent << "}\n\n";
+    }
+
+    void GenerateEnumDefinition(Class* klass, std::stringstream& out, int indentLevel = 0)
+    {
+        RuntimeType runtimeType = RuntimeType::FromClass(klass);
+        const auto indent = GetIndent(indentLevel);
+
+        out << indent << "// Class: " << klass->name << ", Namespaze: " << klass->namespaze
+            << ", Assembly: " << (klass->image && klass->image->assembly ? klass->image->assembly->name : "") << "\n";
+        out << indent << "// Il2Cpp Class Generation\n";
+        out << indent << "enum " << klass->name << " {\n";
+
+        auto fields = runtimeType.GetFields(60);
+        for (size_t i = 0; i < fields.Length(); ++i) {
+            MonoField field(fields.Get<uintptr_t>(i));
+            if (!field || !field.IsLiteral()) {
+                continue;
+            }
+
+            auto declaringType = field.GetDeclaringType();
+            if (declaringType.GetName().AsString() != klass->name) {
+                continue;
+            }
+
+            std::optional<std::string> enumName;
+            auto attrs = field.GetCustomAttributes(true);
+            for (size_t j = 0; j < attrs.Length(); ++j) {
+                RuntimeObject attr(attrs.Get<uintptr_t>(j));
+                auto* attrClass = Il2CppRuntimeCache::GetClassByAddress(reinterpret_cast<uintptr_t>(attr.GetNativeClass()));
+                if (attrClass && attrClass->fullName == "Google.Protobuf.Reflection.OriginalNameAttribute") {
+                    enumName = OriginalNameAttribute(attr.RawPtr()).GetName().AsString();
+                }
+            }
+            if (!enumName) {
+                enumName = field.GetName().AsString();
+            }
+
+            auto rawValue = field.GetRawConstantValue();
+            auto value = rawValue.Unbox<int32_t>();
+            auto outputName = *enumName;
+            if (FIX_ENUM) {
+                outputName = klass->name + "_" + outputName;
+            }
+
+            out << indent << "    " << outputName << " = " << value << ";\n";
+        }
+
+        out << indent << "}\n\n";
+    }
+
+    void GenerateMessageDefinition(Class* klass, std::stringstream& out, int indentLevel = 0)
+    {
+        if (!klass) {
+            return;
+        }
+
+        auto* descriptorMethod = klass->GetMethod("get_Descriptor", {});
+        if (!descriptorMethod) {
+            DebugPrintA("[ProtoDump] [WARN] get_Descriptor not found: %s\n", klass->fullName.c_str());
+            return;
+        }
+
+        RuntimeObject descriptor = InvokeStatic<RuntimeObject>(descriptorMethod);
+        const auto indent = GetIndent(indentLevel);
+        out << indent << "// Class: " << klass->name << ", Namespaze: " << klass->namespaze
+            << ", Assembly: " << (klass->image && klass->image->assembly ? klass->image->assembly->name : "") << "\n";
+        GenerateMessageDefinitionByDescriptor(descriptor, out, indentLevel);
+    }
+}
+
+void DumpProtos2(Assembly* targetAssembly, const char* path)
+{
+    std::filesystem::path filePath(path);
+    const auto directory = filePath.parent_path();
+    if (!directory.empty() && !std::filesystem::exists(directory)) {
+        std::filesystem::create_directories(directory);
+    }
+
+    if (!FindGoogleProtobufAssembly()) {
+        DebugPrintA("[ProtoDump] Google.Protobuf not found, skip proto dump\n");
+        return;
+    }
+
+    std::ofstream file(path);
+    if (!file.is_open()) {
+        DebugPrintA("[ProtoDump] [ERROR] 打开文件失败: %s\n", path);
+        return;
+    }
+
+    auto messages = GetAllProtobufMessages(targetAssembly);
+    auto enums = GetAllProtobufEnums(targetAssembly);
+    DebugPrintA("enums count: %zu\n", enums.size());
+    DebugPrintA("messages count: %zu\n", messages.size());
+
+    std::stringstream output;
+    output << "// CerydarDumper\n\n";
+    output << "syntax = \"proto3\";\n\n";
+
+    for (auto* enumClass : enums) {
+        DebugPrintA("messagesEnum: %s.%s\n", enumClass->namespaze.c_str(), enumClass->name.c_str());
+        GenerateEnumDefinition(enumClass, output);
+    }
+
+    for (auto* messageClass : messages) {
+        DebugPrintA("[ProtoDump] Message: %s.%s\n", messageClass->namespaze.c_str(), messageClass->name.c_str());
+        GenerateMessageDefinition(messageClass, output);
+    }
+
+    file << output.str();
+    DebugPrintA("[ProtoDump] dump done!\n");
+}

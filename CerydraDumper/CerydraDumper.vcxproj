@@ -169,20 +169,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Bind.h" />
-    <ClInclude Include="CActivator.h" />
-    <ClInclude Include="CAppDomain.h" />
+    <ClInclude Include="Activator.h" />
+    <ClInclude Include="AppDomain.h" />
     <ClInclude Include="CBaseModule.h" />
     <ClInclude Include="CICollection.h" />
     <ClInclude Include="CmdIdOut.h" />
     <ClInclude Include="CRspHandler.h" />
-    <ClInclude Include="CSharpRuntime.h" />
-    <ClInclude Include="CSystemArray.h" />
-    <ClInclude Include="CSystemType.h" />
-    <ClInclude Include="CSharpModel.h" />
+    <ClInclude Include="CSharpInvoke.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="Il2CppApiWrapper.h" />
-    <ClInclude Include="Il2CppCache.h" />
     <ClInclude Include="Il2CppModel.h" />
     <ClInclude Include="Il2CppRuntimeCache.h" />
     <ClInclude Include="il2cpp\vm\GlobalMetadataFileInternals.h" />
@@ -208,37 +202,30 @@
     <ClInclude Include="JsonGenerator.h" />
     <ClInclude Include="Memory.h" />
     <ClInclude Include="MetaDumper.h" />
-    <ClInclude Include="CMonoAssembly.h" />
+    <ClInclude Include="MonoAssembly.h" />
     <ClInclude Include="CModuleManager.h" />
     <ClInclude Include="OriginalNameAttribute.h" />
-    <ClInclude Include="Pb.h" />
-    <ClInclude Include="PbD.h" />
     <ClInclude Include="PbE.h" />
-    <ClInclude Include="PbUtil.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PrintHelper.h" />
-    <ClInclude Include="ProtoDumper.h" />
+    <ClInclude Include="RuntimeObject.h" />
+    <ClInclude Include="RuntimeType.h" />
     <ClInclude Include="DumpCs2.h" />
-    <ClInclude Include="CSystemString.h" />
+    <ClInclude Include="SystemString.h" />
+    <ClInclude Include="SystemType.h" />
     <ClInclude Include="UnityResolve.hpp" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="Version.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Bind.cpp" />
-    <ClCompile Include="CActivator.cpp" />
-    <ClCompile Include="CAppDomain.cpp" />
+    <ClCompile Include="Activator.cpp" />
+    <ClCompile Include="AppDomain.cpp" />
     <ClCompile Include="CBaseModule.cpp" />
     <ClCompile Include="CICollection.cpp" />
     <ClCompile Include="CmdIdOut.cpp" />
     <ClCompile Include="CRspHandler.cpp" />
-    <ClCompile Include="CSharpRuntime.cpp" />
-    <ClCompile Include="CSystemArray.cpp" />
-    <ClCompile Include="CSystemType.cpp" />
-    <ClCompile Include="CSharpModel.cpp" />
+    <ClCompile Include="CSharpInvoke.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Il2CppApiWrapper.cpp" />
-    <ClCompile Include="Il2CppCache.cpp" />
     <ClCompile Include="Initializer.cpp" />
     <ClCompile Include="Il2CppDumper.cpp" />
     <ClCompile Include="Il2CppFunctions.cpp" />
@@ -247,13 +234,10 @@
     <ClCompile Include="JsonGenerator.cpp" />
     <ClCompile Include="Memory.cpp" />
     <ClCompile Include="MetaDumper.cpp" />
-    <ClCompile Include="CMonoAssembly.cpp" />
+    <ClCompile Include="MonoAssembly.cpp" />
     <ClCompile Include="CModuleManager.cpp" />
     <ClCompile Include="OriginalNameAttribute.cpp" />
-    <ClCompile Include="Pb.cpp" />
-    <ClCompile Include="PbD.cpp" />
     <ClCompile Include="PbE.cpp" />
-    <ClCompile Include="PbUtil.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -261,9 +245,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PrintHelper.cpp" />
-    <ClCompile Include="ProtoDumper.cpp" />
+    <ClCompile Include="RuntimeType.cpp" />
     <ClCompile Include="DumpCs2.cpp" />
-    <ClCompile Include="CSystemString.cpp" />
+    <ClCompile Include="SystemString.cpp" />
+    <ClCompile Include="SystemType.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="Version.cpp" />
   </ItemGroup>

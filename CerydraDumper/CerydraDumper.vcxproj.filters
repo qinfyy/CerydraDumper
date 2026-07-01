@@ -114,40 +114,31 @@
     <ClInclude Include="DumpCs2.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Il2CppApiWrapper.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Memory.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Il2CppCache.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="CAppDomain.h">
+    <ClInclude Include="AppDomain.h">
       <Filter>头文件\CSharp</Filter>
     </ClInclude>
-    <ClInclude Include="CSystemString.h">
+    <ClInclude Include="SystemString.h">
       <Filter>头文件\CSharp</Filter>
     </ClInclude>
-    <ClInclude Include="CMonoAssembly.h">
+    <ClInclude Include="MonoAssembly.h">
       <Filter>头文件\CSharp</Filter>
     </ClInclude>
-    <ClInclude Include="Bind.h">
+    <ClInclude Include="CSharpInvoke.h">
       <Filter>头文件\CSharp</Filter>
     </ClInclude>
-    <ClInclude Include="CSystemArray.h">
+    <ClInclude Include="RuntimeObject.h">
       <Filter>头文件\CSharp</Filter>
     </ClInclude>
-    <ClInclude Include="CActivator.h">
+    <ClInclude Include="Activator.h">
       <Filter>头文件\CSharp</Filter>
     </ClInclude>
-    <ClInclude Include="CSharpRuntime.h">
+    <ClInclude Include="RuntimeType.h">
       <Filter>头文件\CSharp</Filter>
     </ClInclude>
-    <ClInclude Include="CSystemType.h">
-      <Filter>头文件\CSharp</Filter>
-    </ClInclude>
-    <ClInclude Include="CSharpModel.h">
+    <ClInclude Include="SystemType.h">
       <Filter>头文件\CSharp</Filter>
     </ClInclude>
     <ClInclude Include="Il2CppModel.h">
@@ -218,40 +209,28 @@
     <ClCompile Include="DumpCs2.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Il2CppApiWrapper.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Memory.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Il2CppCache.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Bind.cpp">
+    <ClCompile Include="AppDomain.cpp">
       <Filter>源文件\CSharp</Filter>
     </ClCompile>
-    <ClCompile Include="CAppDomain.cpp">
+    <ClCompile Include="SystemString.cpp">
       <Filter>源文件\CSharp</Filter>
     </ClCompile>
-    <ClCompile Include="CSystemString.cpp">
+    <ClCompile Include="MonoAssembly.cpp">
       <Filter>源文件\CSharp</Filter>
     </ClCompile>
-    <ClCompile Include="CMonoAssembly.cpp">
+    <ClCompile Include="Activator.cpp">
       <Filter>源文件\CSharp</Filter>
     </ClCompile>
-    <ClCompile Include="CSystemArray.cpp">
+    <ClCompile Include="RuntimeType.cpp">
       <Filter>源文件\CSharp</Filter>
     </ClCompile>
-    <ClCompile Include="CActivator.cpp">
+    <ClCompile Include="SystemType.cpp">
       <Filter>源文件\CSharp</Filter>
     </ClCompile>
-    <ClCompile Include="CSharpRuntime.cpp">
-      <Filter>源文件\CSharp</Filter>
-    </ClCompile>
-    <ClCompile Include="CSystemType.cpp">
-      <Filter>源文件\CSharp</Filter>
-    </ClCompile>
-    <ClCompile Include="CSharpModel.cpp">
+    <ClCompile Include="CSharpInvoke.cpp">
       <Filter>源文件\CSharp</Filter>
     </ClCompile>
     <ClCompile Include="Il2CppModel.cpp">

@@ -162,10 +162,12 @@ namespace Cerydra::IL2CPP
 
         std::vector<Field*> fields;
         std::vector<Method*> methods;
+        std::vector<Class*> interfaces;
 
         Field* GetField(const std::string& name) const;
         Method* GetMethod(const std::string& name, const std::vector<std::string>& args = {}) const;
         Method* GetMethodByReturnType(const std::string& returnType, const std::vector<std::string>& args = {}) const;
+        bool Implements(const Class* interfaceClass) const;
 
         template <typename RType>
         RType GetValue(void* obj, const std::string& fieldName) const
