@@ -1,13 +1,15 @@
 ﻿#pragma once
+
+#include "CActivator.h"
+#include "CSharpModel.h"
+#include "CSystemString.h"
+#include "CSystemType.h"
 #include "Il2CppApiWrapper.h"
-#include "Bind.h"
+#include "PrintHelper.h"
+#include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
-#include <stdexcept>
-#include "CSystemType.h"
-#include "CSystemString.h"
-#include "PrintHelper.h"
-#include "CActivator.h"
 
 class CMonoField;
 class CMonoProperty;
@@ -16,268 +18,352 @@ class CRuntimeType : public CIl2CppWrapBase {
 public:
     using CIl2CppWrapBase::CIl2CppWrapBase;
 
-    CS_CLASS("System.RuntimeType");
-
-    // 属性
-    CRuntimeType GetBaseType() const {
-        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
-            this->ptr,
-            "System.RuntimeType",
-            "get_BaseType",
-            {}
-        );
+    static Cerydra::IL2CPP::Class* RuntimeTypeClass()
+    {
+        static auto* klass = Cerydra::CSharp::RequireClass("System.RuntimeType");
+        return klass;
     }
 
-    bool IsGenericType() const {
-        return CallIl2CppInstanceObjectMethod<bool>(
-            this->ptr,
-            "System.RuntimeType",
-            "get_IsGenericType",
-            {}
-        );
+    static Cerydra::IL2CPP::Class* TypeClass()
+    {
+        static auto* klass = Cerydra::CSharp::RequireClass("System.Type");
+        return klass;
     }
 
-    bool IsEnum() const {
-        return CallIl2CppInstanceObjectMethod<bool>(
-            this->ptr,
-            "System.RuntimeType",
-            "get_IsEnum",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetBaseType()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeTypeClass(), "get_BaseType", {});
+        return method;
     }
 
-	// 必须是数组类型才能调用此函数
-    int GetArrayRank() const {
-        return CallIl2CppInstanceObjectMethod<int>(
-            this->ptr,
-            "System.Type",
-            "GetArrayRank",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_IsGenericType()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeTypeClass(), "get_IsGenericType", {});
+        return method;
     }
 
-    CRuntimeType GetReflectedType() const {
-        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
-            this->ptr,
-            "System.RuntimeType",
-            "get_ReflectedType",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_IsEnum()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeTypeClass(), "get_IsEnum", {});
+        return method;
     }
 
-    CRuntimeType GetElementType() const {
-        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
-            this->ptr,
-            "System.RuntimeType",
-            "GetElementType",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetArrayRank()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(TypeClass(), "GetArrayRank", {});
+        return method;
     }
 
-    CSystemString GetNamespace() const {
-        return CallIl2CppInstanceObjectMethod<CSystemString>(
-            this->ptr,
-            "System.RuntimeType",
-            "get_Namespace",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetReflectedType()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeTypeClass(), "get_ReflectedType", {});
+        return method;
     }
 
-    CSystemString GetName() const {
-        return CallIl2CppInstanceObjectMethod<CSystemString>(
-            this->ptr,
-            "System.RuntimeType",
-            "get_Name",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetElementType()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeTypeClass(), "GetElementType", {});
+        return method;
     }
 
-    CSystemString GetFullName() const {
-        return CallIl2CppInstanceObjectMethod<CSystemString>(
-            this->ptr,
-            "System.RuntimeType",
-            "get_FullName",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetNamespace()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeTypeClass(), "get_Namespace", {});
+        return method;
     }
 
-    CIl2CppObject GetTypeHandle() const {
-        return CallIl2CppInstanceObjectMethod<CIl2CppObject>(
-            this->ptr,
-            "System.RuntimeType",
-            "get_TypeHandle",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetName()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeTypeClass(), "get_Name", {});
+        return method;
     }
 
-    CIl2CppArray GetGenericArguments() const {
-        return CallIl2CppInstanceObjectMethod<CIl2CppArray>(
-            this->ptr,
-            "System.RuntimeType",
-            "GetGenericArguments",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetFullName()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeTypeClass(), "get_FullName", {});
+        return method;
     }
 
-    // 函数
-    CIl2CppArray GetFields(int binding_flags) const {
-        return CallIl2CppInstanceObjectMethod<CIl2CppArray>(
-            this->ptr,
-            "System.RuntimeType",
-            "GetFields",
-            { "System.Reflection.BindingFlags" },
-            binding_flags
-        );
+    static Cerydra::IL2CPP::Method* M_GetTypeHandle()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeTypeClass(), "get_TypeHandle", {});
+        return method;
     }
 
-    CIl2CppArray GetProperties(int binding_flags) const {
-        return CallIl2CppInstanceObjectMethod<CIl2CppArray>(
-            this->ptr,
-            "System.RuntimeType",
-            "GetProperties",
-            { "System.Reflection.BindingFlags" },
-            binding_flags
-        );
+    static Cerydra::IL2CPP::Method* M_GetGenericArguments()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeTypeClass(), "GetGenericArguments", {});
+        return method;
     }
 
-    bool IsByRef() const {
-        return CallIl2CppInstanceObjectMethod<bool>(
-            this->ptr,
-            "System.Type",
-            "get_IsByRef",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetFields()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeTypeClass(), "GetFields", { "System.Reflection.BindingFlags" });
+        return method;
     }
 
-    bool IsArray() const {
-        return CallIl2CppInstanceObjectMethod<bool>(
-            this->ptr,
-            "System.Type",
-            "get_IsArray",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetProperties()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeTypeClass(), "GetProperties", { "System.Reflection.BindingFlags" });
+        return method;
     }
 
-    bool IsValueType() const {
-        return CallIl2CppInstanceObjectMethod<bool>(
-            this->ptr,
-            "System.Type",
-            "get_IsValueType",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_IsByRef()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(TypeClass(), "get_IsByRef", {});
+        return method;
     }
 
-    bool IsPointer() const {
-        return CallIl2CppInstanceObjectMethod<bool>(
-            this->ptr,
-            "System.Type",
-            "get_IsPointer",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_IsArray()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(TypeClass(), "get_IsArray", {});
+        return method;
     }
 
-    uintptr_t GetType() const {
-        return CallIl2CppInstanceObjectMethod<uintptr_t>(
-            this->ptr,
-            "System.Type",
-            "GetType",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_IsValueType()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(TypeClass(), "get_IsValueType", {});
+        return method;
     }
 
-    std::unique_ptr<CMonoProperty> GetProperty(CSystemString name) const {
-        auto ptr = CallIl2CppInstanceObjectMethod<uintptr_t>(
-            this->ptr,
-            "System.Type",
-            "GetProperty",
-            { "string" },
-            name
-        );
-
-        return std::make_unique<CMonoProperty>(ptr);
+    static Cerydra::IL2CPP::Method* M_IsPointer()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(TypeClass(), "get_IsPointer", {});
+        return method;
     }
 
-    bool IsInterface() const {
-        return CallIl2CppInstanceObjectMethod<bool>(
-            this->ptr,
-            "System.Type",
-            "get_IsInterface",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetType()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(TypeClass(), "GetType", {});
+        return method;
     }
 
-    uintptr_t GetConstructor(uintptr_t Types) {
-        return CallIl2CppInstanceObjectMethod<uintptr_t>(
-            this->ptr,
-            "System.Type",
-            "GetConstructor",
-            {"System.Type[]"},
-            Types
-        );
+    static Cerydra::IL2CPP::Method* M_GetProperty()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(TypeClass(), "GetProperty", { "string" });
+        return method;
     }
 
-    //public override bool IsAssignableFrom(System.Type c); 
-    bool IsAssignableFrom(uintptr_t Types) {
-        return CallIl2CppInstanceObjectMethod<bool>(
-            this->ptr,
-            "System.RuntimeType",
-            "IsAssignableFrom",
-            { "System.Type" },
-            Types
-        );
+    static Cerydra::IL2CPP::Method* M_IsInterface()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(TypeClass(), "get_IsInterface", {});
+        return method;
     }
 
-    //public override System.Type[] GetInterfaces();
-    CIl2CppArray GetInterfaces() {
-        return CallIl2CppInstanceObjectMethod<CIl2CppArray>(
-            this->ptr,
-            "System.RuntimeType",
-            "GetInterfaces",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetConstructor()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(TypeClass(), "GetConstructor", { "System.Type[]" });
+        return method;
     }
 
-    CRuntimeType GetDeclaringType() {
-        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
-            this->ptr,
-            "System.RuntimeType",
-            "get_DeclaringType",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_IsAssignableFrom()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeTypeClass(), "IsAssignableFrom", { "System.Type" });
+        return method;
+    }
+
+    static Cerydra::IL2CPP::Method* M_GetInterfaces()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeTypeClass(), "GetInterfaces", {});
+        return method;
+    }
+
+    static Cerydra::IL2CPP::Method* M_GetDeclaringType()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeTypeClass(), "get_DeclaringType", {});
+        return method;
+    }
+
+    static Cerydra::IL2CPP::Method* M_GetAssembly()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeTypeClass(), "get_Assembly", {});
+        return method;
+    }
+
+    static Cerydra::IL2CPP::Method* M_GetField()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeTypeClass(), "GetField", { "string", "System.Reflection.BindingFlags" });
+        return method;
+    }
+
+    CRuntimeType GetBaseType() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CRuntimeType>(ptr, M_GetBaseType());
+    }
+
+    bool IsGenericType() const
+    {
+        return Cerydra::CSharp::InvokeInstance<bool>(ptr, M_IsGenericType());
+    }
+
+    bool IsEnum() const
+    {
+        return Cerydra::CSharp::InvokeInstance<bool>(ptr, M_IsEnum());
+    }
+
+    int GetArrayRank() const
+    {
+        return Cerydra::CSharp::InvokeInstance<int>(ptr, M_GetArrayRank());
+    }
+
+    CRuntimeType GetReflectedType() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CRuntimeType>(ptr, M_GetReflectedType());
+    }
+
+    CRuntimeType GetElementType() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CRuntimeType>(ptr, M_GetElementType());
+    }
+
+    CSystemString GetNamespace() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CSystemString>(ptr, M_GetNamespace());
+    }
+
+    CSystemString GetName() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CSystemString>(ptr, M_GetName());
+    }
+
+    CSystemString GetFullName() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CSystemString>(ptr, M_GetFullName());
+    }
+
+    CIl2CppObject GetTypeHandle() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CIl2CppObject>(ptr, M_GetTypeHandle());
+    }
+
+    CIl2CppArray GetGenericArguments() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CIl2CppArray>(ptr, M_GetGenericArguments());
+    }
+
+    CIl2CppArray GetFields(int bindingFlags) const
+    {
+        return Cerydra::CSharp::InvokeInstance<CIl2CppArray, int>(ptr, M_GetFields(), bindingFlags);
+    }
+
+    CIl2CppArray GetProperties(int bindingFlags) const
+    {
+        return Cerydra::CSharp::InvokeInstance<CIl2CppArray, int>(ptr, M_GetProperties(), bindingFlags);
+    }
+
+    bool IsByRef() const
+    {
+        return Cerydra::CSharp::InvokeInstance<bool>(ptr, M_IsByRef());
+    }
+
+    bool IsArray() const
+    {
+        return Cerydra::CSharp::InvokeInstance<bool>(ptr, M_IsArray());
+    }
+
+    bool IsValueType() const
+    {
+        return Cerydra::CSharp::InvokeInstance<bool>(ptr, M_IsValueType());
+    }
+
+    bool IsPointer() const
+    {
+        return Cerydra::CSharp::InvokeInstance<bool>(ptr, M_IsPointer());
+    }
+
+    uintptr_t GetType() const
+    {
+        return Cerydra::CSharp::InvokeInstance<uintptr_t>(ptr, M_GetType());
+    }
+
+    std::unique_ptr<CMonoProperty> GetProperty(CSystemString name) const
+    {
+        auto propertyPtr = Cerydra::CSharp::InvokeInstance<uintptr_t>(ptr, M_GetProperty(), name);
+        return std::make_unique<CMonoProperty>(propertyPtr);
+    }
+
+    bool IsInterface() const
+    {
+        return Cerydra::CSharp::InvokeInstance<bool>(ptr, M_IsInterface());
+    }
+
+    uintptr_t GetConstructor(uintptr_t types)
+    {
+        return Cerydra::CSharp::InvokeInstance<uintptr_t>(ptr, M_GetConstructor(), types);
+    }
+
+    bool IsAssignableFrom(uintptr_t type)
+    {
+        return Cerydra::CSharp::InvokeInstance<bool>(ptr, M_IsAssignableFrom(), type);
+    }
+
+    CIl2CppArray GetInterfaces()
+    {
+        return Cerydra::CSharp::InvokeInstance<CIl2CppArray>(ptr, M_GetInterfaces());
+    }
+
+    CRuntimeType GetDeclaringType()
+    {
+        return Cerydra::CSharp::InvokeInstance<CRuntimeType>(ptr, M_GetDeclaringType());
     }
 
     CSystemString GetAssemblyName();
 
-    std::unique_ptr<CMonoField> _GetField(CSystemString name, int binding_flags) const {
-        auto ptr = CallIl2CppInstanceObjectMethod<uintptr_t>(
-            this->ptr,
-            "System.RuntimeType",
-            "GetField",
-            { "string", "System.Reflection.BindingFlags" },
-            name,
-            binding_flags
-        );
-
-        return std::make_unique<CMonoField>(ptr);
+    std::unique_ptr<CMonoField> _GetField(CSystemString name, int bindingFlags) const
+    {
+        auto fieldPtr = Cerydra::CSharp::InvokeInstance<uintptr_t>(ptr, M_GetField(), name, bindingFlags);
+        return std::make_unique<CMonoField>(fieldPtr);
     }
 
     CIl2CppField GetField(const char* name) const;
 
-    static CRuntimeType FromClass(CIl2CppClass klass) {
-        uintptr_t type_ptr = CSystemType::GetTypeFromHandle(reinterpret_cast<Il2CppType*>(klass.byval_arg().raw_ptr()));
-        return CRuntimeType(type_ptr);
+    static CRuntimeType FromClass(Cerydra::IL2CPP::Class* klass)
+    {
+        return CRuntimeType(klass ? reinterpret_cast<uintptr_t>(klass->GetTypeObject()) : 0);
     }
 
-    static CRuntimeType FromName(const std::string& name) {
-		auto* cClass = GetCachedClass(name);
-        if (cClass == nullptr || cClass->is_null()) {
-            throw std::runtime_error("No such class: " + name);
-		}
-        return FromClass(*cClass);
+    static CRuntimeType FromClass(CIl2CppClass klass)
+    {
+        if (auto* metaClass = GetCachedClassMeta(klass.raw_ptr())) {
+            return FromClass(metaClass);
+        }
+
+        auto typePtr = CSystemType::GetTypeFromHandle(reinterpret_cast<Il2CppType*>(klass.byval_arg().raw_ptr()));
+        return CRuntimeType(typePtr);
     }
 
-    CIl2CppType GetIl2CppType() const {
-        return CIl2CppType(*reinterpret_cast<uintptr_t*>(this->ptr + 16));
+    static CRuntimeType FromName(const std::string& name)
+    {
+        auto* klass = GetCachedClassMeta(name);
+        if (!klass) {
+            throw std::runtime_error("找不到类: " + name);
+        }
+        return FromClass(klass);
+    }
+
+    CIl2CppType GetIl2CppType() const
+    {
+        if (is_null()) {
+            return CIl2CppType(0);
+        }
+
+        return CIl2CppType(*reinterpret_cast<uintptr_t*>(ptr + 16));
+    }
+
+    Cerydra::IL2CPP::Type* GetMetaType() const
+    {
+        if (is_null()) {
+            return nullptr;
+        }
+
+        auto typePtr = *reinterpret_cast<uintptr_t*>(ptr + 16);
+        return Il2CppRuntimeCache::GetTypeByAddress(typePtr);
+    }
+
+    Cerydra::IL2CPP::Class* GetMetaClass() const
+    {
+        auto* type = GetMetaType();
+        return type ? type->klass : nullptr;
     }
 };
 
@@ -285,15 +371,21 @@ class CRuntimeFieldHandle : public CIl2CppWrapBase {
 public:
     using CIl2CppWrapBase::CIl2CppWrapBase;
 
-    CS_CLASS("System.RuntimeFieldHandle");
+    static Cerydra::IL2CPP::Class* StaticClass()
+    {
+        static auto* klass = Cerydra::CSharp::RequireClass("System.RuntimeFieldHandle");
+        return klass;
+    }
 
-    uintptr_t GetValue() const {
-        return CallIl2CppInstanceObjectMethod<uintptr_t>(
-            this->ptr,
-            "System.RuntimeFieldHandle",
-            "get_Value",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetValue()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(StaticClass(), "get_Value", {});
+        return method;
+    }
+
+    uintptr_t GetValue() const
+    {
+        return Cerydra::CSharp::InvokeInstance<uintptr_t>(ptr, M_GetValue());
     }
 };
 
@@ -301,107 +393,131 @@ class CMonoField : public CIl2CppWrapBase {
 public:
     using CIl2CppWrapBase::CIl2CppWrapBase;
 
-    CS_CLASS("System.Reflection.RuntimeFieldInfo");
-
-    // 属性
-    CRuntimeType GetDeclaringType() const {
-        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
-            this->ptr,
-            "System.Reflection.RuntimeFieldInfo",
-            "get_DeclaringType",
-            {}
-        );
+    static Cerydra::IL2CPP::Class* RuntimeFieldInfoClass()
+    {
+        static auto* klass = Cerydra::CSharp::RequireClass("System.Reflection.RuntimeFieldInfo");
+        return klass;
     }
 
-    CRuntimeType GetFieldType() const {
-        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
-            this->ptr,
-            "System.Reflection.RuntimeFieldInfo",
-            "get_FieldType",
-            {}
-        );
+    static Cerydra::IL2CPP::Class* FieldInfoClass()
+    {
+        static auto* klass = Cerydra::CSharp::RequireClass("System.Reflection.FieldInfo");
+        return klass;
     }
 
-    CSystemString GetName() const {
-        return CallIl2CppInstanceObjectMethod<CSystemString>(
-            this->ptr,
-            "System.Reflection.RuntimeFieldInfo",
-            "get_Name",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetDeclaringType()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeFieldInfoClass(), "get_DeclaringType", {});
+        return method;
     }
 
-    CRuntimeFieldHandle GetFieldHandle() const {
-        return CallIl2CppInstanceObjectMethod<CRuntimeFieldHandle>(
-            this->ptr,
-            "System.Reflection.RuntimeFieldInfo",
-            "get_FieldHandle",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetFieldType()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeFieldInfoClass(), "get_FieldType", {});
+        return method;
     }
 
-    uintptr_t GetRawConstantValue() const {
-        return CallIl2CppInstanceObjectMethod<uintptr_t>(
-            this->ptr,
-            "System.Reflection.RuntimeFieldInfo",
-            "GetRawConstantValue",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetName()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeFieldInfoClass(), "get_Name", {});
+        return method;
     }
 
-    // 函数
-    CIl2CppArray GetCustomAttributes(bool inherit) const {
-        return CallIl2CppInstanceObjectMethod<CIl2CppArray>(
-            this->ptr,
-            "System.Reflection.RuntimeFieldInfo",
-            "GetCustomAttributes",
-            { "bool" },
-            inherit
-        );
+    static Cerydra::IL2CPP::Method* M_GetFieldHandle()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeFieldInfoClass(), "get_FieldHandle", {});
+        return method;
     }
 
-    CIl2CppObject GetValue(uintptr_t obj) const {
-        return CallIl2CppInstanceObjectMethod<CIl2CppObject>(
-            this->ptr,
-            "System.Reflection.RuntimeFieldInfo",
-            "GetValue",
-            { "object" },
-            obj
-        );
+    static Cerydra::IL2CPP::Method* M_GetRawConstantValue()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeFieldInfoClass(), "GetRawConstantValue", {});
+        return method;
     }
 
-    bool IsLiteral() const {
-        return CallIl2CppInstanceObjectMethod<bool>(
-            this->ptr,
-            "System.Reflection.FieldInfo",
-            "get_IsLiteral",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetCustomAttributes()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeFieldInfoClass(), "GetCustomAttributes", { "bool" });
+        return method;
     }
 
-    int32_t GetMetadataToken() const {
-        return CallIl2CppInstanceObjectMethod<int32_t>(
-            this->ptr,
-            "System.Reflection.RuntimeFieldInfo",
-            "get_MetadataToken",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetValue()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeFieldInfoClass(), "GetValue", { "object" });
+        return method;
     }
 
-    void SetValue(uintptr_t obj, uintptr_t value) const {
-        CallIl2CppInstanceObjectMethod<void>(
-            this->ptr,
-            "System.Reflection.FieldInfo",
-            "SetValue",
-            { "object", "object" },
-            obj,
-            value
-        );
+    static Cerydra::IL2CPP::Method* M_IsLiteral()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(FieldInfoClass(), "get_IsLiteral", {});
+        return method;
     }
 
-    // 访问 IL2CPP 内部字段
-    CIl2CppField GetIl2CppField() const {
-		uintptr_t fieldPtr = *reinterpret_cast<uintptr_t*>(this->ptr + 24);
+    static Cerydra::IL2CPP::Method* M_GetMetadataToken()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimeFieldInfoClass(), "get_MetadataToken", {});
+        return method;
+    }
+
+    static Cerydra::IL2CPP::Method* M_SetValue()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(FieldInfoClass(), "SetValue", { "object", "object" });
+        return method;
+    }
+
+    CRuntimeType GetDeclaringType() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CRuntimeType>(ptr, M_GetDeclaringType());
+    }
+
+    CRuntimeType GetFieldType() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CRuntimeType>(ptr, M_GetFieldType());
+    }
+
+    CSystemString GetName() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CSystemString>(ptr, M_GetName());
+    }
+
+    CRuntimeFieldHandle GetFieldHandle() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CRuntimeFieldHandle>(ptr, M_GetFieldHandle());
+    }
+
+    uintptr_t GetRawConstantValue() const
+    {
+        return Cerydra::CSharp::InvokeInstance<uintptr_t>(ptr, M_GetRawConstantValue());
+    }
+
+    CIl2CppArray GetCustomAttributes(bool inherit) const
+    {
+        return Cerydra::CSharp::InvokeInstance<CIl2CppArray, bool>(ptr, M_GetCustomAttributes(), inherit);
+    }
+
+    CIl2CppObject GetValue(uintptr_t obj) const
+    {
+        return Cerydra::CSharp::InvokeInstance<CIl2CppObject>(ptr, M_GetValue(), obj);
+    }
+
+    bool IsLiteral() const
+    {
+        return Cerydra::CSharp::InvokeInstance<bool>(ptr, M_IsLiteral());
+    }
+
+    int32_t GetMetadataToken() const
+    {
+        return Cerydra::CSharp::InvokeInstance<int32_t>(ptr, M_GetMetadataToken());
+    }
+
+    void SetValue(uintptr_t obj, uintptr_t value) const
+    {
+        Cerydra::CSharp::InvokeInstance<void>(ptr, M_SetValue(), obj, value);
+    }
+
+    CIl2CppField GetIl2CppField() const
+    {
+        auto fieldPtr = *reinterpret_cast<uintptr_t*>(ptr + 24);
         return CIl2CppField(fieldPtr);
     }
 };
@@ -410,67 +526,82 @@ class CMonoProperty : public CIl2CppWrapBase {
 public:
     using CIl2CppWrapBase::CIl2CppWrapBase;
 
-    CS_CLASS("System.Reflection.RuntimePropertyInfo");
-
-    // 属性
-    CRuntimeType GetDeclaringType() const {
-        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
-            this->ptr,
-            "System.Reflection.RuntimePropertyInfo",
-            "get_DeclaringType",
-            {}
-        );
+    static Cerydra::IL2CPP::Class* RuntimePropertyInfoClass()
+    {
+        static auto* klass = Cerydra::CSharp::RequireClass("System.Reflection.RuntimePropertyInfo");
+        return klass;
     }
 
-    CRuntimeType GetPropertyType() const {
-        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
-            this->ptr,
-            "System.Reflection.RuntimePropertyInfo",
-            "get_PropertyType",
-            {}
-        );
+    static Cerydra::IL2CPP::Class* PropertyInfoClass()
+    {
+        static auto* klass = Cerydra::CSharp::RequireClass("System.Reflection.PropertyInfo");
+        return klass;
     }
 
-    CSystemString GetName() const {
-        return CallIl2CppInstanceObjectMethod<CSystemString>(
-            this->ptr,
-            "System.Reflection.RuntimePropertyInfo",
-            "get_Name",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetDeclaringType()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimePropertyInfoClass(), "get_DeclaringType", {});
+        return method;
     }
 
-    // 函数
-    void SetValue(uintptr_t obj, uintptr_t value) const {
-        CallIl2CppInstanceObjectMethod<void>(
-            this->ptr,
-            "System.Reflection.PropertyInfo",
-            "SetValue",
-            { "object", "object" },
-            obj,
-            value
-        );
+    static Cerydra::IL2CPP::Method* M_GetPropertyType()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimePropertyInfoClass(), "get_PropertyType", {});
+        return method;
     }
 
-    CIl2CppObject GetValue(uintptr_t obj) const {
-        return CallIl2CppInstanceObjectMethod<CIl2CppObject>(
-            this->ptr,
-            "System.Reflection.PropertyInfo",
-            "GetValue",
-            { "object" },
-            obj
-        );
+    static Cerydra::IL2CPP::Method* M_GetName()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(RuntimePropertyInfoClass(), "get_Name", {});
+        return method;
     }
 
-    uintptr_t GetValue(uintptr_t obj, uintptr_t args) const {
-        return CallIl2CppInstanceObjectMethod<uintptr_t>(
-            this->ptr,
-            "System.Reflection.PropertyInfo",
-            "GetValue",
-            { "object", "System.Object[]" },
-            obj,
-            args
-        );
+    static Cerydra::IL2CPP::Method* M_SetValue()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(PropertyInfoClass(), "SetValue", { "object", "object" });
+        return method;
+    }
+
+    static Cerydra::IL2CPP::Method* M_GetValue()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(PropertyInfoClass(), "GetValue", { "object" });
+        return method;
+    }
+
+    static Cerydra::IL2CPP::Method* M_GetValueWithArgs()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(PropertyInfoClass(), "GetValue", { "object", "System.Object[]" });
+        return method;
+    }
+
+    CRuntimeType GetDeclaringType() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CRuntimeType>(ptr, M_GetDeclaringType());
+    }
+
+    CRuntimeType GetPropertyType() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CRuntimeType>(ptr, M_GetPropertyType());
+    }
+
+    CSystemString GetName() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CSystemString>(ptr, M_GetName());
+    }
+
+    void SetValue(uintptr_t obj, uintptr_t value) const
+    {
+        Cerydra::CSharp::InvokeInstance<void>(ptr, M_SetValue(), obj, value);
+    }
+
+    CIl2CppObject GetValue(uintptr_t obj) const
+    {
+        return Cerydra::CSharp::InvokeInstance<CIl2CppObject>(ptr, M_GetValue(), obj);
+    }
+
+    uintptr_t GetValue(uintptr_t obj, uintptr_t args) const
+    {
+        return Cerydra::CSharp::InvokeInstance<uintptr_t>(ptr, M_GetValueWithArgs(), obj, args);
     }
 };
 
@@ -478,77 +609,83 @@ class CSystemObject : public CIl2CppWrapBase {
 public:
     using CIl2CppWrapBase::CIl2CppWrapBase;
 
-    CS_CLASS("System.Object");
+    static Cerydra::IL2CPP::Class* StaticClass()
+    {
+        static auto* klass = Cerydra::CSharp::RequireClass("System.Object");
+        return klass;
+    }
 
-    CRuntimeType GetType() const {
-        return CallIl2CppInstanceObjectMethod<CRuntimeType>(
-            this->ptr,
-            "System.Object",
-            "GetType",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_GetType()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(StaticClass(), "GetType", {});
+        return method;
+    }
+
+    CRuntimeType GetType() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CRuntimeType>(ptr, M_GetType());
     }
 };
 
-// System.Int32
 class CSystemInt32 : public CIl2CppWrapBase {
 public:
     using CIl2CppWrapBase::CIl2CppWrapBase;
 
-    CS_CLASS("System.Int32");
+    static Cerydra::IL2CPP::Class* StaticClass()
+    {
+        static auto* klass = Cerydra::CSharp::RequireClass("System.Int32");
+        return klass;
+    }
 
-    CSystemString ToString() const {
-        return CallIl2CppInstanceObjectMethod<CSystemString>(
-            this->ptr,
-            "System.Int32",
-            "ToString",
-            {}
-        );
+    static Cerydra::IL2CPP::Method* M_ToString()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(StaticClass(), "ToString", {});
+        return method;
+    }
+
+    CSystemString ToString() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CSystemString>(ptr, M_ToString());
     }
 };
 
-// System.Int64
 class CSystemInt64 : public CIl2CppWrapBase {
 public:
     using CIl2CppWrapBase::CIl2CppWrapBase;
 
-    CS_CLASS("System.Int64");
-
-    CSystemString ToString() const {
-        return CallIl2CppInstanceObjectMethod<CSystemString>(
-            this->ptr,
-            "System.Int64",
-            "ToString",
-            {}
-        );
+    static Cerydra::IL2CPP::Class* StaticClass()
+    {
+        static auto* klass = Cerydra::CSharp::RequireClass("System.Int64");
+        return klass;
     }
 
-    static CSystemInt64 FromPtr(uintptr_t ptr) {
+    static Cerydra::IL2CPP::Method* M_ToString()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(StaticClass(), "ToString", {});
+        return method;
+    }
+
+    CSystemString ToString() const
+    {
+        return Cerydra::CSharp::InvokeInstance<CSystemString>(ptr, M_ToString());
+    }
+
+    static CSystemInt64 FromPtr(uintptr_t ptr)
+    {
         return CSystemInt64(ptr);
     }
 };
 
-// System.Dynamic
 class CSystemDynamic : public CIl2CppWrapBase {
 public:
     using CIl2CppWrapBase::CIl2CppWrapBase;
-    //CS_CLASS("System.Dynamic.DynamicObject");
 
-    CSystemString ToString() const {
-        if (this->ptr == 0) {
-            throw std::runtime_error("SystemDynamic::ToString: null object");
+    CSystemString ToString() const
+    {
+        if (!ptr) {
+            throw std::runtime_error("SystemDynamic::ToString: 对象为空");
         }
 
-        auto obj = CIl2CppObject(this->ptr);
-        auto obj_class = obj.get_class();
-        if (obj_class.is_null()) {
-            throw std::runtime_error("SystemDynamic::ToString: object class is null");
-        }
-
-        return CallIl2CppInstanceObjectMethodDynamic<CSystemString>(
-            this->ptr,
-            "ToString",
-            {}
-        );
+        return Cerydra::CSharp::InvokeDynamic<CSystemString>(ptr, "ToString", {});
     }
 };

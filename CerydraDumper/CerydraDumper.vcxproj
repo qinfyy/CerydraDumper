@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -179,9 +179,12 @@
     <ClInclude Include="CSharpRuntime.h" />
     <ClInclude Include="CSystemArray.h" />
     <ClInclude Include="CSystemType.h" />
+    <ClInclude Include="CSharpModel.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Il2CppApiWrapper.h" />
     <ClInclude Include="Il2CppCache.h" />
+    <ClInclude Include="Il2CppModel.h" />
+    <ClInclude Include="Il2CppRuntimeCache.h" />
     <ClInclude Include="il2cpp\vm\GlobalMetadataFileInternals.h" />
     <ClInclude Include="Initializer.h" />
     <ClInclude Include="Il2CppDumper.h" />
@@ -232,12 +235,15 @@
     <ClCompile Include="CSharpRuntime.cpp" />
     <ClCompile Include="CSystemArray.cpp" />
     <ClCompile Include="CSystemType.cpp" />
+    <ClCompile Include="CSharpModel.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Il2CppApiWrapper.cpp" />
     <ClCompile Include="Il2CppCache.cpp" />
     <ClCompile Include="Initializer.cpp" />
     <ClCompile Include="Il2CppDumper.cpp" />
     <ClCompile Include="Il2CppFunctions.cpp" />
+    <ClCompile Include="Il2CppModel.cpp" />
+    <ClCompile Include="Il2CppRuntimeCache.cpp" />
     <ClCompile Include="JsonGenerator.cpp" />
     <ClCompile Include="Memory.cpp" />
     <ClCompile Include="MetaDumper.cpp" />

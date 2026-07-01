@@ -1,6 +1,6 @@
 #pragma once
 #include "Il2CppApiWrapper.h"
-#include "Bind.h"
+#include "CSharpModel.h"
 #include <string>
 #include <vector>
 #include <stdexcept>
@@ -9,9 +9,22 @@ class CSystemString : public CIl2CppWrapBase {
 public:
     using CIl2CppWrapBase::CIl2CppWrapBase;
 
-    CS_CLASS("System.Runtime.InteropServices.Marshal");
+    static Cerydra::IL2CPP::Class* MarshalClass()
+    {
+        static auto* klass = Cerydra::CSharp::RequireClass("System.Runtime.InteropServices.Marshal");
+        return klass;
+    }
 
-    CS_METHOD_STATIC(PtrToStringAnsi, "PtrToStringAnsi", {"System.IntPtr"}, CSystemString, (const char* charPtr), (charPtr));
+    static Cerydra::IL2CPP::Method* M_PtrToStringAnsi()
+    {
+        static auto* method = Cerydra::CSharp::RequireMethod(MarshalClass(), "PtrToStringAnsi", { "System.IntPtr" });
+        return method;
+    }
+
+    static CSystemString PtrToStringAnsi(const char* charPtr)
+    {
+        return Cerydra::CSharp::InvokeStatic<CSystemString>(M_PtrToStringAnsi(), charPtr);
+    }
 
     std::string AsString() const;
 

@@ -41,13 +41,8 @@ CIl2CppField CRuntimeType::GetField(const char* name) const {
 }
 
 
-CSystemString CRuntimeType::GetAssemblyName() {
-    auto monoAssembly = CallIl2CppInstanceObjectMethod<CMonoAssembly>(
-        ptr,
-        "System.RuntimeType",
-        "get_Assembly",
-        {}
-    );
-
-    return monoAssembly.GetName();
-}
+//CSystemString CRuntimeType::GetAssemblyName() {
+//    auto monoAssembly = nullptr
+//
+//    return monoAssembly.GetName();
+//}

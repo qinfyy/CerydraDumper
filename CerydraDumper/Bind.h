@@ -39,9 +39,15 @@ RetOrWrapper CallIl2CppInternal(
     }
 
     auto class_name = klass->name();
+    auto class_meta = GetCachedClassMeta(klass->raw_ptr());
+    auto method_meta = class_meta ? class_meta->GetMethod(method_name, arg_types) : nullptr;
+    auto method_info = method_meta ? CIl2CppMethod(reinterpret_cast<uintptr_t>(method_meta->address)) : klass->find_method(method_name, arg_types);
 
-    auto method_info = klass->find_method(method_name, arg_types);
-    if (method_info.is_null()) {
+    if (!method_meta && !method_info.is_null()) {
+        method_meta = GetCachedMethodMeta(method_info.raw_ptr());
+    }
+
+    if (method_info.is_null() && !method_meta) {
         std::ostringstream msg;
         msg << "No such method: " << method_name
             << " | class: " << class_name
@@ -49,7 +55,7 @@ RetOrWrapper CallIl2CppInternal(
         throw std::runtime_error(msg.str());
     }
 
-    auto function_va = method_info.va();
+    auto function_va = method_meta ? method_meta->Va() : method_info.va();
     if (!function_va) {
         std::ostringstream msg;
         msg << "Method VA is null! Cannot call method: " << method_name
@@ -120,7 +126,7 @@ RetOrWrapper CallIl2CppInternal(
         msg << "Il2CppExceptionWrapper in method: " << method_name
             << " | class: " << class_name
             << " | this ptr: " << std::hex << thisPtr
-            << " | method RVA: " << method_info.rva();
+            << " | method RVA: " << (method_meta ? method_meta->Rva() : method_info.rva());
 
         Il2CppException* ex = e.ex;
         if (ex->message)
@@ -138,7 +144,7 @@ RetOrWrapper CallIl2CppInternal(
         msg << "Unknown exception in method: " << method_name
             << " | class: " << class_name
             << " | this ptr: " << std::hex << thisPtr
-            << " | method RVA: " << method_info.rva();
+            << " | method RVA: " << (method_meta ? method_meta->Rva() : method_info.rva());
         throw std::runtime_error(msg.str());
     }
 }

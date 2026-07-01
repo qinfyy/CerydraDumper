@@ -147,6 +147,15 @@
     <ClInclude Include="CSystemType.h">
       <Filter>头文件\CSharp</Filter>
     </ClInclude>
+    <ClInclude Include="CSharpModel.h">
+      <Filter>头文件\CSharp</Filter>
+    </ClInclude>
+    <ClInclude Include="Il2CppModel.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Il2CppRuntimeCache.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="CmdIdOut.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -241,6 +250,15 @@
     </ClCompile>
     <ClCompile Include="CSystemType.cpp">
       <Filter>源文件\CSharp</Filter>
+    </ClCompile>
+    <ClCompile Include="CSharpModel.cpp">
+      <Filter>源文件\CSharp</Filter>
+    </ClCompile>
+    <ClCompile Include="Il2CppModel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Il2CppRuntimeCache.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CmdIdOut.cpp">
       <Filter>源文件</Filter>
