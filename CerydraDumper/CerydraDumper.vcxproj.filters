@@ -150,15 +150,6 @@
     <ClInclude Include="CmdIdOut.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="CModuleManager.h">
-      <Filter>头文件\CSharp</Filter>
-    </ClInclude>
-    <ClInclude Include="CBaseModule.h">
-      <Filter>头文件\CSharp</Filter>
-    </ClInclude>
-    <ClInclude Include="CRspHandler.h">
-      <Filter>头文件\CSharp</Filter>
-    </ClInclude>
     <ClInclude Include="PbUtil.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -167,9 +158,6 @@
     </ClInclude>
     <ClInclude Include="Pb.h">
       <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="CICollection.h">
-      <Filter>头文件\CSharp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -242,15 +230,6 @@
     <ClCompile Include="CmdIdOut.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="CModuleManager.cpp">
-      <Filter>源文件\CSharp</Filter>
-    </ClCompile>
-    <ClCompile Include="CBaseModule.cpp">
-      <Filter>源文件\CSharp</Filter>
-    </ClCompile>
-    <ClCompile Include="CRspHandler.cpp">
-      <Filter>源文件\CSharp</Filter>
-    </ClCompile>
     <ClCompile Include="PbUtil.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -259,9 +238,6 @@
     </ClCompile>
     <ClCompile Include="Pb.cpp">
       <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="CICollection.cpp">
-      <Filter>源文件\CSharp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

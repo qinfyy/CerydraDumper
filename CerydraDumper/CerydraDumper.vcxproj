@@ -171,10 +171,7 @@
   <ItemGroup>
     <ClInclude Include="Activator.h" />
     <ClInclude Include="AppDomain.h" />
-    <ClInclude Include="CBaseModule.h" />
-    <ClInclude Include="CICollection.h" />
     <ClInclude Include="CmdIdOut.h" />
-    <ClInclude Include="CRspHandler.h" />
     <ClInclude Include="CSharpInvoke.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Il2CppModel.h" />
@@ -203,7 +200,6 @@
     <ClInclude Include="Memory.h" />
     <ClInclude Include="MetaDumper.h" />
     <ClInclude Include="MonoAssembly.h" />
-    <ClInclude Include="CModuleManager.h" />
     <ClInclude Include="OriginalNameAttribute.h" />
     <ClInclude Include="PbE.h" />
     <ClInclude Include="pch.h" />
@@ -220,10 +216,7 @@
   <ItemGroup>
     <ClCompile Include="Activator.cpp" />
     <ClCompile Include="AppDomain.cpp" />
-    <ClCompile Include="CBaseModule.cpp" />
-    <ClCompile Include="CICollection.cpp" />
     <ClCompile Include="CmdIdOut.cpp" />
-    <ClCompile Include="CRspHandler.cpp" />
     <ClCompile Include="CSharpInvoke.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Initializer.cpp" />
@@ -235,7 +228,6 @@
     <ClCompile Include="Memory.cpp" />
     <ClCompile Include="MetaDumper.cpp" />
     <ClCompile Include="MonoAssembly.cpp" />
-    <ClCompile Include="CModuleManager.cpp" />
     <ClCompile Include="OriginalNameAttribute.cpp" />
     <ClCompile Include="PbE.cpp" />
     <ClCompile Include="pch.cpp">
