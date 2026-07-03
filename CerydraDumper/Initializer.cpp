@@ -62,8 +62,8 @@ void TestPrintAllImageNamesWrapper()
 void TestWrapper()
 {
     try {
-        auto str = SystemString::PtrToStringAnsi("Hello il2cpp");
-        DebugPrintA("[String] Converted string: %s\n", str.AsString().c_str());
+        auto* str = SystemString::PtrToStringAnsi("Hello il2cpp");
+        DebugPrintA("[String] Converted string: %s\n", str ? str->AsString().c_str() : "");
     }
     catch (const std::exception& e) {
         DebugPrintA("[String] Exception: %s\n", e.what());
@@ -71,9 +71,9 @@ void TestWrapper()
     }
 
     try {
-        auto domain = AppDomain::GetCurrentDomain();
-        auto assemblies = domain.GetAssemblies();
-        DebugPrintA("[Domain] Assembly count: %zu\n", assemblies.Length());
+        auto* domain = AppDomain::GetCurrentDomain();
+        auto* assemblies = domain ? domain->GetAssemblies() : nullptr;
+        DebugPrintA("[Domain] Assembly count: %zu\n", assemblies ? assemblies->Length() : 0);
     }
     catch (const std::exception& e) {
         DebugPrintA("[Domain] Exception: %s\n", e.what());
@@ -81,16 +81,16 @@ void TestWrapper()
     }
 
     try {
-        RuntimeType stringType = RuntimeType::FromName("System.String");
-        DebugPrintA("[Type] System.String ptr: %p\n", reinterpret_cast<void*>(stringType.RawPtr()));
-        DebugPrintA("[Type] FullName: %s\n", stringType.GetFullName().AsString().c_str());
-        DebugPrintA("[Type] Namespace: %s\n", stringType.GetNamespace().AsString().c_str());
-        DebugPrintA("[Type] IsEnum: %s\n", stringType.IsEnum() ? "true" : "false");
-        DebugPrintA("[Type] IsGenericType: %s\n", stringType.IsGenericType() ? "true" : "false");
-        DebugPrintA("[Type] IsValueType: %s\n", stringType.IsValueType() ? "true" : "false");
+        auto* stringType = RuntimeType::FromName("System.String");
+        DebugPrintA("[Type] System.String ptr: %p\n", stringType);
+        DebugPrintA("[Type] FullName: %s\n", stringType->GetFullName()->AsString().c_str());
+        DebugPrintA("[Type] Namespace: %s\n", stringType->GetNamespace()->AsString().c_str());
+        DebugPrintA("[Type] IsEnum: %s\n", stringType->IsEnum() ? "true" : "false");
+        DebugPrintA("[Type] IsGenericType: %s\n", stringType->IsGenericType() ? "true" : "false");
+        DebugPrintA("[Type] IsValueType: %s\n", stringType->IsValueType() ? "true" : "false");
 
-        auto baseType = stringType.GetBaseType();
-        DebugPrintA("[Type] BaseType: %s\n", baseType.GetFullName().AsString().c_str());
+        auto* baseType = stringType->GetBaseType();
+        DebugPrintA("[Type] BaseType: %s\n", baseType ? baseType->GetFullName()->AsString().c_str() : "");
     }
     catch (const std::exception& e) {
         DebugPrintA("[Type] Exception: %s\n", e.what());
@@ -98,17 +98,17 @@ void TestWrapper()
     }
 
     try {
-        RuntimeType stringType = RuntimeType::FromName("System.String");
-        auto field = stringType.GetFieldObject(SystemString::PtrToStringAnsi("Empty"), 0x58);
+        auto* stringType = RuntimeType::FromName("System.String");
+        auto* field = stringType->GetFieldObject(SystemString::PtrToStringAnsi("Empty"), 0x58);
 
-        DebugPrintA("[Field] Name: %s\n", field->GetName().AsString().c_str());
-        DebugPrintA("[Field] DeclaringType: %s\n", field->GetDeclaringType().GetFullName().AsString().c_str());
-        DebugPrintA("[Field] FieldType: %s\n", field->GetFieldType().GetFullName().AsString().c_str());
+        DebugPrintA("[Field] Name: %s\n", field->GetName()->AsString().c_str());
+        DebugPrintA("[Field] DeclaringType: %s\n", field->GetDeclaringType()->GetFullName()->AsString().c_str());
+        DebugPrintA("[Field] FieldType: %s\n", field->GetFieldType()->GetFullName()->AsString().c_str());
         DebugPrintA("[Field] IsLiteral: %s\n", field->IsLiteral() ? "true" : "false");
         DebugPrintA("[Field] MetadataToken: %d\n", field->GetMetadataToken());
 
-        auto emptyObj = field->GetValue(0);
-        DebugPrintA("[Field] Empty value ptr: %p\n", reinterpret_cast<void*>(emptyObj.RawPtr()));
+        auto* emptyObj = field->GetValue(nullptr);
+        DebugPrintA("[Field] Empty value ptr: %p\n", emptyObj);
     }
     catch (const std::exception& e) {
         DebugPrintA("[Field] Exception: %s\n", e.what());
@@ -116,16 +116,16 @@ void TestWrapper()
     }
 
     try {
-        RuntimeType stringType = RuntimeType::FromName("System.String");
-        auto prop = stringType.GetProperty(SystemString::PtrToStringAnsi("Length"));
-        DebugPrintA("[Property] ptr: %p\n", reinterpret_cast<void*>(prop->RawPtr()));
-        DebugPrintA("[Property] Name: %s\n", prop->GetName().AsString().c_str());
-        DebugPrintA("[Property] DeclaringType: %s\n", prop->GetDeclaringType().GetFullName().AsString().c_str());
-        DebugPrintA("[Property] PropertyType: %s\n", prop->GetPropertyType().GetFullName().AsString().c_str());
+        auto* stringType = RuntimeType::FromName("System.String");
+        auto* prop = stringType->GetProperty(SystemString::PtrToStringAnsi("Length"));
+        DebugPrintA("[Property] ptr: %p\n", prop);
+        DebugPrintA("[Property] Name: %s\n", prop->GetName()->AsString().c_str());
+        DebugPrintA("[Property] DeclaringType: %s\n", prop->GetDeclaringType()->GetFullName()->AsString().c_str());
+        DebugPrintA("[Property] PropertyType: %s\n", prop->GetPropertyType()->GetFullName()->AsString().c_str());
 
-        auto testStr = SystemString::PtrToStringAnsi("abcdef");
-        auto lenObj = prop->GetValue(testStr.RawPtr());
-        DebugPrintA("[Property] Length value ptr: %p\n", reinterpret_cast<void*>(lenObj.RawPtr()));
+        auto* testStr = SystemString::PtrToStringAnsi("abcdef");
+        auto* lenObj = prop->GetValue(testStr);
+        DebugPrintA("[Property] Length value ptr: %p\n", lenObj);
     }
     catch (const std::exception& e) {
         DebugPrintA("[Property] Exception: %s\n", e.what());
@@ -133,10 +133,10 @@ void TestWrapper()
     }
 
     try {
-        auto helloStr = SystemString::PtrToStringAnsi("Hello SystemDynamic");
-        SystemDynamic dynObj(helloStr.RawPtr());
-        DebugPrintA("[Dynamic] ptr: %p\n", reinterpret_cast<void*>(dynObj.RawPtr()));
-        DebugPrintA("[Dynamic] ToString: %s\n", dynObj.ToString().AsString().c_str());
+        auto* helloStr = SystemString::PtrToStringAnsi("Hello SystemDynamic");
+        auto* dynObj = reinterpret_cast<SystemDynamic*>(helloStr);
+        DebugPrintA("[Dynamic] ptr: %p\n", dynObj);
+        DebugPrintA("[Dynamic] ToString: %s\n", dynObj->ToString()->AsString().c_str());
     }
     catch (const std::exception& e) {
         DebugPrintA("[Dynamic] Exception: %s\n", e.what());

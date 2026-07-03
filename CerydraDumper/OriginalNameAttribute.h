@@ -5,14 +5,12 @@
 
 namespace Cerydra::CSharp
 {
-    class OriginalNameAttribute : public ObjectRef
+    class OriginalNameAttribute : public Object
     {
     public:
-        using ObjectRef::ObjectRef;
-
         static Cerydra::IL2CPP::Class* StaticClass();
         static Cerydra::IL2CPP::Method* GetNameMethod();
 
-        SystemString GetName() const;
+        SystemString* GetName() const;
     };
 }

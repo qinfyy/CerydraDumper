@@ -204,10 +204,10 @@ namespace Cerydra::IL2CPP
         return false;
     }
 
-    void* Class::GetTypeObject()
+    Cerydra::CSharp::RuntimeType* Class::GetTypeObject()
     {
         if (objType) {
-            return objType;
+            return reinterpret_cast<Cerydra::CSharp::RuntimeType*>(objType);
         }
 
         if (!byvalType || !byvalType->address) {
@@ -215,15 +215,16 @@ namespace Cerydra::IL2CPP
         }
 
         objType = il2cpp_type_get_object(reinterpret_cast<const Il2CppType*>(byvalType->address));
-        return objType;
+        return reinterpret_cast<Cerydra::CSharp::RuntimeType*>(objType);
     }
 
-    void* Class::NewObject() const
+    Cerydra::CSharp::Object* Class::NewObject() const
     {
         if (!address) {
             return nullptr;
         }
 
-        return il2cpp_object_new(reinterpret_cast<const Il2CppClass*>(address));
+        return reinterpret_cast<Cerydra::CSharp::Object*>(
+            il2cpp_object_new(reinterpret_cast<const Il2CppClass*>(address)));
     }
 }

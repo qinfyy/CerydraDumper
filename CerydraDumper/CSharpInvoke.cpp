@@ -52,7 +52,7 @@ namespace Cerydra::CSharp
     }
 
     Cerydra::IL2CPP::Method* RequireDynamicMethod(
-        uintptr_t instance,
+        const void* instance,
         const char* methodName,
         const std::vector<std::string>& argTypes)
     {
@@ -60,7 +60,7 @@ namespace Cerydra::CSharp
             throw std::runtime_error(std::string("对象为空，无法动态查找方法: ") + methodName);
         }
 
-        auto* nativeClass = *reinterpret_cast<Il2CppClass**>(instance);
+        auto* nativeClass = *reinterpret_cast<Il2CppClass* const*>(instance);
         auto* klass = Il2CppRuntimeCache::GetClassByAddress(reinterpret_cast<uintptr_t>(nativeClass));
         if (!klass) {
             throw std::runtime_error(std::string("找不到对象运行时类，无法动态查找方法: ") + methodName);

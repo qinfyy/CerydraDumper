@@ -36,23 +36,12 @@ namespace Cerydra::CSharp
         const char* methodName,
         const std::vector<std::string>& argTypes);
     Cerydra::IL2CPP::Method* RequireDynamicMethod(
-        uintptr_t instance,
+        const void* instance,
         const char* methodName,
         const std::vector<std::string>& argTypes);
 
-    template <typename Ret, typename NativeRet>
-    Ret WrapReturn(NativeRet value)
-    {
-        if constexpr (std::is_base_of_v<ObjectRef, Ret>) {
-            return Ret(static_cast<uintptr_t>(value));
-        }
-        else {
-            return static_cast<Ret>(value);
-        }
-    }
-
     template <bool isStatic, typename Ret, typename... Args>
-    Ret InvokeCachedInternal(uintptr_t thisPtr, Cerydra::IL2CPP::Method* method, Args... args)
+    Ret InvokeCachedInternal(void* thisPtr, Cerydra::IL2CPP::Method* method, Args... args)
     {
         InitSehTranslator();
 
@@ -73,11 +62,10 @@ namespace Cerydra::CSharp
 
         try {
             if constexpr (isStatic) {
-                using NativeRet = std::conditional_t<std::is_base_of_v<ObjectRef, Ret>, uintptr_t, Ret>;
                 using FnType = std::conditional_t<
                     std::is_same_v<Ret, void>,
                     void(__fastcall*)(Args...),
-                    NativeRet(__fastcall*)(Args...)
+                    Ret(__fastcall*)(Args...)
                 >;
 
                 auto func = reinterpret_cast<FnType>(functionVa);
@@ -86,15 +74,14 @@ namespace Cerydra::CSharp
                     return;
                 }
                 else {
-                    return WrapReturn<Ret>(func(args...));
+                    return func(args...);
                 }
             }
             else {
-                using NativeRet = std::conditional_t<std::is_base_of_v<ObjectRef, Ret>, uintptr_t, Ret>;
                 using FnType = std::conditional_t<
                     std::is_same_v<Ret, void>,
-                    void(__fastcall*)(uintptr_t, Args...),
-                    NativeRet(__fastcall*)(uintptr_t, Args...)
+                    void(__fastcall*)(void*, Args...),
+                    Ret(__fastcall*)(void*, Args...)
                 >;
 
                 auto func = reinterpret_cast<FnType>(functionVa);
@@ -103,7 +90,7 @@ namespace Cerydra::CSharp
                     return;
                 }
                 else {
-                    return WrapReturn<Ret>(func(thisPtr, args...));
+                    return func(thisPtr, args...);
                 }
             }
         }
@@ -135,18 +122,18 @@ namespace Cerydra::CSharp
     template <typename Ret, typename... Args>
     Ret InvokeStatic(Cerydra::IL2CPP::Method* method, Args... args)
     {
-        return InvokeCachedInternal<true, Ret>(0, method, args...);
+        return InvokeCachedInternal<true, Ret>(nullptr, method, args...);
     }
 
     template <typename Ret, typename... Args>
-    Ret InvokeInstance(uintptr_t instance, Cerydra::IL2CPP::Method* method, Args... args)
+    Ret InvokeInstance(const void* instance, Cerydra::IL2CPP::Method* method, Args... args)
     {
-        return InvokeCachedInternal<false, Ret>(instance, method, args...);
+        return InvokeCachedInternal<false, Ret>(const_cast<void*>(instance), method, args...);
     }
 
     template <typename Ret, typename... Args>
     Ret InvokeDynamic(
-        uintptr_t instance,
+        const void* instance,
         const char* methodName,
         const std::vector<std::string>& argTypes,
         Args... args)

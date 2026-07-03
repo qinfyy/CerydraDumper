@@ -16,27 +16,33 @@ namespace Cerydra::CSharp
         return method;
     }
 
-    SystemString SystemString::PtrToStringAnsi(const char* value)
+    SystemString* SystemString::PtrToStringAnsi(const char* value)
     {
-        return InvokeStatic<SystemString>(PtrToStringAnsiMethod(), value);
+        return InvokeStatic<SystemString*>(PtrToStringAnsiMethod(), value);
+    }
+
+    std::string SystemString::ToString() const
+    {
+        return Il2CppStringToUtf8String(const_cast<Il2CppString*>(reinterpret_cast<const Il2CppString*>(this)));
     }
 
     std::string SystemString::AsString() const
     {
-        if (IsNull()) {
-            return "";
+        return ToString();
+    }
+
+    bool SystemString::Equals(const char* rhs) const
+    {
+        if (!rhs) {
+            return false;
         }
 
-        return Il2CppStringToUtf8String(reinterpret_cast<Il2CppString*>(ptr));
+        return AsString() == rhs;
     }
 
     bool SystemString::operator==(const char* rhs) const
     {
-        if (!rhs) {
-            return IsNull();
-        }
-
-        return !IsNull() && AsString() == rhs;
+        return Equals(rhs);
     }
 
     bool SystemString::operator!=(const char* rhs) const

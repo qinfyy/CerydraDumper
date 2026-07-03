@@ -2,8 +2,6 @@
 
 #include "CSharpInvoke.h"
 #include "SystemString.h"
-#include "SystemType.h"
-#include <memory>
 #include <string>
 
 namespace Cerydra::CSharp
@@ -12,43 +10,41 @@ namespace Cerydra::CSharp
     class MonoField;
     class MonoProperty;
 
-    class RuntimeType : public ObjectRef
+    class RuntimeType : public Object
     {
     public:
-        using ObjectRef::ObjectRef;
-
         static Cerydra::IL2CPP::Class* RuntimeTypeClass();
         static Cerydra::IL2CPP::Class* TypeClass();
 
-        static RuntimeType FromClass(Cerydra::IL2CPP::Class* klass);
-        static RuntimeType FromName(const std::string& name);
+        static RuntimeType* FromClass(Cerydra::IL2CPP::Class* klass);
+        static RuntimeType* FromName(const std::string& name);
 
-        RuntimeType GetBaseType() const;
+        RuntimeType* GetBaseType() const;
         bool IsGenericType() const;
         bool IsEnum() const;
         int GetArrayRank() const;
-        RuntimeType GetReflectedType() const;
-        RuntimeType GetElementType() const;
-        SystemString GetNamespace() const;
-        SystemString GetName() const;
-        SystemString GetFullName() const;
-        RuntimeObject GetTypeHandle() const;
-        ArrayObject GetGenericArguments() const;
-        ArrayObject GetFields(int bindingFlags) const;
-        ArrayObject GetProperties(int bindingFlags) const;
+        RuntimeType* GetReflectedType() const;
+        RuntimeType* GetElementType() const;
+        SystemString* GetNamespace() const;
+        SystemString* GetName() const;
+        SystemString* GetFullName() const;
+        Object* GetTypeHandle() const;
+        Array<RuntimeType*>* GetGenericArguments() const;
+        Array<MonoField*>* GetFields(int bindingFlags) const;
+        Array<MonoProperty*>* GetProperties(int bindingFlags) const;
         bool IsByRef() const;
         bool IsArray() const;
         bool IsValueType() const;
         bool IsPointer() const;
-        uintptr_t GetType() const;
-        std::unique_ptr<MonoProperty> GetProperty(SystemString name) const;
+        Object* GetType() const;
+        MonoProperty* GetProperty(SystemString* name) const;
         bool IsInterface() const;
-        uintptr_t GetConstructor(uintptr_t types) const;
-        bool IsAssignableFrom(RuntimeType type) const;
-        ArrayObject GetInterfaces() const;
-        RuntimeType GetDeclaringType() const;
-        SystemString GetAssemblyName() const;
-        std::unique_ptr<MonoField> GetFieldObject(SystemString name, int bindingFlags) const;
+        Object* GetConstructor(Array<RuntimeType*>* types) const;
+        bool IsAssignableFrom(RuntimeType* type) const;
+        Array<RuntimeType*>* GetInterfaces() const;
+        RuntimeType* GetDeclaringType() const;
+        SystemString* GetAssemblyName() const;
+        MonoField* GetFieldObject(SystemString* name, int bindingFlags) const;
 
         Cerydra::IL2CPP::Field* GetField(const char* name) const;
         Cerydra::IL2CPP::Type* GetMetaType() const;
@@ -83,11 +79,9 @@ namespace Cerydra::CSharp
         static Cerydra::IL2CPP::Method* GetFieldMethod();
     };
 
-    class RuntimeFieldHandle : public ObjectRef
+    class RuntimeFieldHandle : public Object
     {
     public:
-        using ObjectRef::ObjectRef;
-
         uintptr_t GetValue() const;
 
     private:
@@ -95,21 +89,19 @@ namespace Cerydra::CSharp
         static Cerydra::IL2CPP::Method* GetValueMethod();
     };
 
-    class MonoField : public ObjectRef
+    class MonoField : public Object
     {
     public:
-        using ObjectRef::ObjectRef;
-
-        RuntimeType GetDeclaringType() const;
-        RuntimeType GetFieldType() const;
-        SystemString GetName() const;
-        RuntimeFieldHandle GetFieldHandle() const;
-        RuntimeObject GetRawConstantValue() const;
-        ArrayObject GetCustomAttributes(bool inherit) const;
-        RuntimeObject GetValue(uintptr_t obj) const;
+        RuntimeType* GetDeclaringType() const;
+        RuntimeType* GetFieldType() const;
+        SystemString* GetName() const;
+        RuntimeFieldHandle* GetFieldHandle() const;
+        Object* GetRawConstantValue() const;
+        Array<Object*>* GetCustomAttributes(bool inherit) const;
+        Object* GetValue(Object* obj) const;
         bool IsLiteral() const;
         int32_t GetMetadataToken() const;
-        void SetValue(uintptr_t obj, uintptr_t value) const;
+        void SetValue(Object* obj, Object* value) const;
         Cerydra::IL2CPP::Field* GetMetaField() const;
 
     private:
@@ -127,17 +119,15 @@ namespace Cerydra::CSharp
         static Cerydra::IL2CPP::Method* SetValueMethod();
     };
 
-    class MonoProperty : public ObjectRef
+    class MonoProperty : public Object
     {
     public:
-        using ObjectRef::ObjectRef;
-
-        RuntimeType GetDeclaringType() const;
-        RuntimeType GetPropertyType() const;
-        SystemString GetName() const;
-        void SetValue(uintptr_t obj, uintptr_t value) const;
-        RuntimeObject GetValue(uintptr_t obj) const;
-        uintptr_t GetValue(uintptr_t obj, uintptr_t args) const;
+        RuntimeType* GetDeclaringType() const;
+        RuntimeType* GetPropertyType() const;
+        SystemString* GetName() const;
+        void SetValue(Object* obj, Object* value) const;
+        Object* GetValue(Object* obj) const;
+        Object* GetValue(Object* obj, Array<Object*>* args) const;
 
     private:
         static Cerydra::IL2CPP::Class* RuntimePropertyInfoClass();
@@ -150,44 +140,40 @@ namespace Cerydra::CSharp
         static Cerydra::IL2CPP::Method* GetValueWithArgsMethod();
     };
 
-    class SystemObject : public ObjectRef
+    class SystemObject : public Object
     {
     public:
-        using ObjectRef::ObjectRef;
-        RuntimeType GetType() const;
+        RuntimeType* GetType() const;
 
     private:
         static Cerydra::IL2CPP::Class* StaticClass();
         static Cerydra::IL2CPP::Method* GetTypeMethod();
     };
 
-    class SystemInt32 : public ObjectRef
+    class SystemInt32 : public Object
     {
     public:
-        using ObjectRef::ObjectRef;
-        SystemString ToString() const;
+        SystemString* ToString() const;
 
     private:
         static Cerydra::IL2CPP::Class* StaticClass();
         static Cerydra::IL2CPP::Method* ToStringMethod();
     };
 
-    class SystemInt64 : public ObjectRef
+    class SystemInt64 : public Object
     {
     public:
-        using ObjectRef::ObjectRef;
-        static SystemInt64 FromPtr(uintptr_t ptr);
-        SystemString ToString() const;
+        static SystemInt64* FromAddress(uintptr_t ptr);
+        SystemString* ToString() const;
 
     private:
         static Cerydra::IL2CPP::Class* StaticClass();
         static Cerydra::IL2CPP::Method* ToStringMethod();
     };
 
-    class SystemDynamic : public ObjectRef
+    class SystemDynamic : public Object
     {
     public:
-        using ObjectRef::ObjectRef;
-        SystemString ToString() const;
+        SystemString* ToString() const;
     };
 }

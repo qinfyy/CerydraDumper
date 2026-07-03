@@ -5,23 +5,20 @@
 
 namespace Cerydra::CSharp
 {
-    class SystemString : public ObjectRef
+    class SystemString : public Object
     {
     public:
-        using ObjectRef::ObjectRef;
-
-        SystemString() = default;
-        explicit SystemString(const char* value)
-        {
-            *this = PtrToStringAnsi(value);
-        }
+        int32_t stringLength{};
+        wchar_t firstChar[32]{};
 
         static Cerydra::IL2CPP::Class* MarshalClass();
         static Cerydra::IL2CPP::Method* PtrToStringAnsiMethod();
-        static SystemString PtrToStringAnsi(const char* value);
+        static SystemString* PtrToStringAnsi(const char* value);
 
+        std::string ToString() const;
         std::string AsString() const;
 
+        bool Equals(const char* rhs) const;
         bool operator==(const char* rhs) const;
         bool operator!=(const char* rhs) const;
         operator std::string() const;

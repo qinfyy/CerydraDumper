@@ -15,8 +15,8 @@ namespace Cerydra::CSharp
         return method;
     }
 
-    SystemType SystemType::GetTypeFromHandle(Il2CppType* type)
+    SystemType* SystemType::GetTypeFromHandle(Il2CppType* type)
     {
-        return InvokeStatic<SystemType>(GetTypeFromHandleMethod(), type);
+        return InvokeStatic<SystemType*>(GetTypeFromHandleMethod(), type);
     }
 }

@@ -27,18 +27,18 @@ namespace Cerydra::CSharp
         return method;
     }
 
-    RuntimeObject Activator::CreateInstance(uintptr_t type)
+    Object* Activator::CreateInstance(Object* type)
     {
-        return InvokeStatic<RuntimeObject>(CreateInstanceMethod(), type);
+        return InvokeStatic<Object*>(CreateInstanceMethod(), type);
     }
 
-    RuntimeObject Activator::CreateInstanceWithArgs(uintptr_t type, uintptr_t args)
+    Object* Activator::CreateInstanceWithArgs(Object* type, Array<Object*>* args)
     {
-        return InvokeStatic<RuntimeObject>(CreateInstanceWithArgsMethod(), type, args);
+        return InvokeStatic<Object*>(CreateInstanceWithArgsMethod(), type, args);
     }
 
-    RuntimeObject Activator::CreateInstanceWithNonpublic(uintptr_t type, bool nonpublic)
+    Object* Activator::CreateInstanceWithNonpublic(Object* type, bool nonpublic)
     {
-        return InvokeStatic<RuntimeObject>(CreateInstanceWithNonpublicMethod(), type, nonpublic);
+        return InvokeStatic<Object*>(CreateInstanceWithNonpublicMethod(), type, nonpublic);
     }
 }

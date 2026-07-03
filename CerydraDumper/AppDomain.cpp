@@ -21,13 +21,13 @@ namespace Cerydra::CSharp
         return method;
     }
 
-    AppDomain AppDomain::GetCurrentDomain()
+    AppDomain* AppDomain::GetCurrentDomain()
     {
-        return InvokeStatic<AppDomain>(GetCurrentDomainMethod());
+        return InvokeStatic<AppDomain*>(GetCurrentDomainMethod());
     }
 
-    ArrayObject AppDomain::GetAssemblies() const
+    Array<MonoAssembly*>* AppDomain::GetAssemblies() const
     {
-        return InvokeInstance<ArrayObject>(ptr, GetAssembliesMethod());
+        return InvokeInstance<Array<MonoAssembly*>*>(this, GetAssembliesMethod());
     }
 }

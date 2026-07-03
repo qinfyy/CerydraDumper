@@ -6,6 +6,12 @@
 #include <type_traits>
 #include <vector>
 
+namespace Cerydra::CSharp
+{
+    class Object;
+    class RuntimeType;
+}
+
 namespace Cerydra::IL2CPP
 {
     struct Assembly;
@@ -191,7 +197,7 @@ namespace Cerydra::IL2CPP
             *reinterpret_cast<RType*>(reinterpret_cast<uintptr_t>(obj) + field->offset) = value;
         }
 
-        void* GetTypeObject();
-        void* NewObject() const;
+        Cerydra::CSharp::RuntimeType* GetTypeObject();
+        Cerydra::CSharp::Object* NewObject() const;
     };
 }

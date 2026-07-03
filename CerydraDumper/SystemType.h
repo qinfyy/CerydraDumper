@@ -4,13 +4,11 @@
 
 namespace Cerydra::CSharp
 {
-    class SystemType : public ObjectRef
+    class SystemType : public Object
     {
     public:
-        using ObjectRef::ObjectRef;
-
         static Cerydra::IL2CPP::Class* StaticClass();
         static Cerydra::IL2CPP::Method* GetTypeFromHandleMethod();
-        static SystemType GetTypeFromHandle(Il2CppType* type);
+        static SystemType* GetTypeFromHandle(Il2CppType* type);
     };
 }

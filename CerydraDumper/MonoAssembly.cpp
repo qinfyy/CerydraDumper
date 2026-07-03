@@ -40,19 +40,19 @@ namespace Cerydra::CSharp
         return method;
     }
 
-    SystemString MonoAssembly::GetName() const
+    SystemString* MonoAssembly::GetName() const
     {
-        auto assemblyName = InvokeInstance<uintptr_t>(ptr, GetNameMethod());
-        return InvokeInstance<SystemString>(assemblyName, AssemblyNameGetNameMethod());
+        auto* assemblyName = InvokeInstance<Object*>(this, GetNameMethod());
+        return assemblyName ? InvokeInstance<SystemString*>(assemblyName, AssemblyNameGetNameMethod()) : nullptr;
     }
 
-    ArrayObject MonoAssembly::GetTypes(bool exportedOnly) const
+    Array<RuntimeType*>* MonoAssembly::GetTypes(bool exportedOnly) const
     {
-        return InvokeInstance<ArrayObject, bool>(ptr, GetTypesMethod(), exportedOnly);
+        return InvokeInstance<Array<RuntimeType*>*, bool>(this, GetTypesMethod(), exportedOnly);
     }
 
-    RuntimeType MonoAssembly::GetTypeByName(SystemString name) const
+    RuntimeType* MonoAssembly::GetTypeByName(SystemString* name) const
     {
-        return InvokeInstance<RuntimeType>(ptr, GetTypeMethod(), name);
+        return InvokeInstance<RuntimeType*>(this, GetTypeMethod(), name);
     }
 }

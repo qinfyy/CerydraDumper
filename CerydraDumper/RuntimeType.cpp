@@ -16,12 +16,12 @@ namespace Cerydra::CSharp
         return klass;
     }
 
-    RuntimeType RuntimeType::FromClass(Cerydra::IL2CPP::Class* klass)
+    RuntimeType* RuntimeType::FromClass(Cerydra::IL2CPP::Class* klass)
     {
-        return RuntimeType(klass ? reinterpret_cast<uintptr_t>(klass->GetTypeObject()) : 0);
+        return klass ? klass->GetTypeObject() : nullptr;
     }
 
-    RuntimeType RuntimeType::FromName(const std::string& name)
+    RuntimeType* RuntimeType::FromName(const std::string& name)
     {
         auto* klass = Il2CppRuntimeCache::GetClass(name);
         if (!klass) {
@@ -58,46 +58,44 @@ namespace Cerydra::CSharp
     Cerydra::IL2CPP::Method* RuntimeType::GetAssemblyMethod() { static auto* method = RequireMethod(RuntimeTypeClass(), "get_Assembly", {}); return method; }
     Cerydra::IL2CPP::Method* RuntimeType::GetFieldMethod() { static auto* method = RequireMethod(RuntimeTypeClass(), "GetField", { "string", "System.Reflection.BindingFlags" }); return method; }
 
-    RuntimeType RuntimeType::GetBaseType() const { return InvokeInstance<RuntimeType>(ptr, GetBaseTypeMethod()); }
-    bool RuntimeType::IsGenericType() const { return InvokeInstance<bool>(ptr, IsGenericTypeMethod()); }
-    bool RuntimeType::IsEnum() const { return InvokeInstance<bool>(ptr, IsEnumMethod()); }
-    int RuntimeType::GetArrayRank() const { return InvokeInstance<int>(ptr, GetArrayRankMethod()); }
-    RuntimeType RuntimeType::GetReflectedType() const { return InvokeInstance<RuntimeType>(ptr, GetReflectedTypeMethod()); }
-    RuntimeType RuntimeType::GetElementType() const { return InvokeInstance<RuntimeType>(ptr, GetElementTypeMethod()); }
-    SystemString RuntimeType::GetNamespace() const { return InvokeInstance<SystemString>(ptr, GetNamespaceMethod()); }
-    SystemString RuntimeType::GetName() const { return InvokeInstance<SystemString>(ptr, GetNameMethod()); }
-    SystemString RuntimeType::GetFullName() const { return InvokeInstance<SystemString>(ptr, GetFullNameMethod()); }
-    RuntimeObject RuntimeType::GetTypeHandle() const { return InvokeInstance<RuntimeObject>(ptr, GetTypeHandleMethod()); }
-    ArrayObject RuntimeType::GetGenericArguments() const { return InvokeInstance<ArrayObject>(ptr, GetGenericArgumentsMethod()); }
-    ArrayObject RuntimeType::GetFields(int bindingFlags) const { return InvokeInstance<ArrayObject, int>(ptr, GetFieldsMethod(), bindingFlags); }
-    ArrayObject RuntimeType::GetProperties(int bindingFlags) const { return InvokeInstance<ArrayObject, int>(ptr, GetPropertiesMethod(), bindingFlags); }
-    bool RuntimeType::IsByRef() const { return InvokeInstance<bool>(ptr, IsByRefMethod()); }
-    bool RuntimeType::IsArray() const { return InvokeInstance<bool>(ptr, IsArrayMethod()); }
-    bool RuntimeType::IsValueType() const { return InvokeInstance<bool>(ptr, IsValueTypeMethod()); }
-    bool RuntimeType::IsPointer() const { return InvokeInstance<bool>(ptr, IsPointerMethod()); }
-    uintptr_t RuntimeType::GetType() const { return InvokeInstance<uintptr_t>(ptr, GetTypeMethod()); }
-    bool RuntimeType::IsInterface() const { return InvokeInstance<bool>(ptr, IsInterfaceMethod()); }
-    uintptr_t RuntimeType::GetConstructor(uintptr_t types) const { return InvokeInstance<uintptr_t>(ptr, GetConstructorMethod(), types); }
-    bool RuntimeType::IsAssignableFrom(RuntimeType type) const { return InvokeInstance<bool>(ptr, IsAssignableFromMethod(), type.RawPtr()); }
-    ArrayObject RuntimeType::GetInterfaces() const { return InvokeInstance<ArrayObject>(ptr, GetInterfacesMethod()); }
-    RuntimeType RuntimeType::GetDeclaringType() const { return InvokeInstance<RuntimeType>(ptr, GetDeclaringTypeMethod()); }
+    RuntimeType* RuntimeType::GetBaseType() const { return InvokeInstance<RuntimeType*>(this, GetBaseTypeMethod()); }
+    bool RuntimeType::IsGenericType() const { return InvokeInstance<bool>(this, IsGenericTypeMethod()); }
+    bool RuntimeType::IsEnum() const { return InvokeInstance<bool>(this, IsEnumMethod()); }
+    int RuntimeType::GetArrayRank() const { return InvokeInstance<int>(this, GetArrayRankMethod()); }
+    RuntimeType* RuntimeType::GetReflectedType() const { return InvokeInstance<RuntimeType*>(this, GetReflectedTypeMethod()); }
+    RuntimeType* RuntimeType::GetElementType() const { return InvokeInstance<RuntimeType*>(this, GetElementTypeMethod()); }
+    SystemString* RuntimeType::GetNamespace() const { return InvokeInstance<SystemString*>(this, GetNamespaceMethod()); }
+    SystemString* RuntimeType::GetName() const { return InvokeInstance<SystemString*>(this, GetNameMethod()); }
+    SystemString* RuntimeType::GetFullName() const { return InvokeInstance<SystemString*>(this, GetFullNameMethod()); }
+    Object* RuntimeType::GetTypeHandle() const { return InvokeInstance<Object*>(this, GetTypeHandleMethod()); }
+    Array<RuntimeType*>* RuntimeType::GetGenericArguments() const { return InvokeInstance<Array<RuntimeType*>*>(this, GetGenericArgumentsMethod()); }
+    Array<MonoField*>* RuntimeType::GetFields(int bindingFlags) const { return InvokeInstance<Array<MonoField*>*, int>(this, GetFieldsMethod(), bindingFlags); }
+    Array<MonoProperty*>* RuntimeType::GetProperties(int bindingFlags) const { return InvokeInstance<Array<MonoProperty*>*, int>(this, GetPropertiesMethod(), bindingFlags); }
+    bool RuntimeType::IsByRef() const { return InvokeInstance<bool>(this, IsByRefMethod()); }
+    bool RuntimeType::IsArray() const { return InvokeInstance<bool>(this, IsArrayMethod()); }
+    bool RuntimeType::IsValueType() const { return InvokeInstance<bool>(this, IsValueTypeMethod()); }
+    bool RuntimeType::IsPointer() const { return InvokeInstance<bool>(this, IsPointerMethod()); }
+    Object* RuntimeType::GetType() const { return InvokeInstance<Object*>(this, GetTypeMethod()); }
+    bool RuntimeType::IsInterface() const { return InvokeInstance<bool>(this, IsInterfaceMethod()); }
+    Object* RuntimeType::GetConstructor(Array<RuntimeType*>* types) const { return InvokeInstance<Object*>(this, GetConstructorMethod(), types); }
+    bool RuntimeType::IsAssignableFrom(RuntimeType* type) const { return InvokeInstance<bool>(this, IsAssignableFromMethod(), type); }
+    Array<RuntimeType*>* RuntimeType::GetInterfaces() const { return InvokeInstance<Array<RuntimeType*>*>(this, GetInterfacesMethod()); }
+    RuntimeType* RuntimeType::GetDeclaringType() const { return InvokeInstance<RuntimeType*>(this, GetDeclaringTypeMethod()); }
 
-    std::unique_ptr<MonoProperty> RuntimeType::GetProperty(SystemString name) const
+    MonoProperty* RuntimeType::GetProperty(SystemString* name) const
     {
-        auto propertyPtr = InvokeInstance<uintptr_t>(ptr, GetPropertyMethod(), name);
-        return std::make_unique<MonoProperty>(propertyPtr);
+        return InvokeInstance<MonoProperty*>(this, GetPropertyMethod(), name);
     }
 
-    SystemString RuntimeType::GetAssemblyName() const
+    SystemString* RuntimeType::GetAssemblyName() const
     {
-        auto assembly = InvokeInstance<MonoAssembly>(ptr, GetAssemblyMethod());
-        return assembly.GetName();
+        auto* assembly = InvokeInstance<MonoAssembly*>(this, GetAssemblyMethod());
+        return assembly ? assembly->GetName() : nullptr;
     }
 
-    std::unique_ptr<MonoField> RuntimeType::GetFieldObject(SystemString name, int bindingFlags) const
+    MonoField* RuntimeType::GetFieldObject(SystemString* name, int bindingFlags) const
     {
-        auto fieldPtr = InvokeInstance<uintptr_t>(ptr, GetFieldMethod(), name, bindingFlags);
-        return std::make_unique<MonoField>(fieldPtr);
+        return InvokeInstance<MonoField*, SystemString*, int>(this, GetFieldMethod(), name, bindingFlags);
     }
 
     Cerydra::IL2CPP::Field* RuntimeType::GetField(const char* name) const
@@ -115,11 +113,7 @@ namespace Cerydra::CSharp
 
     Cerydra::IL2CPP::Type* RuntimeType::GetMetaType() const
     {
-        if (!ptr) {
-            return nullptr;
-        }
-
-        const auto typePtr = *reinterpret_cast<uintptr_t*>(ptr + 16);
+        const auto typePtr = *reinterpret_cast<uintptr_t*>(reinterpret_cast<uintptr_t>(this) + 16);
         return Il2CppRuntimeCache::GetTypeByAddress(typePtr);
     }
 
@@ -131,7 +125,7 @@ namespace Cerydra::CSharp
 
     Cerydra::IL2CPP::Class* RuntimeFieldHandle::StaticClass() { static auto* klass = RequireClass("System.RuntimeFieldHandle"); return klass; }
     Cerydra::IL2CPP::Method* RuntimeFieldHandle::GetValueMethod() { static auto* method = RequireMethod(StaticClass(), "get_Value", {}); return method; }
-    uintptr_t RuntimeFieldHandle::GetValue() const { return InvokeInstance<uintptr_t>(ptr, GetValueMethod()); }
+    uintptr_t RuntimeFieldHandle::GetValue() const { return InvokeInstance<uintptr_t>(this, GetValueMethod()); }
 
     Cerydra::IL2CPP::Class* MonoField::RuntimeFieldInfoClass() { static auto* klass = RequireClass("System.Reflection.RuntimeFieldInfo"); return klass; }
     Cerydra::IL2CPP::Class* MonoField::FieldInfoClass() { static auto* klass = RequireClass("System.Reflection.FieldInfo"); return klass; }
@@ -146,24 +140,20 @@ namespace Cerydra::CSharp
     Cerydra::IL2CPP::Method* MonoField::GetMetadataTokenMethod() { static auto* method = RequireMethod(RuntimeFieldInfoClass(), "get_MetadataToken", {}); return method; }
     Cerydra::IL2CPP::Method* MonoField::SetValueMethod() { static auto* method = RequireMethod(FieldInfoClass(), "SetValue", { "object", "object" }); return method; }
 
-    RuntimeType MonoField::GetDeclaringType() const { return InvokeInstance<RuntimeType>(ptr, GetDeclaringTypeMethod()); }
-    RuntimeType MonoField::GetFieldType() const { return InvokeInstance<RuntimeType>(ptr, GetFieldTypeMethod()); }
-    SystemString MonoField::GetName() const { return InvokeInstance<SystemString>(ptr, GetNameMethod()); }
-    RuntimeFieldHandle MonoField::GetFieldHandle() const { return InvokeInstance<RuntimeFieldHandle>(ptr, GetFieldHandleMethod()); }
-    RuntimeObject MonoField::GetRawConstantValue() const { return InvokeInstance<RuntimeObject>(ptr, GetRawConstantValueMethod()); }
-    ArrayObject MonoField::GetCustomAttributes(bool inherit) const { return InvokeInstance<ArrayObject, bool>(ptr, GetCustomAttributesMethod(), inherit); }
-    RuntimeObject MonoField::GetValue(uintptr_t obj) const { return InvokeInstance<RuntimeObject>(ptr, GetValueMethod(), obj); }
-    bool MonoField::IsLiteral() const { return InvokeInstance<bool>(ptr, IsLiteralMethod()); }
-    int32_t MonoField::GetMetadataToken() const { return InvokeInstance<int32_t>(ptr, GetMetadataTokenMethod()); }
-    void MonoField::SetValue(uintptr_t obj, uintptr_t value) const { InvokeInstance<void>(ptr, SetValueMethod(), obj, value); }
+    RuntimeType* MonoField::GetDeclaringType() const { return InvokeInstance<RuntimeType*>(this, GetDeclaringTypeMethod()); }
+    RuntimeType* MonoField::GetFieldType() const { return InvokeInstance<RuntimeType*>(this, GetFieldTypeMethod()); }
+    SystemString* MonoField::GetName() const { return InvokeInstance<SystemString*>(this, GetNameMethod()); }
+    RuntimeFieldHandle* MonoField::GetFieldHandle() const { return InvokeInstance<RuntimeFieldHandle*>(this, GetFieldHandleMethod()); }
+    Object* MonoField::GetRawConstantValue() const { return InvokeInstance<Object*>(this, GetRawConstantValueMethod()); }
+    Array<Object*>* MonoField::GetCustomAttributes(bool inherit) const { return InvokeInstance<Array<Object*>*, bool>(this, GetCustomAttributesMethod(), inherit); }
+    Object* MonoField::GetValue(Object* obj) const { return InvokeInstance<Object*>(this, GetValueMethod(), obj); }
+    bool MonoField::IsLiteral() const { return InvokeInstance<bool>(this, IsLiteralMethod()); }
+    int32_t MonoField::GetMetadataToken() const { return InvokeInstance<int32_t>(this, GetMetadataTokenMethod()); }
+    void MonoField::SetValue(Object* obj, Object* value) const { InvokeInstance<void>(this, SetValueMethod(), obj, value); }
 
     Cerydra::IL2CPP::Field* MonoField::GetMetaField() const
     {
-        if (!ptr) {
-            return nullptr;
-        }
-
-        const auto fieldPtr = *reinterpret_cast<uintptr_t*>(ptr + 24);
+        const auto fieldPtr = *reinterpret_cast<uintptr_t*>(reinterpret_cast<uintptr_t>(this) + 24);
         return Il2CppRuntimeCache::GetFieldByAddress(fieldPtr);
     }
 
@@ -176,32 +166,28 @@ namespace Cerydra::CSharp
     Cerydra::IL2CPP::Method* MonoProperty::GetValueMethod() { static auto* method = RequireMethod(PropertyInfoClass(), "GetValue", { "object" }); return method; }
     Cerydra::IL2CPP::Method* MonoProperty::GetValueWithArgsMethod() { static auto* method = RequireMethod(PropertyInfoClass(), "GetValue", { "object", "System.Object[]" }); return method; }
 
-    RuntimeType MonoProperty::GetDeclaringType() const { return InvokeInstance<RuntimeType>(ptr, GetDeclaringTypeMethod()); }
-    RuntimeType MonoProperty::GetPropertyType() const { return InvokeInstance<RuntimeType>(ptr, GetPropertyTypeMethod()); }
-    SystemString MonoProperty::GetName() const { return InvokeInstance<SystemString>(ptr, GetNameMethod()); }
-    void MonoProperty::SetValue(uintptr_t obj, uintptr_t value) const { InvokeInstance<void>(ptr, SetValueMethod(), obj, value); }
-    RuntimeObject MonoProperty::GetValue(uintptr_t obj) const { return InvokeInstance<RuntimeObject>(ptr, GetValueMethod(), obj); }
-    uintptr_t MonoProperty::GetValue(uintptr_t obj, uintptr_t args) const { return InvokeInstance<uintptr_t>(ptr, GetValueWithArgsMethod(), obj, args); }
+    RuntimeType* MonoProperty::GetDeclaringType() const { return InvokeInstance<RuntimeType*>(this, GetDeclaringTypeMethod()); }
+    RuntimeType* MonoProperty::GetPropertyType() const { return InvokeInstance<RuntimeType*>(this, GetPropertyTypeMethod()); }
+    SystemString* MonoProperty::GetName() const { return InvokeInstance<SystemString*>(this, GetNameMethod()); }
+    void MonoProperty::SetValue(Object* obj, Object* value) const { InvokeInstance<void>(this, SetValueMethod(), obj, value); }
+    Object* MonoProperty::GetValue(Object* obj) const { return InvokeInstance<Object*>(this, GetValueMethod(), obj); }
+    Object* MonoProperty::GetValue(Object* obj, Array<Object*>* args) const { return InvokeInstance<Object*>(this, GetValueWithArgsMethod(), obj, args); }
 
     Cerydra::IL2CPP::Class* SystemObject::StaticClass() { static auto* klass = RequireClass("System.Object"); return klass; }
     Cerydra::IL2CPP::Method* SystemObject::GetTypeMethod() { static auto* method = RequireMethod(StaticClass(), "GetType", {}); return method; }
-    RuntimeType SystemObject::GetType() const { return InvokeInstance<RuntimeType>(ptr, GetTypeMethod()); }
+    RuntimeType* SystemObject::GetType() const { return InvokeInstance<RuntimeType*>(this, GetTypeMethod()); }
 
     Cerydra::IL2CPP::Class* SystemInt32::StaticClass() { static auto* klass = RequireClass("System.Int32"); return klass; }
     Cerydra::IL2CPP::Method* SystemInt32::ToStringMethod() { static auto* method = RequireMethod(StaticClass(), "ToString", {}); return method; }
-    SystemString SystemInt32::ToString() const { return InvokeInstance<SystemString>(ptr, ToStringMethod()); }
+    SystemString* SystemInt32::ToString() const { return InvokeInstance<SystemString*>(this, ToStringMethod()); }
 
     Cerydra::IL2CPP::Class* SystemInt64::StaticClass() { static auto* klass = RequireClass("System.Int64"); return klass; }
     Cerydra::IL2CPP::Method* SystemInt64::ToStringMethod() { static auto* method = RequireMethod(StaticClass(), "ToString", {}); return method; }
-    SystemInt64 SystemInt64::FromPtr(uintptr_t ptr) { return SystemInt64(ptr); }
-    SystemString SystemInt64::ToString() const { return InvokeInstance<SystemString>(ptr, ToStringMethod()); }
+    SystemInt64* SystemInt64::FromAddress(uintptr_t ptr) { return reinterpret_cast<SystemInt64*>(ptr); }
+    SystemString* SystemInt64::ToString() const { return InvokeInstance<SystemString*>(this, ToStringMethod()); }
 
-    SystemString SystemDynamic::ToString() const
+    SystemString* SystemDynamic::ToString() const
     {
-        if (!ptr) {
-            throw std::runtime_error("SystemDynamic::ToString: 对象为空");
-        }
-
-        return InvokeDynamic<SystemString>(ptr, "ToString", {});
+        return InvokeDynamic<SystemString*>(this, "ToString", {});
     }
 }

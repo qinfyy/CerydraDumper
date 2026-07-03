@@ -15,8 +15,8 @@ namespace Cerydra::CSharp
         return method;
     }
 
-    SystemString OriginalNameAttribute::GetName() const
+    SystemString* OriginalNameAttribute::GetName() const
     {
-        return InvokeInstance<SystemString>(ptr, GetNameMethod());
+        return InvokeInstance<SystemString*>(this, GetNameMethod());
     }
 }

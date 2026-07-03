@@ -8,79 +8,57 @@
 
 namespace Cerydra::CSharp
 {
-    class ObjectRef
-    {
-    protected:
-        uintptr_t ptr{};
-
-    public:
-        ObjectRef() = default;
-        explicit ObjectRef(uintptr_t value) : ptr(value) {}
-
-        explicit operator bool() const { return ptr != 0; }
-        bool operator!() const { return ptr == 0; }
-        bool IsNull() const { return ptr == 0; }
-        bool is_null() const { return IsNull(); }
-        uintptr_t RawPtr() const { return ptr; }
-        uintptr_t raw_ptr() const { return ptr; }
-    };
-
-    class RuntimeObject : public ObjectRef
+    class Object
     {
     public:
-        using ObjectRef::ObjectRef;
-
-        static RuntimeObject FromUIntPtr(uintptr_t value)
+        union
         {
-            return RuntimeObject(value);
+            ::Il2CppClass* klass;
+            void* vtable;
+        } nativeClass{};
+
+        void* monitor{};
+
+        ::Il2CppClass* GetNativeClass() const
+        {
+            return nativeClass.klass;
         }
 
-        Il2CppClass* GetNativeClass() const
+        uintptr_t Address() const
         {
-            if (!ptr) {
-                return nullptr;
-            }
-
-            return *reinterpret_cast<Il2CppClass**>(ptr);
+            return reinterpret_cast<uintptr_t>(this);
         }
 
         template <typename T>
         T Unbox() const
         {
-            if (!ptr) {
-                throw std::runtime_error("尝试拆箱空对象");
-            }
-
-            return *reinterpret_cast<T*>(ptr + 16);
+            return *reinterpret_cast<const T*>(Address() + sizeof(Object));
         }
     };
 
-    class ArrayObject : public ObjectRef
+    using RuntimeObject = Object;
+
+    template <typename T>
+    class Array : public Object
     {
     public:
-        using ObjectRef::ObjectRef;
-
-        Il2CppClass* GetNativeClass() const
+        class Bounds
         {
-            return ptr ? *reinterpret_cast<Il2CppClass**>(ptr) : nullptr;
+        public:
+            uintptr_t length;
+            int32_t lowerBound;
+        };
+
+        Bounds* bounds{};
+        uintptr_t maxLength{};
+        T vector[1]{};
+
+        uintptr_t Length() const
+        {
+            return maxLength;
         }
 
-        uintptr_t Monitor() const
-        {
-            return *reinterpret_cast<uintptr_t*>(ptr + 0x08);
-        }
-
-        uintptr_t Bounds() const
-        {
-            return *reinterpret_cast<uintptr_t*>(ptr + 0x10);
-        }
-
-        size_t Length() const
-        {
-            return ptr ? *reinterpret_cast<const size_t*>(ptr + 0x18) : 0;
-        }
-
-        size_t length() const
+        uintptr_t length() const
         {
             return Length();
         }
@@ -90,124 +68,150 @@ namespace Cerydra::CSharp
             return Length() == 0;
         }
 
-        uintptr_t FirstItemPtr() const
+        uintptr_t FirstItemAddress() const
         {
-            return ptr + 0x20;
+            return reinterpret_cast<uintptr_t>(&vector);
         }
 
         uintptr_t first_item_ptr() const
         {
-            return FirstItemPtr();
+            return FirstItemAddress();
         }
 
-        template <typename T>
-        const T& Get(size_t index) const
+        T& At(size_t index)
         {
-            static_assert(!std::is_void_v<T>, "T must not be void");
-            return *reinterpret_cast<const T*>(FirstItemPtr() + index * sizeof(T));
+            if (index >= Length()) {
+                throw std::out_of_range("Array 下标越界");
+            }
+
+            return *reinterpret_cast<T*>(FirstItemAddress() + sizeof(T) * index);
         }
 
-        template <typename T>
-        const T& get(size_t index) const
+        const T& At(size_t index) const
         {
-            return Get<T>(index);
+            if (index >= Length()) {
+                throw std::out_of_range("Array 下标越界");
+            }
+
+            return *reinterpret_cast<const T*>(FirstItemAddress() + sizeof(T) * index);
         }
 
-        template <typename T>
-        T& GetMutable(size_t index)
+        T& operator[](size_t index)
         {
-            static_assert(!std::is_void_v<T>, "T must not be void");
-            return *reinterpret_cast<T*>(FirstItemPtr() + index * sizeof(T));
+            return At(index);
         }
 
-        template <typename T>
+        const T& operator[](size_t index) const
+        {
+            return At(index);
+        }
+
+        template <typename U = T>
+        U Get(size_t index) const
+        {
+            static_assert(std::is_convertible_v<T, U> || std::is_same_v<T, U>, "数组元素类型不兼容");
+            return static_cast<U>(At(index));
+        }
+
+        template <typename U = T>
+        U get(size_t index) const
+        {
+            return Get<U>(index);
+        }
+
         std::vector<T> ToVector() const
         {
-            static_assert(std::is_copy_constructible_v<T>, "T must be copyable");
-            const T* begin = reinterpret_cast<const T*>(FirstItemPtr());
+            const auto begin = reinterpret_cast<const T*>(FirstItemAddress());
             return std::vector<T>(begin, begin + Length());
         }
 
-        template <typename T>
         std::vector<T> to_vec() const
         {
-            return ToVector<T>();
-        }
-    };
-
-    class NativeList : public ObjectRef
-    {
-    public:
-        using ObjectRef::ObjectRef;
-
-        ArrayObject Items() const
-        {
-            return ArrayObject(ptr ? *reinterpret_cast<uintptr_t*>(ptr + 0x10) : 0);
-        }
-
-        int Size() const
-        {
-            return ptr ? *reinterpret_cast<int*>(ptr + 0x18) : 0;
-        }
-
-        template <typename T>
-        std::vector<T> ToVector() const
-        {
-            auto items = Items();
-            const auto first = items.FirstItemPtr();
-            return std::vector<T>(reinterpret_cast<T*>(first), reinterpret_cast<T*>(first) + Size());
+            return ToVector();
         }
     };
 
     template <typename T>
-    class NativeArray
+    class List : public Object
     {
     public:
-        void* klass{};
-        void* monitor{};
-        void* bounds{};
-        int32_t maxLength{};
-        T vector[65535];
+        Array<T>* items{};
+        int32_t size{};
+        int32_t version{};
+        void* syncRoot{};
 
-        T Get(size_t index) const
+        Array<T>* Items() const
         {
-            if (index >= static_cast<size_t>(maxLength)) {
-                throw std::out_of_range("NativeArray 下标越界");
+            return items;
+        }
+
+        int32_t Size() const
+        {
+            return size;
+        }
+
+        T& At(size_t index)
+        {
+            if (!items) {
+                throw std::runtime_error("List 内部数组为空");
             }
 
-            return vector[index];
+            return items->At(index);
         }
 
-        int32_t Length() const
+        const T& At(size_t index) const
         {
-            return maxLength;
+            if (!items) {
+                throw std::runtime_error("List 内部数组为空");
+            }
+
+            return items->At(index);
+        }
+
+        T& operator[](size_t index)
+        {
+            return At(index);
+        }
+
+        const T& operator[](size_t index) const
+        {
+            return At(index);
+        }
+
+        std::vector<T> ToVector() const
+        {
+            if (!items || size <= 0) {
+                return {};
+            }
+
+            const auto begin = reinterpret_cast<const T*>(items->FirstItemAddress());
+            return std::vector<T>(begin, begin + size);
         }
     };
 
     template <typename TKey, typename TValue>
-    struct Entry
-    {
-        int32_t hashCode;
-        int32_t next;
-        TKey key;
-        TValue value;
-    };
-
-    template <typename TKey, typename TValue>
-    class NativeDictionary
+    class Entry
     {
     public:
-        uintptr_t klass;
-        uintptr_t monitor;
-        NativeArray<int32_t>* buckets;
-        NativeArray<Entry<TKey, TValue>>* entries;
-        int32_t count;
-        int32_t version;
-        int32_t freeList;
-        int32_t freeCount;
-        uintptr_t comparer;
-        void* keys;
-        void* values;
-        uintptr_t syncRoot;
+        int32_t hashCode{};
+        int32_t next{};
+        TKey key{};
+        TValue value{};
+    };
+
+    template <typename TKey, typename TValue>
+    class Dictionary : public Object
+    {
+    public:
+        Array<int32_t>* buckets{};
+        Array<Entry<TKey, TValue>>* entries{};
+        int32_t count{};
+        int32_t version{};
+        int32_t freeList{};
+        int32_t freeCount{};
+        void* comparer{};
+        void* keys{};
+        void* values{};
+        void* syncRoot{};
     };
 }
