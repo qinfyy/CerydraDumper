@@ -1,13 +1,24 @@
 ﻿#include "pch.h"
 #include "Il2CppModel.h"
+#include "PrintHelper.h"
+#include "RuntimeType.h"
+#include "Util.h"
 #include <algorithm>
 #include <cctype>
+#include <iomanip>
+#include <il2cpp-blob.h>
+#include <il2cpp-tabledefs.h>
+#include <limits>
+#include <optional>
 #include <sstream>
 
 namespace Cerydra::IL2CPP
 {
     namespace
     {
+        constexpr int32_t kUnknownType = -1;
+        constexpr int kAllFieldBindingFlags = 0x3C;
+
         bool TypeMatches(const Type* type, const std::string& requested)
         {
             const auto normalized = NormalizeRequestedTypeName(requested);
@@ -22,6 +33,232 @@ namespace Cerydra::IL2CPP
             return normalized == type->name
                 || normalized == type->aliasName
                 || normalized == type->DisplayName();
+        }
+
+        std::string EscapeStringLiteral(const std::string& value)
+        {
+            return "\"" + AsciiEscapeToEscapeLiterals(value) + "\"";
+        }
+
+        std::string EscapeCharLiteral(wchar_t value)
+        {
+            return "'" + AsciiEscapeToEscapeLiterals(Utf16ToUtf8(std::wstring(1, value))) + "'";
+        }
+
+        const Type* ResolveEnumUnderlyingType(const Type* type)
+        {
+            if (!type || !type->klass || !type->klass->isEnum) {
+                return type;
+            }
+
+            for (const auto* field : type->klass->fields) {
+                if (field && field->name == "value__" && field->type) {
+                    return field->type;
+                }
+            }
+
+            return type;
+        }
+
+        int32_t GetLiteralTypeEnum(const Type* type)
+        {
+            const auto* resolvedType = ResolveEnumUnderlyingType(type);
+            if (!resolvedType) {
+                return kUnknownType;
+            }
+            if (resolvedType->typeEnum != kUnknownType) {
+                return resolvedType->typeEnum;
+            }
+
+            const auto& name = resolvedType->name;
+            const auto& aliasName = resolvedType->aliasName;
+            if (name == "System.Boolean" || aliasName == "bool") return IL2CPP_TYPE_BOOLEAN;
+            if (name == "System.Char" || aliasName == "char") return IL2CPP_TYPE_CHAR;
+            if (name == "System.SByte" || aliasName == "sbyte") return IL2CPP_TYPE_I1;
+            if (name == "System.Byte" || aliasName == "byte") return IL2CPP_TYPE_U1;
+            if (name == "System.Int16" || aliasName == "short") return IL2CPP_TYPE_I2;
+            if (name == "System.UInt16" || aliasName == "ushort") return IL2CPP_TYPE_U2;
+            if (name == "System.Int32" || aliasName == "int") return IL2CPP_TYPE_I4;
+            if (name == "System.UInt32" || aliasName == "uint") return IL2CPP_TYPE_U4;
+            if (name == "System.Int64" || aliasName == "long") return IL2CPP_TYPE_I8;
+            if (name == "System.UInt64" || aliasName == "ulong") return IL2CPP_TYPE_U8;
+            if (name == "System.Single" || aliasName == "float") return IL2CPP_TYPE_R4;
+            if (name == "System.Double" || aliasName == "double") return IL2CPP_TYPE_R8;
+            if (name == "System.String" || aliasName == "string") return IL2CPP_TYPE_STRING;
+            return kUnknownType;
+        }
+
+        template <typename T>
+        std::optional<std::string> ReadIl2CppLiteralValue(const Field* field)
+        {
+            T value{};
+            il2cpp_field_static_get_value(reinterpret_cast<FieldInfo*>(field->address), &value);
+            std::ostringstream out;
+            out << value;
+            return out.str();
+        }
+
+        std::optional<std::string> FormatBoxedLiteral(Cerydra::CSharp::Object* value, const Type* type)
+        {
+            const auto typeEnum = GetLiteralTypeEnum(type);
+            if (!value) {
+                return "null";
+            }
+
+            switch (typeEnum) {
+            case IL2CPP_TYPE_BOOLEAN:
+                return value->Unbox<bool>() ? "true" : "false";
+            case IL2CPP_TYPE_CHAR:
+                return EscapeCharLiteral(value->Unbox<wchar_t>());
+            case IL2CPP_TYPE_I1:
+                return std::to_string(static_cast<int>(value->Unbox<int8_t>()));
+            case IL2CPP_TYPE_U1:
+                return std::to_string(static_cast<unsigned int>(value->Unbox<uint8_t>()));
+            case IL2CPP_TYPE_I2:
+                return std::to_string(value->Unbox<int16_t>());
+            case IL2CPP_TYPE_U2:
+                return std::to_string(value->Unbox<uint16_t>());
+            case IL2CPP_TYPE_I4:
+                return std::to_string(value->Unbox<int32_t>());
+            case IL2CPP_TYPE_U4:
+                return std::to_string(value->Unbox<uint32_t>());
+            case IL2CPP_TYPE_I8:
+                return std::to_string(value->Unbox<int64_t>());
+            case IL2CPP_TYPE_U8:
+                return std::to_string(value->Unbox<uint64_t>());
+            case IL2CPP_TYPE_R4:
+            {
+                std::ostringstream out;
+                out << std::setprecision(std::numeric_limits<float>::max_digits10) << value->Unbox<float>() << "f";
+                return out.str();
+            }
+            case IL2CPP_TYPE_R8:
+            {
+                std::ostringstream out;
+                out << std::setprecision(std::numeric_limits<double>::max_digits10) << value->Unbox<double>();
+                return out.str();
+            }
+            case IL2CPP_TYPE_STRING:
+            {
+                auto* str = reinterpret_cast<Cerydra::CSharp::SystemString*>(value);
+                if (!str) {
+                    return std::string("null");
+                }
+                return EscapeStringLiteral(str->AsString());
+            }
+            default:
+                break;
+            }
+
+            auto* str = reinterpret_cast<Cerydra::CSharp::SystemDynamic*>(value)->ToString();
+            if (!str) {
+                return std::nullopt;
+            }
+
+            return str->AsString();
+        }
+
+        std::optional<std::string> ReadLiteralValueByIl2CppApi(const Field* field)
+        {
+            if (!field || !field->address || !field->type || !il2cpp_field_static_get_value.address()) {
+                return std::nullopt;
+            }
+
+            switch (GetLiteralTypeEnum(field->type)) {
+            case IL2CPP_TYPE_BOOLEAN:
+            {
+                bool value{};
+                il2cpp_field_static_get_value(reinterpret_cast<FieldInfo*>(field->address), &value);
+                return value ? "true" : "false";
+            }
+            case IL2CPP_TYPE_CHAR:
+            {
+                wchar_t value{};
+                il2cpp_field_static_get_value(reinterpret_cast<FieldInfo*>(field->address), &value);
+                return EscapeCharLiteral(value);
+            }
+            case IL2CPP_TYPE_I1:
+            {
+                int8_t value{};
+                il2cpp_field_static_get_value(reinterpret_cast<FieldInfo*>(field->address), &value);
+                return std::to_string(static_cast<int>(value));
+            }
+            case IL2CPP_TYPE_U1:
+            {
+                uint8_t value{};
+                il2cpp_field_static_get_value(reinterpret_cast<FieldInfo*>(field->address), &value);
+                return std::to_string(static_cast<unsigned int>(value));
+            }
+            case IL2CPP_TYPE_I2:
+                return ReadIl2CppLiteralValue<int16_t>(field);
+            case IL2CPP_TYPE_U2:
+                return ReadIl2CppLiteralValue<uint16_t>(field);
+            case IL2CPP_TYPE_I4:
+                return ReadIl2CppLiteralValue<int32_t>(field);
+            case IL2CPP_TYPE_U4:
+                return ReadIl2CppLiteralValue<uint32_t>(field);
+            case IL2CPP_TYPE_I8:
+                return ReadIl2CppLiteralValue<int64_t>(field);
+            case IL2CPP_TYPE_U8:
+                return ReadIl2CppLiteralValue<uint64_t>(field);
+            case IL2CPP_TYPE_R4:
+            {
+                float value{};
+                il2cpp_field_static_get_value(reinterpret_cast<FieldInfo*>(field->address), &value);
+                std::ostringstream out;
+                out << std::setprecision(std::numeric_limits<float>::max_digits10) << value << "f";
+                return out.str();
+            }
+            case IL2CPP_TYPE_R8:
+            {
+                double value{};
+                il2cpp_field_static_get_value(reinterpret_cast<FieldInfo*>(field->address), &value);
+                std::ostringstream out;
+                out << std::setprecision(std::numeric_limits<double>::max_digits10) << value;
+                return out.str();
+            }
+            case IL2CPP_TYPE_STRING:
+            {
+                Il2CppString* value{};
+                il2cpp_field_static_get_value(reinterpret_cast<FieldInfo*>(field->address), &value);
+                if (!value) {
+                    return std::string("null");
+                }
+                return EscapeStringLiteral(Il2CppStringToUtf8String(value));
+            }
+            default:
+                return std::nullopt;
+            }
+        }
+
+        std::optional<std::string> ReadLiteralValueByCSharp(const Field* field)
+        {
+            if (!field || !field->klass || field->name.empty()) {
+                return std::nullopt;
+            }
+
+            auto* runtimeType = field->klass->GetTypeObject();
+            if (!runtimeType) {
+                return std::nullopt;
+            }
+
+            auto* fieldName = Cerydra::CSharp::SystemString::PtrToStringAnsi(field->name.c_str());
+            auto* monoField = fieldName ? runtimeType->GetFieldObject(fieldName, kAllFieldBindingFlags) : nullptr;
+            if (!monoField || !monoField->IsLiteral()) {
+                return std::nullopt;
+            }
+
+            return FormatBoxedLiteral(monoField->GetRawConstantValue(), field->type);
+        }
+
+        std::string TypeNameForParam(const Type* type)
+        {
+            if (!type) {
+                return "void";
+            }
+
+            auto typeName = type->DisplayName();
+            return typeName.empty() ? "object" : typeName;
         }
     }
 
@@ -95,6 +332,48 @@ namespace Cerydra::IL2CPP
         return aliasName.empty() ? name : aliasName;
     }
 
+    bool Field::IsLiteral() const
+    {
+        return isLiteral || (flags & FIELD_ATTRIBUTE_LITERAL) != 0;
+    }
+
+    std::string Field::LiteralValue() const
+    {
+        if (!IsLiteral()) {
+            return "";
+        }
+
+        try {
+            if (auto value = ReadLiteralValueByIl2CppApi(this)) {
+                return *value;
+            }
+
+            if (auto value = ReadLiteralValueByCSharp(this)) {
+                return *value;
+            }
+        }
+        catch (const std::exception& ex) {
+            DebugPrintA(
+                "[DumpCs] 常量读取失败: %s.%s, %s\n",
+                klass ? klass->fullName.c_str() : "<unknown>",
+                name.c_str(),
+                ex.what());
+        }
+        catch (...) {
+            DebugPrintA(
+                "[DumpCs] 常量读取失败: %s.%s, 未知异常\n",
+                klass ? klass->fullName.c_str() : "<unknown>",
+                name.c_str());
+        }
+
+        return "";
+    }
+
+    std::string Method::Arg::DisplayName(size_t index) const
+    {
+        return name.empty() ? "arg" + std::to_string(index + 1) : name;
+    }
+
     uintptr_t Method::Rva() const
     {
         const auto va = Va();
@@ -117,6 +396,49 @@ namespace Cerydra::IL2CPP
             }
         }
         out << ")";
+        return out.str();
+    }
+
+    std::string Method::ParamModifier(size_t index) const
+    {
+        if (index >= args.size() || !args[index] || !args[index]->type) {
+            return "";
+        }
+
+        const auto* type = args[index]->type;
+        if (type->byRef) {
+            if ((type->attrs & PARAM_ATTRIBUTE_OUT) && !(type->attrs & PARAM_ATTRIBUTE_IN)) {
+                return "out ";
+            }
+            if ((type->attrs & PARAM_ATTRIBUTE_IN) && !(type->attrs & PARAM_ATTRIBUTE_OUT)) {
+                return "in ";
+            }
+            return "ref ";
+        }
+
+        std::string modifier;
+        if (type->attrs & PARAM_ATTRIBUTE_IN) {
+            modifier += "[In] ";
+        }
+        if (type->attrs & PARAM_ATTRIBUTE_OUT) {
+            modifier += "[Out] ";
+        }
+        return modifier;
+    }
+
+    std::string Method::FormatParam(size_t index, bool includeModifier) const
+    {
+        if (index >= args.size()) {
+            return "";
+        }
+
+        const auto* arg = args[index];
+        std::ostringstream out;
+        if (includeModifier) {
+            out << ParamModifier(index);
+        }
+        out << TypeNameForParam(arg ? arg->type : nullptr) << " "
+            << (arg ? arg->DisplayName(index) : "arg" + std::to_string(index + 1));
         return out.str();
     }
 

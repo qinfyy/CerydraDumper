@@ -63,7 +63,12 @@ namespace
             if (IsFieldStatic(field)) {
                 os << "static ";
             }
-            os << GetTypeName(field->type) << " " << field->name << ";\n";
+            os << GetTypeName(field->type) << " " << field->name;
+            const auto literal = field->LiteralValue();
+            if (!literal.empty()) {
+                os << " = " << literal;
+            }
+            os << ";\n";
         }
 
         os << "\n";
@@ -84,7 +89,9 @@ namespace
             os << GetTypeName(method->returnType) << " " << method->name << "(";
             for (size_t i = 0; i < method->args.size(); ++i) {
                 auto* arg = method->args[i];
-                os << GetTypeName(arg ? arg->type : nullptr) << " " << (arg ? arg->name : "arg" + std::to_string(i));
+                os << method->ParamModifier(i)
+                    << GetTypeName(arg ? arg->type : nullptr) << " "
+                    << (arg ? arg->DisplayName(i) : "arg" + std::to_string(i + 1));
                 if (i + 1 < method->args.size()) {
                     os << ", ";
                 }

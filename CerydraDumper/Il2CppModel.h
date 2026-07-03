@@ -52,6 +52,7 @@ namespace Cerydra::IL2CPP
         void* address{};
         std::string name;
         std::string aliasName;
+        int32_t typeEnum{-1};
         uint32_t attrs{};
         bool byRef{};
         Class* klass{};
@@ -69,6 +70,9 @@ namespace Cerydra::IL2CPP
         int32_t offset{};
         bool isStatic{};
         bool isLiteral{};
+
+        bool IsLiteral() const;
+        std::string LiteralValue() const;
 
         template <typename T>
         void GetStaticValue(T* value) const
@@ -123,6 +127,8 @@ namespace Cerydra::IL2CPP
         {
             std::string name;
             Type* type{};
+
+            std::string DisplayName(size_t index) const;
         };
 
         std::vector<Arg*> args;
@@ -134,6 +140,8 @@ namespace Cerydra::IL2CPP
 
         uintptr_t Rva() const;
         std::string FormatParams() const;
+        std::string ParamModifier(size_t index) const;
+        std::string FormatParam(size_t index, bool includeModifier) const;
         std::string SignatureKey() const;
         bool Match(const std::string& methodName, const std::vector<std::string>& argTypes) const;
 

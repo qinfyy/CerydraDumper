@@ -248,10 +248,40 @@ namespace
             }
 
             os << "\t" << GetFieldModifier(field)
-                << GetTypeName(field->type) << " " << field->name
-                << "; // 0x" << std::hex << field->offset << std::dec << "\n";
+                << GetTypeName(field->type) << " " << field->name;
+
+            const auto literal = field->LiteralValue();
+            if (!literal.empty()) {
+                os << " = " << literal;
+            }
+
+            os << "; // 0x" << std::hex << field->offset << std::dec << "\n";
         }
         os << "\n";
+    }
+
+    void DumpEnum(std::ostream& os, const Cerydra::IL2CPP::Class* klass, size_t typeIndex, const std::string& imageName)
+    {
+        DebugPrintA("[DumpCs] Dumping enum: %s\n", klass->name.c_str());
+        os << "// Assembly: " << imageName << "\n";
+        os << "// Namespace: " << klass->namespaze << "\n";
+        os << GetClassModifier(klass) << klass->name
+            << " // TypeDefIndex: " << typeIndex << "\n{\n";
+
+        for (const auto* field : klass->fields) {
+            if (!field || field->name == "value__" || !field->IsLiteral()) {
+                continue;
+            }
+
+            os << "\t" << field->name;
+            const auto literal = field->LiteralValue();
+            if (!literal.empty()) {
+                os << " = " << literal;
+            }
+            os << ",\n";
+        }
+
+        os << "}\n\n";
     }
 
     void DumpMethods(std::ostream& os, const Cerydra::IL2CPP::Class* klass)
@@ -274,7 +304,9 @@ namespace
             os << GetTypeName(method->returnType) << " " << method->name << "(";
             for (size_t p = 0; p < method->args.size(); ++p) {
                 auto* arg = method->args[p];
-                os << GetTypeName(arg ? arg->type : nullptr) << " " << (arg ? arg->name : "arg" + std::to_string(p));
+                os << method->ParamModifier(p)
+                    << GetTypeName(arg ? arg->type : nullptr) << " "
+                    << (arg ? arg->DisplayName(p) : "arg" + std::to_string(p + 1));
                 if (p + 1 < method->args.size()) {
                     os << ", ";
                 }
@@ -287,6 +319,11 @@ namespace
     void DumpClass(std::ostream& os, const Cerydra::IL2CPP::Class* klass, size_t typeIndex, const std::string& imageName)
     {
         if (!klass) {
+            return;
+        }
+
+        if (klass->isEnum) {
+            DumpEnum(os, klass, typeIndex, imageName);
             return;
         }
 
