@@ -50,28 +50,6 @@ namespace Cerydra::CSharp
         return klass;
     }
 
-    Cerydra::IL2CPP::Class* RequireCoreLibClass(const char* className, const char* namespaze, const char* parent)
-    {
-        if (auto* assembly = Cerydra::IL2CPP::Get("mscorlib.dll")) {
-            if (auto* klass = assembly->Get(className, namespaze, parent)) {
-                return klass;
-            }
-        }
-
-        if (auto* assembly = Cerydra::IL2CPP::Get("System.Private.CoreLib.dll")) {
-            if (auto* klass = assembly->Get(className, namespaze, parent)) {
-                return klass;
-            }
-        }
-
-        auto fullName = Cerydra::IL2CPP::MakeFullClassName(namespaze, className);
-        if (auto* klass = Cerydra::IL2CPP::FindClass(fullName)) {
-            return klass;
-        }
-
-        throw std::runtime_error("找不到 C# 核心类: " + fullName);
-    }
-
     Cerydra::IL2CPP::Method* RequireMethod(
         Cerydra::IL2CPP::Class* klass,
         const char* methodName,

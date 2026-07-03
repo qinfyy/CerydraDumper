@@ -6,13 +6,13 @@ namespace Cerydra::CSharp
 {
     Cerydra::IL2CPP::Class* MonoAssembly::AssemblyClass()
     {
-        static auto* klass = RequireCoreLibClass("Assembly", "System.Reflection");
+        static auto* klass = RequireClass("System.Reflection.Assembly");
         return klass;
     }
 
     Cerydra::IL2CPP::Class* MonoAssembly::AssemblyNameClass()
     {
-        static auto* klass = RequireCoreLibClass("AssemblyName", "System.Reflection");
+        static auto* klass = RequireClass("System.Reflection.AssemblyName");
         return klass;
     }
 

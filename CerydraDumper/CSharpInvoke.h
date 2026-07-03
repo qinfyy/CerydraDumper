@@ -36,10 +36,6 @@ namespace Cerydra::CSharp
         const char* className,
         const char* namespaze = "*",
         const char* parent = "*");
-    Cerydra::IL2CPP::Class* RequireCoreLibClass(
-        const char* className,
-        const char* namespaze = "System",
-        const char* parent = "*");
     Cerydra::IL2CPP::Method* RequireMethod(
         Cerydra::IL2CPP::Class* klass,
         const char* methodName,

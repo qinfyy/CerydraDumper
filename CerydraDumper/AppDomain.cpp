@@ -5,7 +5,7 @@ namespace Cerydra::CSharp
 {
     Cerydra::IL2CPP::Class* AppDomain::StaticClass()
     {
-        static auto* klass = RequireCoreLibClass("AppDomain");
+        static auto* klass = RequireClass("System.AppDomain");
         return klass;
     }
 
