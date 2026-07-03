@@ -9,6 +9,8 @@
 
 namespace
 {
+    constexpr bool kDumpProperties = true;
+
     std::string TrimCsType(const std::string& type)
     {
         std::string result;
@@ -64,6 +66,26 @@ namespace
         }
 
         return TrimCsType(typeName);
+    }
+
+    Cerydra::IL2CPP::Type MakeTypeView(const Il2CppType* type)
+    {
+        Cerydra::IL2CPP::Type result{};
+        if (!type) {
+            return result;
+        }
+
+        result.address = const_cast<Il2CppType*>(type);
+        result.name = il2cpp_type_get_name(type);
+        result.aliasName = Cerydra::IL2CPP::AliasTypeName(result.name);
+        if (il2cpp_type_get_type.address()) {
+            result.typeEnum = il2cpp_type_get_type(type);
+        }
+        result.attrs = il2cpp_type_get_attrs(type);
+        result.byRef = il2cpp_type_is_byref(type);
+        result.klass = Cerydra::IL2CPP::FindClassByAddress(
+            reinterpret_cast<uintptr_t>(il2cpp_class_from_type(type)));
+        return result;
     }
 
     std::string GetClassModifier(const Cerydra::IL2CPP::Class* klass)
@@ -260,6 +282,76 @@ namespace
         os << "\n";
     }
 
+    uintptr_t GetMethodRva(const MethodInfo* method);
+
+    void DumpProperties(std::ostream& os, const Cerydra::IL2CPP::Class* klass)
+    {
+        os << "\t// Properties\n";
+        if (!klass || !klass->address || !il2cpp_class_get_properties.address()) {
+            os << "\n";
+            return;
+        }
+
+        void* iter = nullptr;
+        while (const auto* property = il2cpp_class_get_properties(
+            reinterpret_cast<Il2CppClass*>(klass->address), &iter)) {
+            const auto* getter = il2cpp_property_get_get_method.address()
+                ? il2cpp_property_get_get_method(const_cast<PropertyInfo*>(property))
+                : nullptr;
+            const auto* setter = il2cpp_property_get_set_method.address()
+                ? il2cpp_property_get_set_method(const_cast<PropertyInfo*>(property))
+                : nullptr;
+            const auto* propertyName = il2cpp_property_get_name.address()
+                ? il2cpp_property_get_name(const_cast<PropertyInfo*>(property))
+                : nullptr;
+
+            if (!propertyName || (!getter && !setter)) {
+                continue;
+            }
+
+            const Il2CppType* propertyType = nullptr;
+            uint16_t flags = 0;
+            uint32_t iflags = 0;
+            if (getter) {
+                flags = static_cast<uint16_t>(il2cpp_method_get_flags(getter, &iflags));
+                propertyType = il2cpp_method_get_return_type(getter);
+            }
+            else if (setter && il2cpp_method_get_param_count(setter) > 0) {
+                flags = static_cast<uint16_t>(il2cpp_method_get_flags(setter, &iflags));
+                propertyType = il2cpp_method_get_param(setter, 0);
+            }
+
+            os << std::uppercase << "\t// getter RVA: 0x" << std::hex << GetMethodRva(getter)
+                << " setter RVA: 0x" << GetMethodRva(setter) << std::dec << "\n";
+
+            if (!propertyType) {
+                os << "\t// unknown property " << propertyName << "\n";
+                continue;
+            }
+
+            const auto typeView = MakeTypeView(propertyType);
+            os << "\t" << GetMethodModifiers(flags) << GetTypeName(&typeView)
+                << " " << propertyName << " { ";
+            if (getter) {
+                os << "get; ";
+            }
+            if (setter) {
+                os << "set; ";
+            }
+            os << "}\n";
+        }
+        os << "\n";
+    }
+
+    uintptr_t GetMethodRva(const MethodInfo* method)
+    {
+        if (!method || !method->method_pointer) {
+            return 0;
+        }
+
+        return reinterpret_cast<uintptr_t>(method->method_pointer) - GetGameAssemblyModuleBase();
+    }
+
     void DumpEnum(std::ostream& os, const Cerydra::IL2CPP::Class* klass, size_t typeIndex, const std::string& imageName)
     {
         DebugPrintA("[DumpCs] Dumping enum: %s\n", klass->name.c_str());
@@ -338,6 +430,9 @@ namespace
 
         os << " // TypeDefIndex: " << typeIndex << "\n{\n";
         DumpFields(os, klass);
+        if (kDumpProperties) {
+            DumpProperties(os, klass);
+        }
         DumpMethods(os, klass);
         os << "}\n\n";
     }
