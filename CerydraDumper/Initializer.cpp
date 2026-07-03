@@ -62,6 +62,28 @@ void TestPrintAllImageNamesWrapper()
 void TestWrapper()
 {
     try {
+        using namespace Cerydra::IL2CPP;
+        auto findStringLengthMethod = [](const char* assemblyName) -> Method* {
+            auto* assembly = Get(assemblyName);
+            auto* image = assembly ? assembly->Get() : nullptr;
+            auto* klass = image ? image->Get("String", "System") : nullptr;
+            return klass ? klass->Get<Method>("get_Length") : nullptr;
+        };
+
+        auto* assemblyName = "mscorlib.dll";
+        auto* method = findStringLengthMethod(assemblyName);
+        if (!method) {
+            assemblyName = "System.Private.CoreLib.dll";
+            method = findStringLengthMethod(assemblyName);
+        }
+
+        DebugPrintA("[URGet] %s System.String.get_Length method: %p\n", assemblyName, method);
+    }
+    catch (const std::exception& e) {
+        DebugPrintA("[URGet] Exception: %s\n", e.what());
+    }
+
+    try {
         auto* str = SystemString::PtrToStringAnsi("Hello il2cpp");
         DebugPrintA("[String] Converted string: %s\n", str ? str->AsString().c_str() : "");
     }

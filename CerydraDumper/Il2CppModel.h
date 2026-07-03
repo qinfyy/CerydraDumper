@@ -14,41 +14,47 @@ namespace Cerydra::CSharp
 
 namespace Cerydra::IL2CPP
 {
-    struct Assembly;
-    struct Image;
-    struct Class;
-    struct Type;
-    struct Field;
-    struct Method;
+    class Assembly;
+    class Image;
+    class Class;
+    class Type;
+    class Field;
+    class Method;
 
     std::string MakeFullClassName(const std::string& namespaze, const std::string& name);
     std::string AliasTypeName(const std::string& name);
     std::string NormalizeRequestedTypeName(const std::string& requested);
+    Assembly* Get(const std::string& assemblyName);
 
-    struct Assembly final
+    class Assembly final
     {
+    public:
         void* address{};
         std::string name;
         std::string file;
         Image* image{};
 
-        Class* GetClass(
-            const std::string& name,
-            const std::string& namespaze = "*",
-            const std::string& parent = "*") const;
+        Image* Get() const;
     };
 
-    struct Image final
+    class Image final
     {
+    public:
         void* address{};
         std::string name;
         std::string file;
         Assembly* assembly{};
         std::vector<Class*> classes;
+
+        Class* Get(
+            const std::string& name,
+            const std::string& namespaze = "*",
+            const std::string& parent = "*") const;
     };
 
-    struct Type final
+    class Type final
     {
+    public:
         void* address{};
         std::string name;
         std::string aliasName;
@@ -60,8 +66,9 @@ namespace Cerydra::IL2CPP
         std::string DisplayName() const;
     };
 
-    struct Field final
+    class Field final
     {
+    public:
         void* address{};
         std::string name;
         Type* type{};
@@ -113,8 +120,9 @@ namespace Cerydra::IL2CPP
         };
     };
 
-    struct Method final
+    class Method final
     {
+    public:
         void* address{};
         std::string name;
         Class* klass{};
@@ -123,8 +131,9 @@ namespace Cerydra::IL2CPP
         bool isStatic{};
         void* function{};
 
-        struct Arg
+        class Arg
         {
+        public:
             std::string name;
             Type* type{};
 
@@ -158,8 +167,9 @@ namespace Cerydra::IL2CPP
         }
     };
 
-    struct Class final
+    class Class final
     {
+    public:
         void* address{};
         std::string name;
         std::string fullName;
@@ -182,6 +192,35 @@ namespace Cerydra::IL2CPP
         Method* GetMethod(const std::string& name, const std::vector<std::string>& args = {}) const;
         Method* GetMethodByReturnType(const std::string& returnType, const std::vector<std::string>& args = {}) const;
         bool Implements(const Class* interfaceClass) const;
+
+        template <typename RType>
+        RType* Get(const std::string& memberName, const std::vector<std::string>& args = {}) const
+        {
+            if constexpr (std::is_same_v<RType, Field>) {
+                return GetField(memberName);
+            }
+            else if constexpr (std::is_same_v<RType, Method>) {
+                auto* method = GetMethod(memberName, args);
+                if (method || !args.empty()) {
+                    return method;
+                }
+
+                for (auto* candidate : methods) {
+                    if (candidate && candidate->name == memberName) {
+                        return candidate;
+                    }
+                }
+
+                return nullptr;
+            }
+            else if constexpr (std::is_same_v<RType, std::int32_t>) {
+                auto* field = GetField(memberName);
+                return field ? reinterpret_cast<RType*>(static_cast<intptr_t>(field->offset)) : nullptr;
+            }
+            else {
+                return nullptr;
+            }
+        }
 
         template <typename RType>
         RType GetValue(void* obj, const std::string& fieldName) const

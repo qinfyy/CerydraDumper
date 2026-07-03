@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "Il2CppModel.h"
+#include "Il2CppRuntimeCache.h"
 #include "PrintHelper.h"
 #include "RuntimeType.h"
 #include "Util.h"
@@ -306,13 +307,19 @@ namespace Cerydra::IL2CPP
         return normalized;
     }
 
-    Class* Assembly::GetClass(const std::string& className, const std::string& namespaze, const std::string& parentName) const
+    Assembly* Get(const std::string& assemblyName)
     {
-        if (!image) {
-            return nullptr;
-        }
+        return Il2CppRuntimeCache::GetAssembly(assemblyName);
+    }
 
-        for (auto klass : image->classes) {
+    Image* Assembly::Get() const
+    {
+        return image;
+    }
+
+    Class* Image::Get(const std::string& className, const std::string& namespaze, const std::string& parentName) const
+    {
+        for (auto klass : classes) {
             if (!klass || klass->name != className) {
                 continue;
             }
