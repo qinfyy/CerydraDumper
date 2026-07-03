@@ -21,7 +21,6 @@ namespace
     std::vector<Field*> g_fields;
     std::vector<Method*> g_methods;
     std::vector<Type*> g_types;
-    std::vector<Method::Arg*> g_args;
 
     std::unordered_map<void*, Assembly*> g_assemblyByAddress;
     std::unordered_map<void*, Image*> g_imageByAddress;
@@ -342,7 +341,6 @@ void Il2CppRuntimeCache::BuildMethods(Class* klass)
             }
             arg->type = GetOrCreateType(il2cpp_method_get_param(nativeMethod, i));
             method->args.push_back(arg);
-            g_args.push_back(arg);
         }
 
         klass->methods.push_back(method);
