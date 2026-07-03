@@ -26,12 +26,50 @@ namespace Cerydra::CSharp
 
     Cerydra::IL2CPP::Class* RequireClass(const char* className)
     {
-        auto* klass = Il2CppRuntimeCache::GetClass(className);
+        auto* klass = Cerydra::IL2CPP::FindClass(className);
         if (!klass) {
             throw std::runtime_error(std::string("找不到 C# 类: ") + className);
         }
 
         return klass;
+    }
+
+    Cerydra::IL2CPP::Class* RequireClass(
+        const char* assemblyName,
+        const char* className,
+        const char* namespaze,
+        const char* parent)
+    {
+        auto* assembly = Cerydra::IL2CPP::Get(assemblyName);
+        auto* klass = assembly ? assembly->Get(className, namespaze, parent) : nullptr;
+        if (!klass) {
+            throw std::runtime_error(
+                std::string("找不到 C# 类: ") + assemblyName + "::" + namespaze + "." + className);
+        }
+
+        return klass;
+    }
+
+    Cerydra::IL2CPP::Class* RequireCoreLibClass(const char* className, const char* namespaze, const char* parent)
+    {
+        if (auto* assembly = Cerydra::IL2CPP::Get("mscorlib.dll")) {
+            if (auto* klass = assembly->Get(className, namespaze, parent)) {
+                return klass;
+            }
+        }
+
+        if (auto* assembly = Cerydra::IL2CPP::Get("System.Private.CoreLib.dll")) {
+            if (auto* klass = assembly->Get(className, namespaze, parent)) {
+                return klass;
+            }
+        }
+
+        auto fullName = Cerydra::IL2CPP::MakeFullClassName(namespaze, className);
+        if (auto* klass = Cerydra::IL2CPP::FindClass(fullName)) {
+            return klass;
+        }
+
+        throw std::runtime_error("找不到 C# 核心类: " + fullName);
     }
 
     Cerydra::IL2CPP::Method* RequireMethod(
@@ -61,7 +99,7 @@ namespace Cerydra::CSharp
         }
 
         auto* nativeClass = *reinterpret_cast<Il2CppClass* const*>(instance);
-        auto* klass = Il2CppRuntimeCache::GetClassByAddress(reinterpret_cast<uintptr_t>(nativeClass));
+        auto* klass = Cerydra::IL2CPP::FindClassByAddress(reinterpret_cast<uintptr_t>(nativeClass));
         if (!klass) {
             throw std::runtime_error(std::string("找不到对象运行时类，无法动态查找方法: ") + methodName);
         }

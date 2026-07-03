@@ -6,7 +6,7 @@ namespace Cerydra::CSharp
 {
     Cerydra::IL2CPP::Class* SystemString::MarshalClass()
     {
-        static auto* klass = RequireClass("System.Runtime.InteropServices.Marshal");
+        static auto* klass = RequireCoreLibClass("Marshal", "System.Runtime.InteropServices");
         return klass;
     }
 

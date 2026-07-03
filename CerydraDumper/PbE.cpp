@@ -64,7 +64,7 @@ namespace
     std::vector<Class*> GetAllProtobufMessages(Assembly* targetAssembly)
     {
         std::vector<Class*> messages;
-        auto* iMessageClass = Il2CppRuntimeCache::GetClass("Google.Protobuf.IMessage");
+        auto* iMessageClass = FindClass("Google.Protobuf.IMessage");
         if (!targetAssembly || !targetAssembly->image || !iMessageClass) {
             return messages;
         }
@@ -98,7 +98,7 @@ namespace
         for (size_t i = 0; attrs && i < attrs->Length(); ++i) {
             auto* attr = attrs->Get<Object*>(i);
             auto* nativeClass = attr ? attr->GetNativeClass() : nullptr;
-            auto* attrClass = Il2CppRuntimeCache::GetClassByAddress(reinterpret_cast<uintptr_t>(nativeClass));
+            auto* attrClass = FindClassByAddress(reinterpret_cast<uintptr_t>(nativeClass));
             if (attrClass && attrClass->fullName == "Google.Protobuf.Reflection.OriginalNameAttribute") {
                 return true;
             }
@@ -364,7 +364,7 @@ namespace
             auto* attrs = field->GetCustomAttributes(true);
             for (size_t j = 0; attrs && j < attrs->Length(); ++j) {
                 auto* attr = attrs->Get<Object*>(j);
-                auto* attrClass = Il2CppRuntimeCache::GetClassByAddress(reinterpret_cast<uintptr_t>(attr ? attr->GetNativeClass() : nullptr));
+                auto* attrClass = FindClassByAddress(reinterpret_cast<uintptr_t>(attr ? attr->GetNativeClass() : nullptr));
                 if (attrClass && attrClass->fullName == "Google.Protobuf.Reflection.OriginalNameAttribute") {
                     auto* name = reinterpret_cast<OriginalNameAttribute*>(attr)->GetName();
                     enumName = name ? name->AsString() : std::string();

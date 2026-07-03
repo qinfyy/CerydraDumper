@@ -5,7 +5,7 @@ namespace Cerydra::CSharp
 {
     Cerydra::IL2CPP::Class* Activator::StaticClass()
     {
-        static auto* klass = RequireClass("System.Activator");
+        static auto* klass = RequireCoreLibClass("Activator");
         return klass;
     }
 

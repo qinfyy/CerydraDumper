@@ -6,13 +6,13 @@ namespace Cerydra::CSharp
 {
     Cerydra::IL2CPP::Class* RuntimeType::RuntimeTypeClass()
     {
-        static auto* klass = RequireClass("System.RuntimeType");
+        static auto* klass = RequireCoreLibClass("RuntimeType");
         return klass;
     }
 
     Cerydra::IL2CPP::Class* RuntimeType::TypeClass()
     {
-        static auto* klass = RequireClass("System.Type");
+        static auto* klass = RequireCoreLibClass("Type");
         return klass;
     }
 
@@ -23,7 +23,7 @@ namespace Cerydra::CSharp
 
     RuntimeType* RuntimeType::FromName(const std::string& name)
     {
-        auto* klass = Il2CppRuntimeCache::GetClass(name);
+        auto* klass = Cerydra::IL2CPP::FindClass(name);
         if (!klass) {
             throw std::runtime_error("找不到类: " + name);
         }
@@ -114,7 +114,7 @@ namespace Cerydra::CSharp
     Cerydra::IL2CPP::Type* RuntimeType::GetMetaType() const
     {
         const auto typePtr = *reinterpret_cast<uintptr_t*>(reinterpret_cast<uintptr_t>(this) + 16);
-        return Il2CppRuntimeCache::GetTypeByAddress(typePtr);
+        return Cerydra::IL2CPP::FindTypeByAddress(typePtr);
     }
 
     Cerydra::IL2CPP::Class* RuntimeType::GetMetaClass() const
@@ -123,12 +123,12 @@ namespace Cerydra::CSharp
         return type ? type->klass : nullptr;
     }
 
-    Cerydra::IL2CPP::Class* RuntimeFieldHandle::StaticClass() { static auto* klass = RequireClass("System.RuntimeFieldHandle"); return klass; }
+    Cerydra::IL2CPP::Class* RuntimeFieldHandle::StaticClass() { static auto* klass = RequireCoreLibClass("RuntimeFieldHandle"); return klass; }
     Cerydra::IL2CPP::Method* RuntimeFieldHandle::GetValueMethod() { static auto* method = RequireMethod(StaticClass(), "get_Value", {}); return method; }
     uintptr_t RuntimeFieldHandle::GetValue() const { return InvokeInstance<uintptr_t>(this, GetValueMethod()); }
 
-    Cerydra::IL2CPP::Class* MonoField::RuntimeFieldInfoClass() { static auto* klass = RequireClass("System.Reflection.RuntimeFieldInfo"); return klass; }
-    Cerydra::IL2CPP::Class* MonoField::FieldInfoClass() { static auto* klass = RequireClass("System.Reflection.FieldInfo"); return klass; }
+    Cerydra::IL2CPP::Class* MonoField::RuntimeFieldInfoClass() { static auto* klass = RequireCoreLibClass("RuntimeFieldInfo", "System.Reflection", "FieldInfo"); return klass; }
+    Cerydra::IL2CPP::Class* MonoField::FieldInfoClass() { static auto* klass = RequireCoreLibClass("FieldInfo", "System.Reflection", "MemberInfo"); return klass; }
     Cerydra::IL2CPP::Method* MonoField::GetDeclaringTypeMethod() { static auto* method = RequireMethod(RuntimeFieldInfoClass(), "get_DeclaringType", {}); return method; }
     Cerydra::IL2CPP::Method* MonoField::GetFieldTypeMethod() { static auto* method = RequireMethod(RuntimeFieldInfoClass(), "get_FieldType", {}); return method; }
     Cerydra::IL2CPP::Method* MonoField::GetNameMethod() { static auto* method = RequireMethod(RuntimeFieldInfoClass(), "get_Name", {}); return method; }
@@ -154,11 +154,11 @@ namespace Cerydra::CSharp
     Cerydra::IL2CPP::Field* MonoField::GetMetaField() const
     {
         const auto fieldPtr = *reinterpret_cast<uintptr_t*>(reinterpret_cast<uintptr_t>(this) + 24);
-        return Il2CppRuntimeCache::GetFieldByAddress(fieldPtr);
+        return Cerydra::IL2CPP::FindFieldByAddress(fieldPtr);
     }
 
-    Cerydra::IL2CPP::Class* MonoProperty::RuntimePropertyInfoClass() { static auto* klass = RequireClass("System.Reflection.RuntimePropertyInfo"); return klass; }
-    Cerydra::IL2CPP::Class* MonoProperty::PropertyInfoClass() { static auto* klass = RequireClass("System.Reflection.PropertyInfo"); return klass; }
+    Cerydra::IL2CPP::Class* MonoProperty::RuntimePropertyInfoClass() { static auto* klass = RequireCoreLibClass("RuntimePropertyInfo", "System.Reflection", "PropertyInfo"); return klass; }
+    Cerydra::IL2CPP::Class* MonoProperty::PropertyInfoClass() { static auto* klass = RequireCoreLibClass("PropertyInfo", "System.Reflection", "MemberInfo"); return klass; }
     Cerydra::IL2CPP::Method* MonoProperty::GetDeclaringTypeMethod() { static auto* method = RequireMethod(RuntimePropertyInfoClass(), "get_DeclaringType", {}); return method; }
     Cerydra::IL2CPP::Method* MonoProperty::GetPropertyTypeMethod() { static auto* method = RequireMethod(RuntimePropertyInfoClass(), "get_PropertyType", {}); return method; }
     Cerydra::IL2CPP::Method* MonoProperty::GetNameMethod() { static auto* method = RequireMethod(RuntimePropertyInfoClass(), "get_Name", {}); return method; }
@@ -173,15 +173,15 @@ namespace Cerydra::CSharp
     Object* MonoProperty::GetValue(Object* obj) const { return InvokeInstance<Object*>(this, GetValueMethod(), obj); }
     Object* MonoProperty::GetValue(Object* obj, Array<Object*>* args) const { return InvokeInstance<Object*>(this, GetValueWithArgsMethod(), obj, args); }
 
-    Cerydra::IL2CPP::Class* SystemObject::StaticClass() { static auto* klass = RequireClass("System.Object"); return klass; }
+    Cerydra::IL2CPP::Class* SystemObject::StaticClass() { static auto* klass = RequireCoreLibClass("Object"); return klass; }
     Cerydra::IL2CPP::Method* SystemObject::GetTypeMethod() { static auto* method = RequireMethod(StaticClass(), "GetType", {}); return method; }
     RuntimeType* SystemObject::GetType() const { return InvokeInstance<RuntimeType*>(this, GetTypeMethod()); }
 
-    Cerydra::IL2CPP::Class* SystemInt32::StaticClass() { static auto* klass = RequireClass("System.Int32"); return klass; }
+    Cerydra::IL2CPP::Class* SystemInt32::StaticClass() { static auto* klass = RequireCoreLibClass("Int32"); return klass; }
     Cerydra::IL2CPP::Method* SystemInt32::ToStringMethod() { static auto* method = RequireMethod(StaticClass(), "ToString", {}); return method; }
     SystemString* SystemInt32::ToString() const { return InvokeInstance<SystemString*>(this, ToStringMethod()); }
 
-    Cerydra::IL2CPP::Class* SystemInt64::StaticClass() { static auto* klass = RequireClass("System.Int64"); return klass; }
+    Cerydra::IL2CPP::Class* SystemInt64::StaticClass() { static auto* klass = RequireCoreLibClass("Int64"); return klass; }
     Cerydra::IL2CPP::Method* SystemInt64::ToStringMethod() { static auto* method = RequireMethod(StaticClass(), "ToString", {}); return method; }
     SystemInt64* SystemInt64::FromAddress(uintptr_t ptr) { return reinterpret_cast<SystemInt64*>(ptr); }
     SystemString* SystemInt64::ToString() const { return InvokeInstance<SystemString*>(this, ToStringMethod()); }

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Il2CppRuntimeCache.h"
+#include "Il2CppModel.h"
 #include "RuntimeObject.h"
 #include "Util.h"
 #include <cstdint>
@@ -31,6 +31,15 @@ namespace Cerydra::CSharp
     };
 
     Cerydra::IL2CPP::Class* RequireClass(const char* className);
+    Cerydra::IL2CPP::Class* RequireClass(
+        const char* assemblyName,
+        const char* className,
+        const char* namespaze = "*",
+        const char* parent = "*");
+    Cerydra::IL2CPP::Class* RequireCoreLibClass(
+        const char* className,
+        const char* namespaze = "System",
+        const char* parent = "*");
     Cerydra::IL2CPP::Method* RequireMethod(
         Cerydra::IL2CPP::Class* klass,
         const char* methodName,

@@ -25,6 +25,11 @@ namespace Cerydra::IL2CPP
     std::string AliasTypeName(const std::string& name);
     std::string NormalizeRequestedTypeName(const std::string& requested);
     Assembly* Get(const std::string& assemblyName);
+    Class* FindClass(const std::string& fullOrAliasName);
+    Class* FindClass(const std::string& namespaze, const std::string& name);
+    Class* FindClassByAddress(uintptr_t address);
+    Field* FindFieldByAddress(uintptr_t address);
+    Type* FindTypeByAddress(uintptr_t address);
 
     class Assembly final
     {
@@ -35,6 +40,10 @@ namespace Cerydra::IL2CPP
         Image* image{};
 
         Image* Get() const;
+        Class* Get(
+            const std::string& name,
+            const std::string& namespaze = "*",
+            const std::string& parent = "*") const;
     };
 
     class Image final

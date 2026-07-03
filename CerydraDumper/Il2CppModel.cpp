@@ -261,6 +261,25 @@ namespace Cerydra::IL2CPP
             auto typeName = type->DisplayName();
             return typeName.empty() ? "object" : typeName;
         }
+
+        bool ClassNameMatches(const Class* klass, const std::string& fullOrAliasName)
+        {
+            if (!klass) {
+                return false;
+            }
+
+            if (klass->fullName == fullOrAliasName || klass->name == fullOrAliasName) {
+                return true;
+            }
+
+            return klass->byvalType
+                && (klass->byvalType->name == fullOrAliasName || klass->byvalType->aliasName == fullOrAliasName);
+        }
+
+        bool TypeAddressMatches(const Type* type, uintptr_t address)
+        {
+            return type && reinterpret_cast<uintptr_t>(type->address) == address;
+        }
     }
 
     std::string MakeFullClassName(const std::string& namespaze, const std::string& name)
@@ -312,9 +331,131 @@ namespace Cerydra::IL2CPP
         return Il2CppRuntimeCache::GetAssembly(assemblyName);
     }
 
+    Class* FindClass(const std::string& fullOrAliasName)
+    {
+        for (auto* assembly : Il2CppRuntimeCache::Assemblies()) {
+            if (!assembly || !assembly->image) {
+                continue;
+            }
+
+            for (auto* klass : assembly->image->classes) {
+                if (ClassNameMatches(klass, fullOrAliasName)) {
+                    return klass;
+                }
+            }
+        }
+
+        return nullptr;
+    }
+
+    Class* FindClass(const std::string& namespaze, const std::string& name)
+    {
+        return FindClass(MakeFullClassName(namespaze, name));
+    }
+
+    Class* FindClassByAddress(uintptr_t address)
+    {
+        if (!address) {
+            return nullptr;
+        }
+
+        for (auto* assembly : Il2CppRuntimeCache::Assemblies()) {
+            if (!assembly || !assembly->image) {
+                continue;
+            }
+
+            for (auto* klass : assembly->image->classes) {
+                if (klass && reinterpret_cast<uintptr_t>(klass->address) == address) {
+                    return klass;
+                }
+            }
+        }
+
+        return nullptr;
+    }
+
+    Field* FindFieldByAddress(uintptr_t address)
+    {
+        if (!address) {
+            return nullptr;
+        }
+
+        for (auto* assembly : Il2CppRuntimeCache::Assemblies()) {
+            if (!assembly || !assembly->image) {
+                continue;
+            }
+
+            for (auto* klass : assembly->image->classes) {
+                if (!klass) {
+                    continue;
+                }
+
+                for (auto* field : klass->fields) {
+                    if (field && reinterpret_cast<uintptr_t>(field->address) == address) {
+                        return field;
+                    }
+                }
+            }
+        }
+
+        return nullptr;
+    }
+
+    Type* FindTypeByAddress(uintptr_t address)
+    {
+        if (!address) {
+            return nullptr;
+        }
+
+        for (auto* assembly : Il2CppRuntimeCache::Assemblies()) {
+            if (!assembly || !assembly->image) {
+                continue;
+            }
+
+            for (auto* klass : assembly->image->classes) {
+                if (!klass) {
+                    continue;
+                }
+
+                if (TypeAddressMatches(klass->byvalType, address)) {
+                    return klass->byvalType;
+                }
+
+                for (auto* field : klass->fields) {
+                    if (field && TypeAddressMatches(field->type, address)) {
+                        return field->type;
+                    }
+                }
+
+                for (auto* method : klass->methods) {
+                    if (!method) {
+                        continue;
+                    }
+
+                    if (TypeAddressMatches(method->returnType, address)) {
+                        return method->returnType;
+                    }
+
+                    for (auto* arg : method->args) {
+                        if (arg && TypeAddressMatches(arg->type, address)) {
+                            return arg->type;
+                        }
+                    }
+                }
+            }
+        }
+
+        return nullptr;
+    }
+
     Image* Assembly::Get() const
     {
         return image;
+    }
+
+    Class* Assembly::Get(const std::string& className, const std::string& namespaze, const std::string& parentName) const
+    {
+        return image ? image->Get(className, namespaze, parentName) : nullptr;
     }
 
     Class* Image::Get(const std::string& className, const std::string& namespaze, const std::string& parentName) const

@@ -5,7 +5,7 @@ namespace Cerydra::CSharp
 {
     Cerydra::IL2CPP::Class* SystemType::StaticClass()
     {
-        static auto* klass = RequireClass("System.Type");
+        static auto* klass = RequireCoreLibClass("Type");
         return klass;
     }
 
