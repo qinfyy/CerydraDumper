@@ -201,7 +201,7 @@
     <ClInclude Include="MetaDumper.h" />
     <ClInclude Include="MonoAssembly.h" />
     <ClInclude Include="OriginalNameAttribute.h" />
-    <ClInclude Include="PbE.h" />
+    <ClInclude Include="ProtoDumper.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PrintHelper.h" />
     <ClInclude Include="RuntimeObject.h" />
@@ -229,7 +229,7 @@
     <ClCompile Include="MetaDumper.cpp" />
     <ClCompile Include="MonoAssembly.cpp" />
     <ClCompile Include="OriginalNameAttribute.cpp" />
-    <ClCompile Include="PbE.cpp" />
+    <ClCompile Include="ProtoDumper.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

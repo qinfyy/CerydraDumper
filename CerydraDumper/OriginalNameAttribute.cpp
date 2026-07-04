@@ -3,13 +3,13 @@
 
 namespace Cerydra::CSharp
 {
-    Cerydra::IL2CPP::Class* OriginalNameAttribute::StaticClass()
+    Cerydra::Il2Cpp::Class* OriginalNameAttribute::StaticClass()
     {
         static auto* klass = RequireClass("Google.Protobuf.Reflection.OriginalNameAttribute");
         return klass;
     }
 
-    Cerydra::IL2CPP::Method* OriginalNameAttribute::GetNameMethod()
+    Cerydra::Il2Cpp::Method* OriginalNameAttribute::GetNameMethod()
     {
         static auto* method = RequireMethod(StaticClass(), "get_Name", {});
         return method;

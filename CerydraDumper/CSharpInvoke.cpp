@@ -24,9 +24,9 @@ namespace Cerydra::CSharp
         });
     }
 
-    Cerydra::IL2CPP::Class* RequireClass(const char* className)
+    Cerydra::Il2Cpp::Class* RequireClass(const char* className)
     {
-        auto* klass = Cerydra::IL2CPP::FindClass(className);
+        auto* klass = Cerydra::Il2Cpp::FindClass(className);
         if (!klass) {
             throw std::runtime_error(std::string("找不到 C# 类: ") + className);
         }
@@ -34,13 +34,13 @@ namespace Cerydra::CSharp
         return klass;
     }
 
-    Cerydra::IL2CPP::Class* RequireClass(
+    Cerydra::Il2Cpp::Class* RequireClass(
         const char* assemblyName,
         const char* className,
         const char* namespaze,
         const char* parent)
     {
-        auto* assembly = Cerydra::IL2CPP::Get(assemblyName);
+        auto* assembly = Cerydra::Il2Cpp::Get(assemblyName);
         auto* klass = assembly ? assembly->Get(className, namespaze, parent) : nullptr;
         if (!klass) {
             throw std::runtime_error(
@@ -50,8 +50,8 @@ namespace Cerydra::CSharp
         return klass;
     }
 
-    Cerydra::IL2CPP::Method* RequireMethod(
-        Cerydra::IL2CPP::Class* klass,
+    Cerydra::Il2Cpp::Method* RequireMethod(
+        Cerydra::Il2Cpp::Class* klass,
         const char* methodName,
         const std::vector<std::string>& argTypes)
     {
@@ -67,7 +67,7 @@ namespace Cerydra::CSharp
         return method;
     }
 
-    Cerydra::IL2CPP::Method* RequireDynamicMethod(
+    Cerydra::Il2Cpp::Method* RequireDynamicMethod(
         const void* instance,
         const char* methodName,
         const std::vector<std::string>& argTypes)
@@ -77,7 +77,7 @@ namespace Cerydra::CSharp
         }
 
         auto* nativeClass = *reinterpret_cast<Il2CppClass* const*>(instance);
-        auto* klass = Cerydra::IL2CPP::FindClassByAddress(reinterpret_cast<uintptr_t>(nativeClass));
+        auto* klass = Cerydra::Il2Cpp::FindClassByAddress(reinterpret_cast<uintptr_t>(nativeClass));
         if (!klass) {
             throw std::runtime_error(std::string("找不到对象运行时类，无法动态查找方法: ") + methodName);
         }

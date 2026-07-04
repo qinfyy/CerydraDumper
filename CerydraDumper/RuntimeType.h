@@ -13,10 +13,10 @@ namespace Cerydra::CSharp
     class RuntimeType : public Object
     {
     public:
-        static Cerydra::IL2CPP::Class* RuntimeTypeClass();
-        static Cerydra::IL2CPP::Class* TypeClass();
+        static Cerydra::Il2Cpp::Class* RuntimeTypeClass();
+        static Cerydra::Il2Cpp::Class* TypeClass();
 
-        static RuntimeType* FromClass(Cerydra::IL2CPP::Class* klass);
+        static RuntimeType* FromClass(Cerydra::Il2Cpp::Class* klass);
         static RuntimeType* FromName(const std::string& name);
 
         RuntimeType* GetBaseType() const;
@@ -46,37 +46,37 @@ namespace Cerydra::CSharp
         SystemString* GetAssemblyName() const;
         MonoField* GetFieldObject(SystemString* name, int bindingFlags) const;
 
-        Cerydra::IL2CPP::Field* GetField(const char* name) const;
-        Cerydra::IL2CPP::Type* GetMetaType() const;
-        Cerydra::IL2CPP::Class* GetMetaClass() const;
+        Cerydra::Il2Cpp::Field* GetField(const char* name) const;
+        Cerydra::Il2Cpp::Type* GetMetaType() const;
+        Cerydra::Il2Cpp::Class* GetMetaClass() const;
 
     private:
-        static Cerydra::IL2CPP::Method* GetBaseTypeMethod();
-        static Cerydra::IL2CPP::Method* IsGenericTypeMethod();
-        static Cerydra::IL2CPP::Method* IsEnumMethod();
-        static Cerydra::IL2CPP::Method* GetArrayRankMethod();
-        static Cerydra::IL2CPP::Method* GetReflectedTypeMethod();
-        static Cerydra::IL2CPP::Method* GetElementTypeMethod();
-        static Cerydra::IL2CPP::Method* GetNamespaceMethod();
-        static Cerydra::IL2CPP::Method* GetNameMethod();
-        static Cerydra::IL2CPP::Method* GetFullNameMethod();
-        static Cerydra::IL2CPP::Method* GetTypeHandleMethod();
-        static Cerydra::IL2CPP::Method* GetGenericArgumentsMethod();
-        static Cerydra::IL2CPP::Method* GetFieldsMethod();
-        static Cerydra::IL2CPP::Method* GetPropertiesMethod();
-        static Cerydra::IL2CPP::Method* IsByRefMethod();
-        static Cerydra::IL2CPP::Method* IsArrayMethod();
-        static Cerydra::IL2CPP::Method* IsValueTypeMethod();
-        static Cerydra::IL2CPP::Method* IsPointerMethod();
-        static Cerydra::IL2CPP::Method* GetTypeMethod();
-        static Cerydra::IL2CPP::Method* GetPropertyMethod();
-        static Cerydra::IL2CPP::Method* IsInterfaceMethod();
-        static Cerydra::IL2CPP::Method* GetConstructorMethod();
-        static Cerydra::IL2CPP::Method* IsAssignableFromMethod();
-        static Cerydra::IL2CPP::Method* GetInterfacesMethod();
-        static Cerydra::IL2CPP::Method* GetDeclaringTypeMethod();
-        static Cerydra::IL2CPP::Method* GetAssemblyMethod();
-        static Cerydra::IL2CPP::Method* GetFieldMethod();
+        static Cerydra::Il2Cpp::Method* GetBaseTypeMethod();
+        static Cerydra::Il2Cpp::Method* IsGenericTypeMethod();
+        static Cerydra::Il2Cpp::Method* IsEnumMethod();
+        static Cerydra::Il2Cpp::Method* GetArrayRankMethod();
+        static Cerydra::Il2Cpp::Method* GetReflectedTypeMethod();
+        static Cerydra::Il2Cpp::Method* GetElementTypeMethod();
+        static Cerydra::Il2Cpp::Method* GetNamespaceMethod();
+        static Cerydra::Il2Cpp::Method* GetNameMethod();
+        static Cerydra::Il2Cpp::Method* GetFullNameMethod();
+        static Cerydra::Il2Cpp::Method* GetTypeHandleMethod();
+        static Cerydra::Il2Cpp::Method* GetGenericArgumentsMethod();
+        static Cerydra::Il2Cpp::Method* GetFieldsMethod();
+        static Cerydra::Il2Cpp::Method* GetPropertiesMethod();
+        static Cerydra::Il2Cpp::Method* IsByRefMethod();
+        static Cerydra::Il2Cpp::Method* IsArrayMethod();
+        static Cerydra::Il2Cpp::Method* IsValueTypeMethod();
+        static Cerydra::Il2Cpp::Method* IsPointerMethod();
+        static Cerydra::Il2Cpp::Method* GetTypeMethod();
+        static Cerydra::Il2Cpp::Method* GetPropertyMethod();
+        static Cerydra::Il2Cpp::Method* IsInterfaceMethod();
+        static Cerydra::Il2Cpp::Method* GetConstructorMethod();
+        static Cerydra::Il2Cpp::Method* IsAssignableFromMethod();
+        static Cerydra::Il2Cpp::Method* GetInterfacesMethod();
+        static Cerydra::Il2Cpp::Method* GetDeclaringTypeMethod();
+        static Cerydra::Il2Cpp::Method* GetAssemblyMethod();
+        static Cerydra::Il2Cpp::Method* GetFieldMethod();
     };
 
     class RuntimeFieldHandle : public Object
@@ -85,8 +85,8 @@ namespace Cerydra::CSharp
         uintptr_t GetValue() const;
 
     private:
-        static Cerydra::IL2CPP::Class* StaticClass();
-        static Cerydra::IL2CPP::Method* GetValueMethod();
+        static Cerydra::Il2Cpp::Class* StaticClass();
+        static Cerydra::Il2Cpp::Method* GetValueMethod();
     };
 
     class MonoField : public Object
@@ -102,21 +102,21 @@ namespace Cerydra::CSharp
         bool IsLiteral() const;
         int32_t GetMetadataToken() const;
         void SetValue(Object* obj, Object* value) const;
-        Cerydra::IL2CPP::Field* GetMetaField() const;
+        Cerydra::Il2Cpp::Field* GetMetaField() const;
 
     private:
-        static Cerydra::IL2CPP::Class* RuntimeFieldInfoClass();
-        static Cerydra::IL2CPP::Class* FieldInfoClass();
-        static Cerydra::IL2CPP::Method* GetDeclaringTypeMethod();
-        static Cerydra::IL2CPP::Method* GetFieldTypeMethod();
-        static Cerydra::IL2CPP::Method* GetNameMethod();
-        static Cerydra::IL2CPP::Method* GetFieldHandleMethod();
-        static Cerydra::IL2CPP::Method* GetRawConstantValueMethod();
-        static Cerydra::IL2CPP::Method* GetCustomAttributesMethod();
-        static Cerydra::IL2CPP::Method* GetValueMethod();
-        static Cerydra::IL2CPP::Method* IsLiteralMethod();
-        static Cerydra::IL2CPP::Method* GetMetadataTokenMethod();
-        static Cerydra::IL2CPP::Method* SetValueMethod();
+        static Cerydra::Il2Cpp::Class* RuntimeFieldInfoClass();
+        static Cerydra::Il2Cpp::Class* FieldInfoClass();
+        static Cerydra::Il2Cpp::Method* GetDeclaringTypeMethod();
+        static Cerydra::Il2Cpp::Method* GetFieldTypeMethod();
+        static Cerydra::Il2Cpp::Method* GetNameMethod();
+        static Cerydra::Il2Cpp::Method* GetFieldHandleMethod();
+        static Cerydra::Il2Cpp::Method* GetRawConstantValueMethod();
+        static Cerydra::Il2Cpp::Method* GetCustomAttributesMethod();
+        static Cerydra::Il2Cpp::Method* GetValueMethod();
+        static Cerydra::Il2Cpp::Method* IsLiteralMethod();
+        static Cerydra::Il2Cpp::Method* GetMetadataTokenMethod();
+        static Cerydra::Il2Cpp::Method* SetValueMethod();
     };
 
     class MonoProperty : public Object
@@ -130,14 +130,14 @@ namespace Cerydra::CSharp
         Object* GetValue(Object* obj, Array<Object*>* args) const;
 
     private:
-        static Cerydra::IL2CPP::Class* RuntimePropertyInfoClass();
-        static Cerydra::IL2CPP::Class* PropertyInfoClass();
-        static Cerydra::IL2CPP::Method* GetDeclaringTypeMethod();
-        static Cerydra::IL2CPP::Method* GetPropertyTypeMethod();
-        static Cerydra::IL2CPP::Method* GetNameMethod();
-        static Cerydra::IL2CPP::Method* SetValueMethod();
-        static Cerydra::IL2CPP::Method* GetValueMethod();
-        static Cerydra::IL2CPP::Method* GetValueWithArgsMethod();
+        static Cerydra::Il2Cpp::Class* RuntimePropertyInfoClass();
+        static Cerydra::Il2Cpp::Class* PropertyInfoClass();
+        static Cerydra::Il2Cpp::Method* GetDeclaringTypeMethod();
+        static Cerydra::Il2Cpp::Method* GetPropertyTypeMethod();
+        static Cerydra::Il2Cpp::Method* GetNameMethod();
+        static Cerydra::Il2Cpp::Method* SetValueMethod();
+        static Cerydra::Il2Cpp::Method* GetValueMethod();
+        static Cerydra::Il2Cpp::Method* GetValueWithArgsMethod();
     };
 
     class SystemObject : public Object
@@ -146,8 +146,8 @@ namespace Cerydra::CSharp
         RuntimeType* GetType() const;
 
     private:
-        static Cerydra::IL2CPP::Class* StaticClass();
-        static Cerydra::IL2CPP::Method* GetTypeMethod();
+        static Cerydra::Il2Cpp::Class* StaticClass();
+        static Cerydra::Il2Cpp::Method* GetTypeMethod();
     };
 
     class SystemInt32 : public Object
@@ -156,8 +156,8 @@ namespace Cerydra::CSharp
         SystemString* ToString() const;
 
     private:
-        static Cerydra::IL2CPP::Class* StaticClass();
-        static Cerydra::IL2CPP::Method* ToStringMethod();
+        static Cerydra::Il2Cpp::Class* StaticClass();
+        static Cerydra::Il2Cpp::Method* ToStringMethod();
     };
 
     class SystemInt64 : public Object
@@ -167,8 +167,8 @@ namespace Cerydra::CSharp
         SystemString* ToString() const;
 
     private:
-        static Cerydra::IL2CPP::Class* StaticClass();
-        static Cerydra::IL2CPP::Method* ToStringMethod();
+        static Cerydra::Il2Cpp::Class* StaticClass();
+        static Cerydra::Il2Cpp::Method* ToStringMethod();
     };
 
     class SystemDynamic : public Object

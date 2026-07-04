@@ -2,8 +2,9 @@
 #include "Il2CppRuntimeCache.h"
 #include "PrintHelper.h"
 #include <mutex>
+#include <chrono>
 
-using namespace Cerydra::IL2CPP;
+using namespace Cerydra::Il2Cpp;
 
 namespace
 {
@@ -36,20 +37,12 @@ namespace
         }
         return value;
     }
-
-    void ResetCounters()
-    {
-        s_assemblyCount = 0;
-        s_classCount = 0;
-        s_fieldCount = 0;
-        s_methodCount = 0;
-        s_typeCount = 0;
-    }
 }
 
 void Il2CppRuntimeCache::Init()
 {
     std::call_once(g_initOnce, [] {
+        auto il2cppStartTime = std::chrono::high_resolution_clock::now();
         DebugPrintA("[RuntimeCache] 开始缓存 IL2CPP 元数据...\n");
 
         auto domain = il2cpp_domain_get();
@@ -59,17 +52,21 @@ void Il2CppRuntimeCache::Init()
         }
 
         il2cpp_thread_attach(domain);
-        ResetCounters();
+
+        s_assemblyCount = 0;
+        s_classCount = 0;
+        s_fieldCount = 0;
+        s_methodCount = 0;
+        s_typeCount = 0;
+
         BuildAssemblies();
 
         g_initialized = true;
-        DebugPrintA(
-            "[RuntimeCache] 完成: assemblies=%zu, classes=%zu, fields=%zu, methods=%zu, types=%zu\n",
-            s_assemblyCount,
-            s_classCount,
-            s_fieldCount,
-            s_methodCount,
-            s_typeCount);
+        auto il2cppEndTime = std::chrono::high_resolution_clock::now();
+        auto il2cppDurationMs = std::chrono::duration_cast<std::chrono::milliseconds>(il2cppEndTime - il2cppStartTime).count();
+
+        DebugPrintA("[RuntimeCache] 完成: assemblies=%zu, classes=%zu, fields=%zu, methods=%zu, types=%zu (耗时: %lld ms)\n",
+            s_assemblyCount, s_classCount, s_fieldCount, s_methodCount, s_typeCount, il2cppDurationMs);
     });
 }
 

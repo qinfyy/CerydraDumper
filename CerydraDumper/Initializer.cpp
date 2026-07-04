@@ -4,7 +4,7 @@
 #include "Il2CppDumper.h"
 #include "Il2CppFunctions.h"
 #include "Il2CppRuntimeCache.h"
-#include "PbE.h"
+#include "ProtoDumper.h"
 #include "PrintHelper.h"
 #include "RuntimeType.h"
 #include "SystemString.h"
@@ -12,6 +12,7 @@
 #include <DbgHelp.h>
 #include <filesystem>
 #include <optional>
+#include "DumpCs2.h"
 #pragma comment(lib, "DbgHelp.lib")
 
 using namespace Cerydra::CSharp;
@@ -62,7 +63,7 @@ void TestPrintAllImageNamesWrapper()
 void TestWrapper()
 {
     try {
-        using namespace Cerydra::IL2CPP;
+        using namespace Cerydra::Il2Cpp;
         auto findStringLengthMethod = [](const char* assemblyName) -> Method* {
             auto* assembly = Get(assemblyName);
             auto* image = assembly ? assembly->Get() : nullptr;
@@ -170,7 +171,7 @@ void TestWrapper()
 void yep()
 {
     try {
-        Cerydra::IL2CPP::Assembly* protoAssembly = nullptr;
+        Cerydra::Il2Cpp::Assembly* protoAssembly = nullptr;
 
         for (auto* assembly : Il2CppRuntimeCache::Assemblies()) {
             if (!assembly) {
@@ -182,6 +183,9 @@ void yep()
                 protoAssembly = assembly;
             }
         }
+
+        DumpCs(".\\output\\dump.cs");
+        DumpCs2(".\\output\\dump2.cs");
 
         if (protoAssembly) {
             DumpProtos2(protoAssembly, ".\\output\\dump.proto");
@@ -216,22 +220,16 @@ DWORD WINAPI MainThread(LPVOID)
     DebugPrintA("\n");
     DebugPrintA("[INFO] Start il2cpp dump!\n");
 
-    auto urStart = std::chrono::high_resolution_clock::now();
-    UnityResolve::Init(base, UnityResolve::Mode::Il2Cpp);
-    auto urEnd = std::chrono::high_resolution_clock::now();
-    auto urDurationMs = std::chrono::duration_cast<std::chrono::milliseconds>(urEnd - urStart);
-    std::cout << "UR耗时: " << urDurationMs.count() << " 毫秒" << std::endl;
+    //UnityResolve::Init(base, UnityResolve::Mode::Il2Cpp);
 
-    auto il2cppStart = std::chrono::high_resolution_clock::now();
     InitIl2CppFunctions();
     Il2CppRuntimeCache::Init();
-    auto il2cppEnd = std::chrono::high_resolution_clock::now();
-    auto il2cppDurationMs = std::chrono::duration_cast<std::chrono::milliseconds>(il2cppEnd - il2cppStart);
-    std::cout << "IL2CPP耗时: " << il2cppDurationMs.count() << " 毫秒" << std::endl;
 
     TestPrintAllImageNamesWrapper();
     TestWrapper();
     yep();
+
+	DumpProtos2(Il2CppRuntimeCache::GetAssembly("Game"), ".\\output\\dump.proto");
 
     DebugPrintA("[INFO] All done.\n");
     return 0;

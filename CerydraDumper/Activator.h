@@ -7,10 +7,10 @@ namespace Cerydra::CSharp
     class Activator final
     {
     public:
-        static Cerydra::IL2CPP::Class* StaticClass();
-        static Cerydra::IL2CPP::Method* CreateInstanceMethod();
-        static Cerydra::IL2CPP::Method* CreateInstanceWithArgsMethod();
-        static Cerydra::IL2CPP::Method* CreateInstanceWithNonpublicMethod();
+        static Cerydra::Il2Cpp::Class* StaticClass();
+        static Cerydra::Il2Cpp::Method* CreateInstanceMethod();
+        static Cerydra::Il2Cpp::Method* CreateInstanceWithArgsMethod();
+        static Cerydra::Il2Cpp::Method* CreateInstanceWithNonpublicMethod();
 
         static Object* CreateInstance(Object* type);
         static Object* CreateInstanceWithArgs(Object* type, Array<Object*>* args);

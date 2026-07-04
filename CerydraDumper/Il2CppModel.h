@@ -12,7 +12,7 @@ namespace Cerydra::CSharp
     class RuntimeType;
 }
 
-namespace Cerydra::IL2CPP
+namespace Cerydra::Il2Cpp
 {
     class Assembly;
     class Image;

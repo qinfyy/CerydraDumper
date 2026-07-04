@@ -3,19 +3,19 @@
 
 namespace Cerydra::CSharp
 {
-    Cerydra::IL2CPP::Class* AppDomain::StaticClass()
+    Cerydra::Il2Cpp::Class* AppDomain::StaticClass()
     {
         static auto* klass = RequireClass("System.AppDomain");
         return klass;
     }
 
-    Cerydra::IL2CPP::Method* AppDomain::GetAssembliesMethod()
+    Cerydra::Il2Cpp::Method* AppDomain::GetAssembliesMethod()
     {
         static auto* method = RequireMethod(StaticClass(), "GetAssemblies", {});
         return method;
     }
 
-    Cerydra::IL2CPP::Method* AppDomain::GetCurrentDomainMethod()
+    Cerydra::Il2Cpp::Method* AppDomain::GetCurrentDomainMethod()
     {
         static auto* method = RequireMethod(StaticClass(), "get_CurrentDomain", {});
         return method;

@@ -3,13 +3,13 @@
 
 namespace Cerydra::CSharp
 {
-    Cerydra::IL2CPP::Class* SystemType::StaticClass()
+    Cerydra::Il2Cpp::Class* SystemType::StaticClass()
     {
         static auto* klass = RequireClass("System.Type");
         return klass;
     }
 
-    Cerydra::IL2CPP::Method* SystemType::GetTypeFromHandleMethod()
+    Cerydra::Il2Cpp::Method* SystemType::GetTypeFromHandleMethod()
     {
         static auto* method = RequireMethod(StaticClass(), "GetTypeFromHandle", { "System.RuntimeTypeHandle" });
         return method;

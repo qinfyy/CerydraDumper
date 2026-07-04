@@ -30,23 +30,23 @@ namespace Cerydra::CSharp
         explicit Il2CppExceptionWrapper(Il2CppException* value) : ex(value) {}
     };
 
-    Cerydra::IL2CPP::Class* RequireClass(const char* className);
-    Cerydra::IL2CPP::Class* RequireClass(
+    Cerydra::Il2Cpp::Class* RequireClass(const char* className);
+    Cerydra::Il2Cpp::Class* RequireClass(
         const char* assemblyName,
         const char* className,
         const char* namespaze = "*",
         const char* parent = "*");
-    Cerydra::IL2CPP::Method* RequireMethod(
-        Cerydra::IL2CPP::Class* klass,
+    Cerydra::Il2Cpp::Method* RequireMethod(
+        Cerydra::Il2Cpp::Class* klass,
         const char* methodName,
         const std::vector<std::string>& argTypes);
-    Cerydra::IL2CPP::Method* RequireDynamicMethod(
+    Cerydra::Il2Cpp::Method* RequireDynamicMethod(
         const void* instance,
         const char* methodName,
         const std::vector<std::string>& argTypes);
 
     template <bool isStatic, typename Ret, typename... Args>
-    Ret InvokeCachedInternal(void* thisPtr, Cerydra::IL2CPP::Method* method, Args... args)
+    Ret InvokeCachedInternal(void* thisPtr, Cerydra::Il2Cpp::Method* method, Args... args)
     {
         InitSehTranslator();
 
@@ -125,13 +125,13 @@ namespace Cerydra::CSharp
     }
 
     template <typename Ret, typename... Args>
-    Ret InvokeStatic(Cerydra::IL2CPP::Method* method, Args... args)
+    Ret InvokeStatic(Cerydra::Il2Cpp::Method* method, Args... args)
     {
         return InvokeCachedInternal<true, Ret>(nullptr, method, args...);
     }
 
     template <typename Ret, typename... Args>
-    Ret InvokeInstance(const void* instance, Cerydra::IL2CPP::Method* method, Args... args)
+    Ret InvokeInstance(const void* instance, Cerydra::Il2Cpp::Method* method, Args... args)
     {
         return InvokeCachedInternal<false, Ret>(const_cast<void*>(instance), method, args...);
     }

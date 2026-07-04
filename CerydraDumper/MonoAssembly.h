@@ -10,12 +10,12 @@ namespace Cerydra::CSharp
     class MonoAssembly : public Object
     {
     public:
-        static Cerydra::IL2CPP::Class* AssemblyClass();
-        static Cerydra::IL2CPP::Class* AssemblyNameClass();
-        static Cerydra::IL2CPP::Method* GetNameMethod();
-        static Cerydra::IL2CPP::Method* AssemblyNameGetNameMethod();
-        static Cerydra::IL2CPP::Method* GetTypesMethod();
-        static Cerydra::IL2CPP::Method* GetTypeMethod();
+        static Cerydra::Il2Cpp::Class* AssemblyClass();
+        static Cerydra::Il2Cpp::Class* AssemblyNameClass();
+        static Cerydra::Il2Cpp::Method* GetNameMethod();
+        static Cerydra::Il2Cpp::Method* AssemblyNameGetNameMethod();
+        static Cerydra::Il2Cpp::Method* GetTypesMethod();
+        static Cerydra::Il2Cpp::Method* GetTypeMethod();
 
         SystemString* GetName() const;
         Array<RuntimeType*>* GetTypes(bool exportedOnly) const;

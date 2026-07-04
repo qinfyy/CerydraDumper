@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <fstream>
 #include <il2cpp-tabledefs.h>
+#include <il2cpp-api-types.h>
 #include <sstream>
 
 namespace
@@ -54,7 +55,7 @@ namespace
         return result;
     }
 
-    std::string GetTypeName(const Cerydra::IL2CPP::Type* type)
+    std::string GetTypeName(const Cerydra::Il2Cpp::Type* type)
     {
         if (!type) {
             return "void";
@@ -68,27 +69,27 @@ namespace
         return TrimCsType(typeName);
     }
 
-    Cerydra::IL2CPP::Type MakeTypeView(const Il2CppType* type)
+    Cerydra::Il2Cpp::Type MakeTypeView(const Il2CppType* type)
     {
-        Cerydra::IL2CPP::Type result{};
+        Cerydra::Il2Cpp::Type result{};
         if (!type) {
             return result;
         }
 
         result.address = const_cast<Il2CppType*>(type);
         result.name = il2cpp_type_get_name(type);
-        result.aliasName = Cerydra::IL2CPP::AliasTypeName(result.name);
+        result.aliasName = Cerydra::Il2Cpp::AliasTypeName(result.name);
         if (il2cpp_type_get_type) {
             result.typeEnum = il2cpp_type_get_type(type);
         }
         result.attrs = il2cpp_type_get_attrs(type);
         result.byRef = il2cpp_type_is_byref(type);
-        result.klass = Cerydra::IL2CPP::FindClassByAddress(
+        result.klass = Cerydra::Il2Cpp::FindClassByAddress(
             reinterpret_cast<uintptr_t>(il2cpp_class_from_type(type)));
         return result;
     }
 
-    std::string GetClassModifier(const Cerydra::IL2CPP::Class* klass)
+    std::string GetClassModifier(const Cerydra::Il2Cpp::Class* klass)
     {
         std::ostringstream output;
         const auto flags = klass ? klass->flags : 0;
@@ -157,7 +158,7 @@ namespace
         return output.str();
     }
 
-    std::string GetFieldModifier(const Cerydra::IL2CPP::Field* field)
+    std::string GetFieldModifier(const Cerydra::Il2Cpp::Field* field)
     {
         std::string result;
         const auto flags = field ? static_cast<uint16_t>(field->flags) : 0;
@@ -261,7 +262,7 @@ namespace
         os << "\n";
     }
 
-    void DumpFields(std::ostream& os, const Cerydra::IL2CPP::Class* klass)
+    void DumpFields(std::ostream& os, const Cerydra::Il2Cpp::Class* klass)
     {
         os << "\t// Fields\n";
         for (const auto* field : klass->fields) {
@@ -284,9 +285,9 @@ namespace
 
     uintptr_t GetMethodRva(const MethodInfo* method);
 
-    void DumpProperties(std::ostream& os, const Cerydra::IL2CPP::Class* klass)
+    void DumpProperties(std::ostream& os, const Cerydra::Il2Cpp::Class* klass)
     {
-        os << "\t// Properties\n";
+        os << "\t// Properties\n\n";
         if (!klass || !klass->address || !il2cpp_class_get_properties) {
             os << "\n";
             return;
@@ -352,7 +353,7 @@ namespace
         return reinterpret_cast<uintptr_t>(method->method_pointer) - GetGameAssemblyModuleBase();
     }
 
-    void DumpEnum(std::ostream& os, const Cerydra::IL2CPP::Class* klass, size_t typeIndex, const std::string& imageName)
+    void DumpEnum(std::ostream& os, const Cerydra::Il2Cpp::Class* klass, size_t typeIndex, const std::string& imageName)
     {
         DebugPrintA("[DumpCs] Dumping enum: %s\n", klass->name.c_str());
         os << "// Assembly: " << imageName << "\n";
@@ -376,7 +377,7 @@ namespace
         os << "}\n\n";
     }
 
-    void DumpMethods(std::ostream& os, const Cerydra::IL2CPP::Class* klass)
+    void DumpMethods(std::ostream& os, const Cerydra::Il2Cpp::Class* klass)
     {
         os << "\t// Methods\n\n";
         for (size_t i = 0; i < klass->methods.size(); ++i) {
@@ -408,7 +409,7 @@ namespace
         }
     }
 
-    void DumpClass(std::ostream& os, const Cerydra::IL2CPP::Class* klass, size_t typeIndex, const std::string& imageName)
+    void DumpClass(std::ostream& os, const Cerydra::Il2Cpp::Class* klass, size_t typeIndex, const std::string& imageName)
     {
         if (!klass) {
             return;

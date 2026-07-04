@@ -9,7 +9,7 @@
 
 namespace
 {
-    std::string GetTypeName(const Cerydra::IL2CPP::Type* type)
+    std::string GetTypeName(const Cerydra::Il2Cpp::Type* type)
     {
         if (!type) {
             return "void";
@@ -19,12 +19,12 @@ namespace
         return name.empty() ? "object" : name;
     }
 
-    bool IsFieldStatic(const Cerydra::IL2CPP::Field* field)
+    bool IsFieldStatic(const Cerydra::Il2Cpp::Field* field)
     {
         return field && (field->flags & FIELD_ATTRIBUTE_STATIC);
     }
 
-    bool IsMethodStatic(const Cerydra::IL2CPP::Method* method)
+    bool IsMethodStatic(const Cerydra::Il2Cpp::Method* method)
     {
         return method && (method->flags & METHOD_ATTRIBUTE_STATIC);
     }
@@ -38,7 +38,7 @@ namespace
         return result;
     }
 
-    void RenderClass(std::ostringstream& os, const Cerydra::IL2CPP::Class* klass)
+    void RenderClass(std::ostringstream& os, const Cerydra::Il2Cpp::Class* klass)
     {
         if (!klass) {
             return;

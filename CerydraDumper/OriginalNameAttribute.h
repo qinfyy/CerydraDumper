@@ -8,8 +8,8 @@ namespace Cerydra::CSharp
     class OriginalNameAttribute : public Object
     {
     public:
-        static Cerydra::IL2CPP::Class* StaticClass();
-        static Cerydra::IL2CPP::Method* GetNameMethod();
+        static Cerydra::Il2Cpp::Class* StaticClass();
+        static Cerydra::Il2Cpp::Method* GetNameMethod();
 
         SystemString* GetName() const;
     };

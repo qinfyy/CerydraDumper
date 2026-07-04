@@ -13,7 +13,7 @@
 #include <optional>
 #include <sstream>
 
-namespace Cerydra::IL2CPP
+namespace Cerydra::Il2Cpp
 {
     namespace
     {

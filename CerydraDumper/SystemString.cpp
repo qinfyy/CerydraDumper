@@ -4,13 +4,13 @@
 
 namespace Cerydra::CSharp
 {
-    Cerydra::IL2CPP::Class* SystemString::MarshalClass()
+    Cerydra::Il2Cpp::Class* SystemString::MarshalClass()
     {
         static auto* klass = RequireClass("System.Runtime.InteropServices.Marshal");
         return klass;
     }
 
-    Cerydra::IL2CPP::Method* SystemString::PtrToStringAnsiMethod()
+    Cerydra::Il2Cpp::Method* SystemString::PtrToStringAnsiMethod()
     {
         static auto* method = RequireMethod(MarshalClass(), "PtrToStringAnsi", { "System.IntPtr" });
         return method;

@@ -4,37 +4,37 @@
 
 namespace Cerydra::CSharp
 {
-    Cerydra::IL2CPP::Class* MonoAssembly::AssemblyClass()
+    Cerydra::Il2Cpp::Class* MonoAssembly::AssemblyClass()
     {
         static auto* klass = RequireClass("System.Reflection.Assembly");
         return klass;
     }
 
-    Cerydra::IL2CPP::Class* MonoAssembly::AssemblyNameClass()
+    Cerydra::Il2Cpp::Class* MonoAssembly::AssemblyNameClass()
     {
         static auto* klass = RequireClass("System.Reflection.AssemblyName");
         return klass;
     }
 
-    Cerydra::IL2CPP::Method* MonoAssembly::GetNameMethod()
+    Cerydra::Il2Cpp::Method* MonoAssembly::GetNameMethod()
     {
         static auto* method = RequireMethod(AssemblyClass(), "GetName", {});
         return method;
     }
 
-    Cerydra::IL2CPP::Method* MonoAssembly::AssemblyNameGetNameMethod()
+    Cerydra::Il2Cpp::Method* MonoAssembly::AssemblyNameGetNameMethod()
     {
         static auto* method = RequireMethod(AssemblyNameClass(), "get_Name", {});
         return method;
     }
 
-    Cerydra::IL2CPP::Method* MonoAssembly::GetTypesMethod()
+    Cerydra::Il2Cpp::Method* MonoAssembly::GetTypesMethod()
     {
         static auto* method = RequireMethod(AssemblyClass(), "GetTypes", { "bool" });
         return method;
     }
 
-    Cerydra::IL2CPP::Method* MonoAssembly::GetTypeMethod()
+    Cerydra::Il2Cpp::Method* MonoAssembly::GetTypeMethod()
     {
         static auto* method = RequireMethod(AssemblyClass(), "GetType", { "string" });
         return method;

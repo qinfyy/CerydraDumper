@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include "PbE.h"
+#include "ProtoDumper.h"
 #include "OriginalNameAttribute.h"
 #include "PrintHelper.h"
 #include "RuntimeType.h"
@@ -11,11 +11,26 @@
 #include <unordered_map>
 
 using namespace Cerydra::CSharp;
-using namespace Cerydra::IL2CPP;
+using namespace Cerydra::Il2Cpp;
 
 namespace
 {
     constexpr bool FIX_ENUM = true;
+
+    template <typename Ret, typename... Args>
+    Ret InvokeObject(Object* obj, const char* methodName, const std::vector<std::string>& argTypes = {}, Args... args)
+    {
+        if (!obj) {
+            if constexpr (std::is_void_v<Ret>) {
+                return;
+            }
+            else {
+                return Ret{};
+            }
+        }
+
+        return InvokeDynamic<Ret>(obj, methodName, argTypes, args...);
+    }
 
     std::string GetIndent(int indentLevel)
     {
@@ -149,22 +164,7 @@ namespace
 
         return "";
     }
-
-    template <typename Ret, typename... Args>
-    Ret InvokeObject(Object* obj, const char* methodName, const std::vector<std::string>& argTypes = {}, Args... args)
-    {
-        if (!obj) {
-            if constexpr (std::is_void_v<Ret>) {
-                return;
-            }
-            else {
-                return Ret{};
-            }
-        }
-
-        return InvokeDynamic<Ret>(obj, methodName, argTypes, args...);
-    }
-
+    
     List<Object*>* DescriptorList(Object* obj, const char* getter)
     {
         return InvokeObject<List<Object*>*>(obj, getter);

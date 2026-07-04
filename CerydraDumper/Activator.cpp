@@ -3,25 +3,25 @@
 
 namespace Cerydra::CSharp
 {
-    Cerydra::IL2CPP::Class* Activator::StaticClass()
+    Cerydra::Il2Cpp::Class* Activator::StaticClass()
     {
         static auto* klass = RequireClass("System.Activator");
         return klass;
     }
 
-    Cerydra::IL2CPP::Method* Activator::CreateInstanceMethod()
+    Cerydra::Il2Cpp::Method* Activator::CreateInstanceMethod()
     {
         static auto* method = RequireMethod(StaticClass(), "CreateInstance", { "System.Type" });
         return method;
     }
 
-    Cerydra::IL2CPP::Method* Activator::CreateInstanceWithArgsMethod()
+    Cerydra::Il2Cpp::Method* Activator::CreateInstanceWithArgsMethod()
     {
         static auto* method = RequireMethod(StaticClass(), "CreateInstance", { "System.Type", "object[]" });
         return method;
     }
 
-    Cerydra::IL2CPP::Method* Activator::CreateInstanceWithNonpublicMethod()
+    Cerydra::Il2Cpp::Method* Activator::CreateInstanceWithNonpublicMethod()
     {
         static auto* method = RequireMethod(StaticClass(), "CreateInstance", { "System.Type", "bool" });
         return method;

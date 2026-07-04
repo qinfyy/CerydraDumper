@@ -10,13 +10,13 @@ public:
     static void Init();
     static bool IsInitialized();
 
-    static Cerydra::IL2CPP::Assembly* GetAssembly(const std::string& name);
-    static const std::vector<Cerydra::IL2CPP::Assembly*>& Assemblies();
+    static Cerydra::Il2Cpp::Assembly* GetAssembly(const std::string& name);
+    static const std::vector<Cerydra::Il2Cpp::Assembly*>& Assemblies();
 
 private:
     static void BuildAssemblies();
-    static void BuildClasses(Cerydra::IL2CPP::Assembly* assembly, Cerydra::IL2CPP::Image* image);
-    static void BuildFields(Cerydra::IL2CPP::Class* klass);
-    static void BuildMethods(Cerydra::IL2CPP::Class* klass);
-    static Cerydra::IL2CPP::Type* CreateType(const Il2CppType* type);
+    static void BuildClasses(Cerydra::Il2Cpp::Assembly* assembly, Cerydra::Il2Cpp::Image* image);
+    static void BuildFields(Cerydra::Il2Cpp::Class* klass);
+    static void BuildMethods(Cerydra::Il2Cpp::Class* klass);
+    static Cerydra::Il2Cpp::Type* CreateType(const Il2CppType* type);
 };
