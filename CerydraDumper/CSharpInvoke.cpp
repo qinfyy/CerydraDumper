@@ -41,7 +41,8 @@ namespace Cerydra::CSharp
         const char* parent)
     {
         auto* assembly = Cerydra::Il2Cpp::Get(assemblyName);
-        auto* klass = assembly ? assembly->Get(className, namespaze, parent) : nullptr;
+        auto* image = assembly ? assembly->Get() : nullptr;
+        auto* klass = image ? image->Get(className, namespaze, parent) : nullptr;
         if (!klass) {
             throw std::runtime_error(
                 std::string("找不到 C# 类: ") + assemblyName + "::" + namespaze + "." + className);

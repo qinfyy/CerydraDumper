@@ -10,8 +10,6 @@ namespace Cerydra::CSharp
     {
     public:
         static Cerydra::Il2Cpp::Class* StaticClass();
-        static Cerydra::Il2Cpp::Method* GetAssembliesMethod();
-        static Cerydra::Il2Cpp::Method* GetCurrentDomainMethod();
 
         static AppDomain* GetCurrentDomain();
         Array<MonoAssembly*>* GetAssemblies() const;

@@ -8,9 +8,6 @@ namespace Cerydra::CSharp
     {
     public:
         static Cerydra::Il2Cpp::Class* StaticClass();
-        static Cerydra::Il2Cpp::Method* CreateInstanceMethod();
-        static Cerydra::Il2Cpp::Method* CreateInstanceWithArgsMethod();
-        static Cerydra::Il2Cpp::Method* CreateInstanceWithNonpublicMethod();
 
         static Object* CreateInstance(Object* type);
         static Object* CreateInstanceWithArgs(Object* type, Array<Object*>* args);

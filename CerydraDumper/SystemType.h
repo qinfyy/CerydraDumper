@@ -8,7 +8,6 @@ namespace Cerydra::CSharp
     {
     public:
         static Cerydra::Il2Cpp::Class* StaticClass();
-        static Cerydra::Il2Cpp::Method* GetTypeFromHandleMethod();
         static SystemType* GetTypeFromHandle(Il2CppType* type);
     };
 }

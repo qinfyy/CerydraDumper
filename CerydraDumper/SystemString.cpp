@@ -10,15 +10,10 @@ namespace Cerydra::CSharp
         return klass;
     }
 
-    Cerydra::Il2Cpp::Method* SystemString::PtrToStringAnsiMethod()
-    {
-        static auto* method = RequireMethod(MarshalClass(), "PtrToStringAnsi", { "System.IntPtr" });
-        return method;
-    }
-
     SystemString* SystemString::PtrToStringAnsi(const char* value)
     {
-        return InvokeStatic<SystemString*>(PtrToStringAnsiMethod(), value);
+        static auto* method = RequireMethod(MarshalClass(), "PtrToStringAnsi", { "System.IntPtr" });
+        return InvokeStatic<SystemString*>(method, value);
     }
 
     std::string SystemString::ToString() const

@@ -9,14 +9,9 @@ namespace Cerydra::CSharp
         return klass;
     }
 
-    Cerydra::Il2Cpp::Method* SystemType::GetTypeFromHandleMethod()
-    {
-        static auto* method = RequireMethod(StaticClass(), "GetTypeFromHandle", { "System.RuntimeTypeHandle" });
-        return method;
-    }
-
     SystemType* SystemType::GetTypeFromHandle(Il2CppType* type)
     {
-        return InvokeStatic<SystemType*>(GetTypeFromHandleMethod(), type);
+        static auto* method = RequireMethod(StaticClass(), "GetTypeFromHandle", { "System.RuntimeTypeHandle" });
+        return InvokeStatic<SystemType*>(method, type);
     }
 }

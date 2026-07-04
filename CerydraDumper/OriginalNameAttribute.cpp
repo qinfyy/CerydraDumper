@@ -9,14 +9,9 @@ namespace Cerydra::CSharp
         return klass;
     }
 
-    Cerydra::Il2Cpp::Method* OriginalNameAttribute::GetNameMethod()
-    {
-        static auto* method = RequireMethod(StaticClass(), "get_Name", {});
-        return method;
-    }
-
     SystemString* OriginalNameAttribute::GetName() const
     {
-        return InvokeInstance<SystemString*>(this, GetNameMethod());
+        static auto* method = RequireMethod(StaticClass(), "get_Name", {});
+        return InvokeInstance<SystemString*>(this, method);
     }
 }

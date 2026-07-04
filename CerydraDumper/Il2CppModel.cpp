@@ -463,11 +463,6 @@ namespace Cerydra::Il2Cpp
         return image;
     }
 
-    Class* Assembly::Get(const std::string& className, const std::string& namespaze, const std::string& parentName) const
-    {
-        return image ? image->Get(className, namespaze, parentName) : nullptr;
-    }
-
     Class* Image::Get(const std::string& className, const std::string& namespaze, const std::string& parentName) const
     {
         for (auto klass : classes) {

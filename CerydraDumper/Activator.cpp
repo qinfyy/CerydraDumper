@@ -9,36 +9,21 @@ namespace Cerydra::CSharp
         return klass;
     }
 
-    Cerydra::Il2Cpp::Method* Activator::CreateInstanceMethod()
-    {
-        static auto* method = RequireMethod(StaticClass(), "CreateInstance", { "System.Type" });
-        return method;
-    }
-
-    Cerydra::Il2Cpp::Method* Activator::CreateInstanceWithArgsMethod()
-    {
-        static auto* method = RequireMethod(StaticClass(), "CreateInstance", { "System.Type", "object[]" });
-        return method;
-    }
-
-    Cerydra::Il2Cpp::Method* Activator::CreateInstanceWithNonpublicMethod()
-    {
-        static auto* method = RequireMethod(StaticClass(), "CreateInstance", { "System.Type", "bool" });
-        return method;
-    }
-
     Object* Activator::CreateInstance(Object* type)
     {
-        return InvokeStatic<Object*>(CreateInstanceMethod(), type);
+        static auto* method = RequireMethod(StaticClass(), "CreateInstance", { "System.Type" });
+        return InvokeStatic<Object*>(method, type);
     }
 
     Object* Activator::CreateInstanceWithArgs(Object* type, Array<Object*>* args)
     {
-        return InvokeStatic<Object*>(CreateInstanceWithArgsMethod(), type, args);
+        static auto* method = RequireMethod(StaticClass(), "CreateInstance", { "System.Type", "object[]" });
+        return InvokeStatic<Object*>(method, type, args);
     }
 
     Object* Activator::CreateInstanceWithNonpublic(Object* type, bool nonpublic)
     {
-        return InvokeStatic<Object*>(CreateInstanceWithNonpublicMethod(), type, nonpublic);
+        static auto* method = RequireMethod(StaticClass(), "CreateInstance", { "System.Type", "bool" });
+        return InvokeStatic<Object*>(method, type, nonpublic);
     }
 }

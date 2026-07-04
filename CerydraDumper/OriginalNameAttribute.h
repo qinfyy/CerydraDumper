@@ -9,7 +9,6 @@ namespace Cerydra::CSharp
     {
     public:
         static Cerydra::Il2Cpp::Class* StaticClass();
-        static Cerydra::Il2Cpp::Method* GetNameMethod();
 
         SystemString* GetName() const;
     };

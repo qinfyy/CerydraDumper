@@ -40,10 +40,6 @@ namespace Cerydra::Il2Cpp
         Image* image{};
 
         Image* Get() const;
-        Class* Get(
-            const std::string& name,
-            const std::string& namespaze = "*",
-            const std::string& parent = "*") const;
     };
 
     class Image final
