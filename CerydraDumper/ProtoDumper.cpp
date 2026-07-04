@@ -104,7 +104,7 @@ namespace
         }
 
         auto* enumType = RuntimeType::FromClass(field->klass);
-        auto* fieldObject = enumType ? enumType->GetFieldObject(SystemString::PtrToStringAnsi(field->name.c_str()), 60) : nullptr;
+        auto* fieldObject = enumType ? enumType->GetFieldObject(SystemString::PtrToStringAnsi(field->name.c_str()), kAllMemberBindingFlags) : nullptr;
         if (!fieldObject) {
             return false;
         }
@@ -149,7 +149,7 @@ namespace
             return "";
         }
 
-        auto* fields = enumType->GetFields(60);
+        auto* fields = enumType->GetFields(kAllMemberBindingFlags);
         for (size_t i = 0; fields && i < fields->Length(); ++i) {
             auto* field = fields->Get<MonoField*>(i);
             if (!field || !field->IsLiteral()) {
@@ -348,7 +348,7 @@ namespace
         out << indent << "// Il2Cpp Class Generation\n";
         out << indent << "enum " << klass->name << " {\n";
 
-        auto* fields = runtimeType ? runtimeType->GetFields(60) : nullptr;
+        auto* fields = runtimeType ? runtimeType->GetFields(kAllMemberBindingFlags) : nullptr;
         for (size_t i = 0; fields && i < fields->Length(); ++i) {
             auto* field = fields->Get<MonoField*>(i);
             if (!field || !field->IsLiteral()) {

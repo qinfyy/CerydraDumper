@@ -122,7 +122,9 @@ void TestWrapper()
 
     try {
         auto* stringType = RuntimeType::FromName("System.String");
-        auto* field = stringType->GetFieldObject(SystemString::PtrToStringAnsi("Empty"), 0x58);
+        auto* field = stringType->GetFieldObject(
+            SystemString::PtrToStringAnsi("Empty"),
+            kPublicStaticFlattenHierarchyBindingFlags);
 
         DebugPrintA("[Field] Name: %s\n", field->GetName()->AsString().c_str());
         DebugPrintA("[Field] DeclaringType: %s\n", field->GetDeclaringType()->GetFullName()->AsString().c_str());

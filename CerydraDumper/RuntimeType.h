@@ -2,6 +2,7 @@
 
 #include "CSharpInvoke.h"
 #include "SystemString.h"
+#include <cstdint>
 #include <string>
 
 namespace Cerydra::CSharp
@@ -9,6 +10,71 @@ namespace Cerydra::CSharp
     class MonoAssembly;
     class MonoField;
     class MonoProperty;
+
+    enum class BindingFlags : uint32_t
+    {
+        Default = 0,
+        IgnoreCase = 1,
+        DeclaredOnly = 2,
+        Instance = 4,
+        Static = 8,
+        Public = 16,
+        NonPublic = 32,
+        FlattenHierarchy = 64,
+        InvokeMethod = 256,
+        CreateInstance = 512,
+        GetField = 1024,
+        SetField = 2048,
+        GetProperty = 4096,
+        SetProperty = 8192,
+        PutDispProperty = 16384,
+        PutRefDispProperty = 32768,
+        ExactBinding = 65536,
+        SuppressChangeType = 131072,
+        OptionalParamBinding = 262144,
+        IgnoreReturn = 16777216,
+    };
+
+    constexpr BindingFlags operator|(BindingFlags left, BindingFlags right)
+    {
+        return static_cast<BindingFlags>(static_cast<uint32_t>(left) | static_cast<uint32_t>(right));
+    }
+
+    constexpr BindingFlags operator&(BindingFlags left, BindingFlags right)
+    {
+        return static_cast<BindingFlags>(static_cast<uint32_t>(left) & static_cast<uint32_t>(right));
+    }
+
+    constexpr BindingFlags operator^(BindingFlags left, BindingFlags right)
+    {
+        return static_cast<BindingFlags>(static_cast<uint32_t>(left) ^ static_cast<uint32_t>(right));
+    }
+
+    constexpr BindingFlags operator~(BindingFlags value)
+    {
+        return static_cast<BindingFlags>(~static_cast<uint32_t>(value));
+    }
+
+    inline BindingFlags& operator|=(BindingFlags& left, BindingFlags right)
+    {
+        left = left | right;
+        return left;
+    }
+
+    inline BindingFlags& operator&=(BindingFlags& left, BindingFlags right)
+    {
+        left = left & right;
+        return left;
+    }
+
+    inline BindingFlags& operator^=(BindingFlags& left, BindingFlags right)
+    {
+        left = left ^ right;
+        return left;
+    }
+
+    inline constexpr BindingFlags kAllMemberBindingFlags = BindingFlags::Instance | BindingFlags::Static | BindingFlags::Public | BindingFlags::NonPublic;
+    inline constexpr BindingFlags kPublicStaticFlattenHierarchyBindingFlags = BindingFlags::Static | BindingFlags::Public | BindingFlags::FlattenHierarchy;
 
     class RuntimeType : public Object
     {
@@ -30,8 +96,8 @@ namespace Cerydra::CSharp
         SystemString* GetFullName() const;
         Object* GetTypeHandle() const;
         Array<RuntimeType*>* GetGenericArguments() const;
-        Array<MonoField*>* GetFields(int bindingFlags) const;
-        Array<MonoProperty*>* GetProperties(int bindingFlags) const;
+        Array<MonoField*>* GetFields(BindingFlags bindingFlags) const;
+        Array<MonoProperty*>* GetProperties(BindingFlags bindingFlags) const;
         bool IsByRef() const;
         bool IsArray() const;
         bool IsValueType() const;
@@ -44,7 +110,7 @@ namespace Cerydra::CSharp
         Array<RuntimeType*>* GetInterfaces() const;
         RuntimeType* GetDeclaringType() const;
         SystemString* GetAssemblyName() const;
-        MonoField* GetFieldObject(SystemString* name, int bindingFlags) const;
+        MonoField* GetFieldObject(SystemString* name, BindingFlags bindingFlags) const;
 
         Cerydra::Il2Cpp::Field* GetField(const char* name) const;
         Cerydra::Il2Cpp::Type* GetMetaType() const;

@@ -18,7 +18,7 @@ namespace Cerydra::Il2Cpp
     namespace
     {
         constexpr int32_t kUnknownType = -1;
-        constexpr int kAllFieldBindingFlags = 0x3C;
+        constexpr auto kAllFieldBindingFlags = Cerydra::CSharp::kAllMemberBindingFlags;
 
         bool TypeMatches(const Type* type, const std::string& requested)
         {

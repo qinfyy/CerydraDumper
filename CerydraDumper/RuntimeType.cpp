@@ -69,8 +69,8 @@ namespace Cerydra::CSharp
     SystemString* RuntimeType::GetFullName() const { return InvokeInstance<SystemString*>(this, GetFullNameMethod()); }
     Object* RuntimeType::GetTypeHandle() const { return InvokeInstance<Object*>(this, GetTypeHandleMethod()); }
     Array<RuntimeType*>* RuntimeType::GetGenericArguments() const { return InvokeInstance<Array<RuntimeType*>*>(this, GetGenericArgumentsMethod()); }
-    Array<MonoField*>* RuntimeType::GetFields(int bindingFlags) const { return InvokeInstance<Array<MonoField*>*, int>(this, GetFieldsMethod(), bindingFlags); }
-    Array<MonoProperty*>* RuntimeType::GetProperties(int bindingFlags) const { return InvokeInstance<Array<MonoProperty*>*, int>(this, GetPropertiesMethod(), bindingFlags); }
+    Array<MonoField*>* RuntimeType::GetFields(BindingFlags bindingFlags) const { return InvokeInstance<Array<MonoField*>*, int>(this, GetFieldsMethod(), static_cast<int>(bindingFlags)); }
+    Array<MonoProperty*>* RuntimeType::GetProperties(BindingFlags bindingFlags) const { return InvokeInstance<Array<MonoProperty*>*, int>(this, GetPropertiesMethod(), static_cast<int>(bindingFlags)); }
     bool RuntimeType::IsByRef() const { return InvokeInstance<bool>(this, IsByRefMethod()); }
     bool RuntimeType::IsArray() const { return InvokeInstance<bool>(this, IsArrayMethod()); }
     bool RuntimeType::IsValueType() const { return InvokeInstance<bool>(this, IsValueTypeMethod()); }
@@ -93,9 +93,9 @@ namespace Cerydra::CSharp
         return assembly ? assembly->GetName() : nullptr;
     }
 
-    MonoField* RuntimeType::GetFieldObject(SystemString* name, int bindingFlags) const
+    MonoField* RuntimeType::GetFieldObject(SystemString* name, BindingFlags bindingFlags) const
     {
-        return InvokeInstance<MonoField*, SystemString*, int>(this, GetFieldMethod(), name, bindingFlags);
+        return InvokeInstance<MonoField*, SystemString*, int>(this, GetFieldMethod(), name, static_cast<int>(bindingFlags));
     }
 
     Cerydra::Il2Cpp::Field* RuntimeType::GetField(const char* name) const
