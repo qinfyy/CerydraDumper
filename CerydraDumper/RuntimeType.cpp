@@ -105,7 +105,12 @@ namespace Cerydra::CSharp
             if (auto* field = klass->GetField(name)) {
                 return field;
             }
-            klass = klass->parentClass;
+            if (!klass->address) {
+                break;
+            }
+
+            auto* parent = il2cpp_class_get_parent(reinterpret_cast<Il2CppClass*>(klass->address));
+            klass = Cerydra::IL2CPP::FindClassByAddress(reinterpret_cast<uintptr_t>(parent));
         }
 
         throw std::runtime_error("找不到字段: " + std::string(name));
@@ -120,7 +125,18 @@ namespace Cerydra::CSharp
     Cerydra::IL2CPP::Class* RuntimeType::GetMetaClass() const
     {
         auto* type = GetMetaType();
-        return type ? type->klass : nullptr;
+        if (!type) {
+            return nullptr;
+        }
+        if (type->klass) {
+            return type->klass;
+        }
+        if (!type->address) {
+            return nullptr;
+        }
+
+        auto* nativeClass = il2cpp_class_from_type(reinterpret_cast<const Il2CppType*>(type->address));
+        return Cerydra::IL2CPP::FindClassByAddress(reinterpret_cast<uintptr_t>(nativeClass));
     }
 
     Cerydra::IL2CPP::Class* RuntimeFieldHandle::StaticClass() { static auto* klass = RequireClass("System.RuntimeFieldHandle"); return klass; }

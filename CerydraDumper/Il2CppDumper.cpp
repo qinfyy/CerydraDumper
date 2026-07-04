@@ -424,8 +424,8 @@ namespace
         os << "// Namespace: " << klass->namespaze << "\n";
         os << GetClassModifier(klass) << klass->name;
 
-        if (!klass->isValueType && klass->parentClass && klass->parentClass->name != "Object") {
-            os << " : " << klass->parentClass->name;
+        if (!klass->isValueType && !klass->parent.empty() && klass->parent != "Object") {
+            os << " : " << klass->parent;
         }
 
         os << " // TypeDefIndex: " << typeIndex << "\n{\n";

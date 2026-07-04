@@ -216,9 +216,18 @@ DWORD WINAPI MainThread(LPVOID)
     DebugPrintA("\n");
     DebugPrintA("[INFO] Start il2cpp dump!\n");
 
-    UnityResolve::Init(base, UnityResolve::Mode::Mono);
+    auto urStart = std::chrono::high_resolution_clock::now();
+    UnityResolve::Init(base, UnityResolve::Mode::Il2Cpp);
+    auto urEnd = std::chrono::high_resolution_clock::now();
+    auto urDurationMs = std::chrono::duration_cast<std::chrono::milliseconds>(urEnd - urStart);
+    std::cout << "UR耗时: " << urDurationMs.count() << " 毫秒" << std::endl;
+
+    auto il2cppStart = std::chrono::high_resolution_clock::now();
     InitIl2CppFunctions();
     Il2CppRuntimeCache::Init();
+    auto il2cppEnd = std::chrono::high_resolution_clock::now();
+    auto il2cppDurationMs = std::chrono::duration_cast<std::chrono::milliseconds>(il2cppEnd - il2cppStart);
+    std::cout << "IL2CPP耗时: " << il2cppDurationMs.count() << " 毫秒" << std::endl;
 
     TestPrintAllImageNamesWrapper();
     TestWrapper();

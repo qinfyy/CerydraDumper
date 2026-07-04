@@ -2,7 +2,6 @@
 #include "Il2CppRuntimeCache.h"
 #include "PrintHelper.h"
 #include <mutex>
-#include <unordered_set>
 
 using namespace Cerydra::IL2CPP;
 
@@ -16,15 +15,11 @@ namespace
     bool g_initialized = false;
 
     std::vector<Assembly*> s_assemblies;
-
-    struct MetadataCount
-    {
-        size_t assemblies{};
-        size_t classes{};
-        size_t fields{};
-        size_t methods{};
-        size_t types{};
-    };
+    size_t s_assemblyCount{};
+    size_t s_classCount{};
+    size_t s_fieldCount{};
+    size_t s_methodCount{};
+    size_t s_typeCount{};
 
     std::string SafeString(const char* value)
     {
@@ -42,73 +37,13 @@ namespace
         return value;
     }
 
-    template <typename Func>
-    void ForEachClass(Func&& func)
+    void ResetCounters()
     {
-        for (auto* assembly : s_assemblies) {
-            if (!assembly || !assembly->image) {
-                continue;
-            }
-
-            for (auto* klass : assembly->image->classes) {
-                if (klass) {
-                    func(klass);
-                }
-            }
-        }
-    }
-
-    void AddTypeAddress(std::unordered_set<void*>& addresses, const Type* type)
-    {
-        if (type && type->address) {
-            addresses.insert(type->address);
-        }
-    }
-
-    MetadataCount CountMetadata()
-    {
-        MetadataCount count{};
-        std::unordered_set<void*> typeAddresses;
-        count.assemblies = s_assemblies.size();
-
-        ForEachClass([&](const Class* klass) {
-            ++count.classes;
-            count.fields += klass->fields.size();
-            count.methods += klass->methods.size();
-            AddTypeAddress(typeAddresses, klass->byvalType);
-
-            for (const auto* field : klass->fields) {
-                if (field) {
-                    AddTypeAddress(typeAddresses, field->type);
-                }
-            }
-
-            for (const auto* method : klass->methods) {
-                if (!method) {
-                    continue;
-                }
-
-                AddTypeAddress(typeAddresses, method->returnType);
-                for (const auto* arg : method->args) {
-                    if (arg) {
-                        AddTypeAddress(typeAddresses, arg->type);
-                    }
-                }
-            }
-        });
-
-        count.types = typeAddresses.size();
-        return count;
-    }
-
-    void ResolveTypeClass(Type* type)
-    {
-        if (!type || type->klass || !type->address) {
-            return;
-        }
-
-        auto* nativeClass = il2cpp_class_from_type(reinterpret_cast<const Il2CppType*>(type->address));
-        type->klass = FindClassByAddress(reinterpret_cast<uintptr_t>(nativeClass));
+        s_assemblyCount = 0;
+        s_classCount = 0;
+        s_fieldCount = 0;
+        s_methodCount = 0;
+        s_typeCount = 0;
     }
 }
 
@@ -124,18 +59,17 @@ void Il2CppRuntimeCache::Init()
         }
 
         il2cpp_thread_attach(domain);
+        ResetCounters();
         BuildAssemblies();
-        ResolveClassLinks();
 
         g_initialized = true;
-        const auto count = CountMetadata();
         DebugPrintA(
             "[RuntimeCache] 完成: assemblies=%zu, classes=%zu, fields=%zu, methods=%zu, types=%zu\n",
-            count.assemblies,
-            count.classes,
-            count.fields,
-            count.methods,
-            count.types);
+            s_assemblyCount,
+            s_classCount,
+            s_fieldCount,
+            s_methodCount,
+            s_typeCount);
     });
 }
 
@@ -203,6 +137,7 @@ void Il2CppRuntimeCache::BuildAssemblies()
         assembly->image = image;
 
         s_assemblies.push_back(assembly);
+        ++s_assemblyCount;
 
         BuildClasses(assembly, image);
     }
@@ -241,6 +176,7 @@ void Il2CppRuntimeCache::BuildClasses(Assembly*, Image* image)
         }
 
         image->classes.push_back(klass);
+        ++s_classCount;
 
         BuildFields(klass);
         BuildMethods(klass);
@@ -267,6 +203,7 @@ void Il2CppRuntimeCache::BuildFields(Class* klass)
         field->isLiteral = (field->flags & FIELD_ATTRIBUTE_LITERAL) != 0;
 
         klass->fields.push_back(field);
+        ++s_fieldCount;
     }
 }
 
@@ -305,52 +242,8 @@ void Il2CppRuntimeCache::BuildMethods(Class* klass)
         }
 
         klass->methods.push_back(method);
+        ++s_methodCount;
     }
-}
-
-void Il2CppRuntimeCache::ResolveClassLinks()
-{
-    ForEachClass([](Class* klass) {
-        if (!klass || !klass->address) {
-            return;
-        }
-
-        auto* parent = il2cpp_class_get_parent(reinterpret_cast<Il2CppClass*>(klass->address));
-        klass->parentClass = FindClassByAddress(reinterpret_cast<uintptr_t>(parent));
-
-        ResolveTypeClass(klass->byvalType);
-        for (auto* field : klass->fields) {
-            if (field) {
-                ResolveTypeClass(field->type);
-            }
-        }
-        for (auto* method : klass->methods) {
-            if (!method) {
-                continue;
-            }
-
-            ResolveTypeClass(method->returnType);
-            for (auto* arg : method->args) {
-                if (arg) {
-                    ResolveTypeClass(arg->type);
-                }
-            }
-        }
-
-        klass->interfaces.clear();
-        void* iter = nullptr;
-        while (true) {
-            auto* nativeInterface = il2cpp_class_get_interfaces(reinterpret_cast<Il2CppClass*>(klass->address), &iter);
-            if (!nativeInterface) {
-                break;
-            }
-
-            auto* interfaceClass = FindClassByAddress(reinterpret_cast<uintptr_t>(nativeInterface));
-            if (interfaceClass) {
-                klass->interfaces.push_back(interfaceClass);
-            }
-        }
-    });
 }
 
 Type* Il2CppRuntimeCache::CreateType(const Il2CppType* nativeType)
@@ -368,9 +261,7 @@ Type* Il2CppRuntimeCache::CreateType(const Il2CppType* nativeType)
     }
     type->attrs = il2cpp_type_get_attrs(nativeType);
     type->byRef = il2cpp_type_is_byref(nativeType);
-
-    auto nativeClass = il2cpp_class_from_type(nativeType);
-    type->klass = FindClassByAddress(reinterpret_cast<uintptr_t>(nativeClass));
+    ++s_typeCount;
 
     return type;
 }

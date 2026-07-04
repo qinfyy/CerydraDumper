@@ -48,11 +48,21 @@ namespace Cerydra::IL2CPP
 
         const Type* ResolveEnumUnderlyingType(const Type* type)
         {
-            if (!type || !type->klass || !type->klass->isEnum) {
+            if (!type) {
                 return type;
             }
 
-            for (const auto* field : type->klass->fields) {
+            auto* enumClass = type->klass;
+            if (!enumClass && type->address) {
+                auto* nativeClass = il2cpp_class_from_type(reinterpret_cast<const Il2CppType*>(type->address));
+                enumClass = FindClassByAddress(reinterpret_cast<uintptr_t>(nativeClass));
+            }
+
+            if (!enumClass || !enumClass->isEnum) {
+                return type;
+            }
+
+            for (const auto* field : enumClass->fields) {
                 if (field && field->name == "value__" && field->type) {
                     return field->type;
                 }
@@ -659,19 +669,14 @@ namespace Cerydra::IL2CPP
 
     bool Class::Implements(const Class* interfaceClass) const
     {
-        if (!interfaceClass) {
+        if (!interfaceClass || !address || !interfaceClass->address) {
             return false;
         }
 
-        for (auto* current = this; current; current = current->parentClass) {
-            for (auto* iface : current->interfaces) {
-                if (iface == interfaceClass) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return il2cpp_class_is_subclass_of(
+            reinterpret_cast<Il2CppClass*>(address),
+            reinterpret_cast<Il2CppClass*>(interfaceClass->address),
+            true);
     }
 
     Cerydra::CSharp::RuntimeType* Class::GetTypeObject()

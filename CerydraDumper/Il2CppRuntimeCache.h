@@ -18,6 +18,5 @@ private:
     static void BuildClasses(Cerydra::IL2CPP::Assembly* assembly, Cerydra::IL2CPP::Image* image);
     static void BuildFields(Cerydra::IL2CPP::Class* klass);
     static void BuildMethods(Cerydra::IL2CPP::Class* klass);
-    static void ResolveClassLinks();
     static Cerydra::IL2CPP::Type* CreateType(const Il2CppType* type);
 };

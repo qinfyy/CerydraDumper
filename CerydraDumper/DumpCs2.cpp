@@ -49,8 +49,8 @@ namespace
         os << "namespace: " << klass->namespaze << "\n";
         os << "Assembly: " << (klass->image ? klass->image->name : "") << "\n";
         os << "class " << klass->name;
-        if (klass->parentClass) {
-            os << " : " << klass->parentClass->name;
+        if (!klass->parent.empty()) {
+            os << " : " << klass->parent;
         }
         os << " {\n\n";
 
