@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <cstdint>
 #include <stdexcept>
 #include <string>
@@ -60,6 +60,11 @@ public:
     explicit operator bool() const
     {
         return address() != nullptr;
+    }
+
+    bool operator!() const
+    {
+        return address() == nullptr;
     }
 
 private:

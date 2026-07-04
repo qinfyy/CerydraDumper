@@ -78,7 +78,7 @@ namespace
         result.address = const_cast<Il2CppType*>(type);
         result.name = il2cpp_type_get_name(type);
         result.aliasName = Cerydra::IL2CPP::AliasTypeName(result.name);
-        if (il2cpp_type_get_type.address()) {
+        if (il2cpp_type_get_type) {
             result.typeEnum = il2cpp_type_get_type(type);
         }
         result.attrs = il2cpp_type_get_attrs(type);
@@ -287,7 +287,7 @@ namespace
     void DumpProperties(std::ostream& os, const Cerydra::IL2CPP::Class* klass)
     {
         os << "\t// Properties\n";
-        if (!klass || !klass->address || !il2cpp_class_get_properties.address()) {
+        if (!klass || !klass->address || !il2cpp_class_get_properties) {
             os << "\n";
             return;
         }
@@ -295,13 +295,13 @@ namespace
         void* iter = nullptr;
         while (const auto* property = il2cpp_class_get_properties(
             reinterpret_cast<Il2CppClass*>(klass->address), &iter)) {
-            const auto* getter = il2cpp_property_get_get_method.address()
+            const auto* getter = il2cpp_property_get_get_method
                 ? il2cpp_property_get_get_method(const_cast<PropertyInfo*>(property))
                 : nullptr;
-            const auto* setter = il2cpp_property_get_set_method.address()
+            const auto* setter = il2cpp_property_get_set_method
                 ? il2cpp_property_get_set_method(const_cast<PropertyInfo*>(property))
                 : nullptr;
-            const auto* propertyName = il2cpp_property_get_name.address()
+            const auto* propertyName = il2cpp_property_get_name
                 ? il2cpp_property_get_name(const_cast<PropertyInfo*>(property))
                 : nullptr;
 

@@ -171,7 +171,7 @@ namespace Cerydra::IL2CPP
 
         std::optional<std::string> ReadLiteralValueByIl2CppApi(const Field* field)
         {
-            if (!field || !field->address || !field->type || !il2cpp_field_static_get_value.address()) {
+            if (!field || !field->address || !field->type || !il2cpp_field_static_get_value) {
                 return std::nullopt;
             }
 

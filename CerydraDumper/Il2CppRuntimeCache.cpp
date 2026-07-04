@@ -231,7 +231,7 @@ void Il2CppRuntimeCache::BuildMethods(Class* klass)
         method->args.reserve(paramCount);
         for (uint32_t i = 0; i < paramCount; ++i) {
             auto arg = new Method::Arg();
-            if (il2cpp_method_get_param_name.address()) {
+            if (il2cpp_method_get_param_name) {
                 arg->name = SafeString(il2cpp_method_get_param_name(nativeMethod, i));
             }
             if (arg->name.empty()) {
@@ -256,7 +256,7 @@ Type* Il2CppRuntimeCache::CreateType(const Il2CppType* nativeType)
     type->address = const_cast<Il2CppType*>(nativeType);
     type->name = SafeString(il2cpp_type_get_name(nativeType));
     type->aliasName = AliasTypeName(type->name);
-    if (il2cpp_type_get_type.address()) {
+    if (il2cpp_type_get_type) {
         type->typeEnum = il2cpp_type_get_type(nativeType);
     }
     type->attrs = il2cpp_type_get_attrs(nativeType);
