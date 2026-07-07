@@ -386,7 +386,7 @@ namespace
             }
 
             os << std::uppercase << "\t// RVA: 0x" << std::hex << method->Rva()
-                << " VA: 0x" << method->Va() << std::dec << " // Slot: " << i << "\n";
+                << " VA: 0x" << (method->Rva() + 0x180000000) << std::dec << " // Slot: " << i << "\n";
 
             os << "\t" << GetMethodModifiers(static_cast<uint16_t>(method->flags));
             if (method->returnType && method->returnType->byRef) {

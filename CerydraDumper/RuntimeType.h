@@ -142,8 +142,9 @@ namespace Cerydra::CSharp
         Cerydra::Il2Cpp::Field* GetMetaField() const;
 
     private:
-        static Cerydra::Il2Cpp::Class* RuntimeFieldInfoClass();
+        static Cerydra::Il2Cpp::Class* MonoFieldClass();
         static Cerydra::Il2Cpp::Class* FieldInfoClass();
+        static Cerydra::Il2Cpp::Class* MemberInfoClass();
     };
 
     class MonoProperty : public Object

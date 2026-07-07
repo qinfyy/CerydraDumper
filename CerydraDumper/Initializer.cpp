@@ -231,8 +231,6 @@ DWORD WINAPI MainThread(LPVOID)
     TestWrapper();
     yep();
 
-	DumpProtos2(Il2CppRuntimeCache::GetAssembly("Game"), ".\\output\\dump.proto");
-
     DebugPrintA("[INFO] All done.\n");
     return 0;
 }

@@ -218,9 +218,9 @@ namespace Cerydra::CSharp
         return InvokeInstance<uintptr_t>(this, method);
     }
 
-    Cerydra::Il2Cpp::Class* MonoField::RuntimeFieldInfoClass()
+    Cerydra::Il2Cpp::Class* MonoField::MonoFieldClass()
     {
-        static auto* klass = RequireClass("System.Reflection.RuntimeFieldInfo");
+        static auto* klass = RequireClass("System.Reflection.MonoField");
         return klass;
     }
     Cerydra::Il2Cpp::Class* MonoField::FieldInfoClass()
@@ -228,40 +228,45 @@ namespace Cerydra::CSharp
         static auto* klass = RequireClass("System.Reflection.FieldInfo");
         return klass;
     }
+    Cerydra::Il2Cpp::Class* MonoField::MemberInfoClass()
+    {
+        static auto* klass = RequireClass("System.Reflection.MemberInfo");
+        return klass;
+    }
 
     RuntimeType* MonoField::GetDeclaringType() const
     {
-        static auto* method = RequireMethod(RuntimeFieldInfoClass(), "get_DeclaringType", {});
+        static auto* method = RequireMethod(MonoFieldClass(), "get_DeclaringType", {});
         return InvokeInstance<RuntimeType*>(this, method);
     }
     RuntimeType* MonoField::GetFieldType() const
     {
-        static auto* method = RequireMethod(RuntimeFieldInfoClass(), "get_FieldType", {});
+        static auto* method = RequireMethod(MonoFieldClass(), "get_FieldType", {});
         return InvokeInstance<RuntimeType*>(this, method);
     }
     SystemString* MonoField::GetName() const
     {
-        static auto* method = RequireMethod(RuntimeFieldInfoClass(), "get_Name", {});
+        static auto* method = RequireMethod(MonoFieldClass(), "get_Name", {});
         return InvokeInstance<SystemString*>(this, method);
     }
     RuntimeFieldHandle* MonoField::GetFieldHandle() const
     {
-        static auto* method = RequireMethod(RuntimeFieldInfoClass(), "get_FieldHandle", {});
+        static auto* method = RequireMethod(MonoFieldClass(), "get_FieldHandle", {});
         return InvokeInstance<RuntimeFieldHandle*>(this, method);
     }
     Object* MonoField::GetRawConstantValue() const
     {
-        static auto* method = RequireMethod(RuntimeFieldInfoClass(), "GetRawConstantValue", {});
+        static auto* method = RequireMethod(MonoFieldClass(), "GetRawConstantValue", {});
         return InvokeInstance<Object*>(this, method);
     }
     Array<Object*>* MonoField::GetCustomAttributes(bool inherit) const
     {
-        static auto* method = RequireMethod(RuntimeFieldInfoClass(), "GetCustomAttributes", { "bool" });
+        static auto* method = RequireMethod(MonoFieldClass(), "GetCustomAttributes", { "bool" });
         return InvokeInstance<Array<Object*>*, bool>(this, method, inherit);
     }
     Object* MonoField::GetValue(Object* obj) const
     {
-        static auto* method = RequireMethod(RuntimeFieldInfoClass(), "GetValue", { "object" });
+        static auto* method = RequireMethod(MonoFieldClass(), "GetValue", { "object" });
         return InvokeInstance<Object*>(this, method, obj);
     }
     bool MonoField::IsLiteral() const
@@ -271,7 +276,7 @@ namespace Cerydra::CSharp
     }
     int32_t MonoField::GetMetadataToken() const
     {
-        static auto* method = RequireMethod(RuntimeFieldInfoClass(), "get_MetadataToken", {});
+        static auto* method = RequireMethod(MemberInfoClass(), "get_MetadataToken", {});
         return InvokeInstance<int32_t>(this, method);
     }
     void MonoField::SetValue(Object* obj, Object* value) const
