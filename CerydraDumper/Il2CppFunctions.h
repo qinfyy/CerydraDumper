@@ -6,16 +6,22 @@
 #include <unordered_map>
 #include <utility>
 
-#include "il2cpp-api-types.h"
+#include "./il2cpp/il2cpp-api-types.h"
 
 uintptr_t GetGameAssemblyModuleBase();
 
+uintptr_t GetUnityPlayerModuleBase();
+
 struct MethodInfo
 {
-    void* method_pointer; // 0x00
-    uint8_t padding[0x44];
-    uint16_t flags; // 0x4C
+    const Il2CppClass* klass;
+    const void* method_pointer;
+    uint8_t _pad[0x1A];
+    uint16_t flags;
 };
+
+static_assert(offsetof(MethodInfo, method_pointer) == 0x8);
+static_assert(offsetof(MethodInfo, flags) == 0x2A);
 
 inline std::unordered_map<std::string, void*> address_{};
 
@@ -25,6 +31,10 @@ template <typename Return, typename... Args>
 static auto Invoke(const std::string& funcName, Args... args) -> Return
 {
     auto address = FindIl2CppAddress(funcName);
+    if (!address) {
+        throw std::runtime_error("IL2CPP API 未绑定: " + funcName);
+    }
+
     auto fn = reinterpret_cast<Return(*)(Args...)>(address);
     if constexpr (std::is_void_v<Return>) {
         fn(std::forward<Args>(args)...);
@@ -53,8 +63,7 @@ public:
 
     [[nodiscard]] void* address() const
     {
-        auto it = address_.find(funcName_);
-        return it == address_.end() ? nullptr : it->second;
+		return FindIl2CppAddress(funcName_);
     }
 
     explicit operator bool() const
@@ -73,7 +82,7 @@ private:
 
 #define DO_API(r, n, p) inline Il2CppApiStub<r p> n{#n};
 #define DO_API_NO_RETURN(r, n, p) inline Il2CppApiStub<r p> n{#n};
-#include "il2cpp-api-functions.h"
+#include "./il2cpp/il2cpp-api-functions.h"
 #undef DO_API
 #undef DO_API_NO_RETURN
 

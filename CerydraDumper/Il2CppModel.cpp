@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <cctype>
 #include <iomanip>
-#include <il2cpp-blob.h>
-#include <il2cpp-tabledefs.h>
+#include "./il2cpp/il2cpp-blob.h"
+#include "./il2cpp/il2cpp-tabledefs.h"
 #include <limits>
 #include <optional>
 #include <sstream>

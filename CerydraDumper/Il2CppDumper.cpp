@@ -4,8 +4,8 @@
 #include "PrintHelper.h"
 #include <filesystem>
 #include <fstream>
-#include <il2cpp-tabledefs.h>
-#include <il2cpp-api-types.h>
+#include "./il2cpp/il2cpp-tabledefs.h"
+#include "./il2cpp/il2cpp-api-types.h"
 #include <sstream>
 
 namespace
@@ -312,13 +312,12 @@ namespace
 
             const Il2CppType* propertyType = nullptr;
             uint16_t flags = 0;
-            uint32_t iflags = 0;
             if (getter) {
-                flags = static_cast<uint16_t>(il2cpp_method_get_flags(getter, &iflags));
+                flags = getter->flags;
                 propertyType = il2cpp_method_get_return_type(getter);
             }
             else if (setter && il2cpp_method_get_param_count(setter) > 0) {
-                flags = static_cast<uint16_t>(il2cpp_method_get_flags(setter, &iflags));
+                flags = setter->flags;
                 propertyType = il2cpp_method_get_param(setter, 0);
             }
 

@@ -4,7 +4,7 @@
 #include "PrintHelper.h"
 #include <filesystem>
 #include <fstream>
-#include <il2cpp-tabledefs.h>
+#include "./il2cpp/il2cpp-tabledefs.h"
 #include <sstream>
 
 namespace

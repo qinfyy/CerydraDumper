@@ -73,23 +73,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)il2cpp;$(IncludePath)</IncludePath>
     <TargetName>version</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)il2cpp;$(IncludePath)</IncludePath>
     <TargetName>version</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)il2cpp;$(IncludePath)</IncludePath>
     <TargetName>version</TargetName>
     <OutDir>E:\UintyTest\My project\x64 Il2Cpp</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)il2cpp;$(IncludePath)</IncludePath>
     <TargetName>version</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -176,26 +172,12 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Il2CppModel.h" />
     <ClInclude Include="Il2CppRuntimeCache.h" />
-    <ClInclude Include="il2cpp\vm\GlobalMetadataFileInternals.h" />
     <ClInclude Include="Initializer.h" />
     <ClInclude Include="Il2CppDumper.h" />
     <ClInclude Include="Il2CppFunctions.h" />
     <ClInclude Include="il2cpp\il2cpp-api-functions.h" />
     <ClInclude Include="il2cpp\il2cpp-api-types.h" />
-    <ClInclude Include="il2cpp\il2cpp-blob.h" />
-    <ClInclude Include="il2cpp\il2cpp-class-internals.h" />
-    <ClInclude Include="il2cpp\il2cpp-config-api.h" />
-    <ClInclude Include="il2cpp\il2cpp-config.h" />
-    <ClInclude Include="il2cpp\il2cpp-metadata.h" />
-    <ClInclude Include="il2cpp\il2cpp-mono-api-functions.h" />
-    <ClInclude Include="il2cpp\il2cpp-object-internals.h" />
-    <ClInclude Include="il2cpp\il2cpp-pinvoke-support.h" />
-    <ClInclude Include="il2cpp\il2cpp-runtime-metadata.h" />
-    <ClInclude Include="il2cpp\il2cpp-sanitizers.h" />
-    <ClInclude Include="il2cpp\il2cpp-string-types.h" />
     <ClInclude Include="il2cpp\il2cpp-tabledefs.h" />
-    <ClInclude Include="il2cpp\il2cpp-tokentype.h" />
-    <ClInclude Include="il2cpp\il2cpp-windowsruntime-types.h" />
     <ClInclude Include="JsonGenerator.h" />
     <ClInclude Include="Memory.h" />
     <ClInclude Include="MetaDumper.h" />
@@ -219,9 +201,9 @@
     <ClCompile Include="CmdIdOut.cpp" />
     <ClCompile Include="CSharpInvoke.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Il2CppFunctions.cpp" />
     <ClCompile Include="Initializer.cpp" />
     <ClCompile Include="Il2CppDumper.cpp" />
-    <ClCompile Include="Il2CppFunctions.cpp" />
     <ClCompile Include="Il2CppModel.cpp" />
     <ClCompile Include="Il2CppRuntimeCache.cpp" />
     <ClCompile Include="JsonGenerator.cpp" />

@@ -3,15 +3,12 @@
 #include "PrintHelper.h"
 #include <mutex>
 #include <chrono>
+#include "./il2cpp/il2cpp-tabledefs.h"
 
 using namespace Cerydra::Il2Cpp;
 
 namespace
 {
-    constexpr int32_t FIELD_ATTRIBUTE_STATIC = 0x0010;
-    constexpr int32_t FIELD_ATTRIBUTE_LITERAL = 0x0040;
-    constexpr int32_t METHOD_ATTRIBUTE_STATIC = 0x0010;
-
     std::once_flag g_initOnce;
     bool g_initialized = false;
 
@@ -126,7 +123,7 @@ void Il2CppRuntimeCache::BuildAssemblies()
         auto image = new Image();
         image->address = const_cast<Il2CppImage*>(nativeImage);
         image->name = SafeString(il2cpp_image_get_name(nativeImage));
-        image->file = SafeString(il2cpp_image_get_filename(nativeImage));
+        image->file = il2cpp_image_get_filename ? SafeString(il2cpp_image_get_filename(nativeImage)) : image->name;
         image->assembly = assembly;
 
         assembly->name = StripDllExtension(image->name);
@@ -219,10 +216,9 @@ void Il2CppRuntimeCache::BuildMethods(Class* klass)
         method->klass = klass;
         method->returnType = CreateType(il2cpp_method_get_return_type(nativeMethod));
 
-        uint32_t iflags = 0;
-        method->flags = static_cast<int32_t>(il2cpp_method_get_flags(nativeMethod, &iflags));
+        method->flags = static_cast<int32_t>(nativeMethod->flags);
         method->isStatic = (method->flags & METHOD_ATTRIBUTE_STATIC) != 0;
-        method->function = const_cast<MethodInfo*>(nativeMethod)->method_pointer;
+        method->function = const_cast<void*>(const_cast<MethodInfo*>(nativeMethod)->method_pointer);
 
         const auto paramCount = il2cpp_method_get_param_count(nativeMethod);
         method->args.reserve(paramCount);

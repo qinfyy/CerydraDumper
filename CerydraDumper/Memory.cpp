@@ -1,5 +1,6 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Memory.h"
+#include <cstdint>
 #include <string>
 
 uintptr_t Scan(HMODULE moduleBase, LPCSTR pattern)
@@ -52,4 +53,10 @@ uintptr_t Scan(HMODULE moduleBase, LPCSTR pattern)
 
     HeapFree(GetProcessHeap(), 0, patternBytes);
     return 0;
+}
+
+uintptr_t ExtractQwordTarget(uintptr_t instructionAddress)
+{
+    const int32_t relativeOffset = *reinterpret_cast<int32_t*>(instructionAddress + 3);
+    return instructionAddress + 7 + relativeOffset;
 }
