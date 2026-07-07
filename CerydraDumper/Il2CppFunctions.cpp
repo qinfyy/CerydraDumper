@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <cstdio>
 #include <cstring>
+#include <array>
 #include <iostream>
 #include "Memory.h"
 #include "PrintHelper.h"
@@ -64,19 +65,14 @@ namespace
         { "il2cpp_image_get_name", 168 },
         { "il2cpp_image_get_class_count", 169 },
         { "il2cpp_image_get_class", 170 },
-        //{ "il2cpp_class_get_type", 50 }, // 未验证
-        //{ "il2cpp_type_get_object", 158 }, // 未验证
-        //{ "il2cpp_type_get_type", 159 }, // 未验证
-        //{ "il2cpp_class_is_interface", 47 }, // 未验证
+        { "il2cpp_type_get_object", 158 },
+        { "il2cpp_type_get_type", 159 },
+        { "il2cpp_class_is_subclass_of", 26 },
+        { "il2cpp_class_is_interface", 47 },
+        { "il2cpp_class_get_type", 51 },
     };
 
-    constexpr Il2CppFixedApiBinding kFixedIl2CppApiBindings[] = {
-        { "il2cpp_class_get_type", 0x3A61FD0 },
-        { "il2cpp_type_get_object", 0x3A631F0 },
-        { "il2cpp_type_get_type", 0x3A63200 },
-        { "il2cpp_class_is_interface", 0x3A61F60 },
-        { "il2cpp_class_is_subclass_of", 0x3A61D70 },
-    };
+    constexpr std::array<Il2CppFixedApiBinding, 0> kFixedIl2CppApiBindings = {};
 
     const std::unordered_set<std::string>& UsedIl2CppApis()
     {
@@ -105,7 +101,7 @@ namespace
             //"il2cpp_field_static_set_value", //1 3
             "il2cpp_image_get_class",
             "il2cpp_image_get_class_count",
-            //"il2cpp_image_get_filename", //1 2
+            //"il2cpp_image_get_filename", //1 0
             "il2cpp_image_get_name",
             //"il2cpp_method_get_flags", //1 1
             "il2cpp_method_get_name",
